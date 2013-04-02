@@ -246,7 +246,6 @@ public class TreeModelEvaluator extends TreeModelManager implements Evaluator {
 
 		private Node trueNode = null;
 
-
 		public Prediction(Node lastTrueNode, Node trueNode){
 			this.lastTrueNode = lastTrueNode;
 			this.trueNode = trueNode;
