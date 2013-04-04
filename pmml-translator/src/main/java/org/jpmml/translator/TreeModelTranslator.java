@@ -37,7 +37,7 @@ public class TreeModelTranslator extends TreeModelManager implements Translator 
 
 		String outputVariableName = null;
 		List<FieldName> predictedFields = getPredictedFields();
-		if (predictedFields!=null && predictedFields.size()>0) {
+		if (predictedFields!=null && !predictedFields.isEmpty()) {
 			outputVariableName = predictedFields.get(0).getValue();
 		}
 		if (outputVariableName==null) {
@@ -83,31 +83,19 @@ public class TreeModelTranslator extends TreeModelManager implements Translator 
 		return result;
 	}
 	
-	private void assignOutputVariable(StringBuilder code, String value, TranslationContext context, DataField outputVariable)
-		throws TranslationException {
-		
-		switch(outputVariable.getDataType()) {
-			case INTEGER:
-			case FLOAT:
-			case DOUBLE:
-				code.append(context.getIndentation())
-				.append(context.formatOutputVariable(outputVariable.getName().getValue())).append(" = ").append(value)
-				.append(";\n");
-				break;
-			case STRING:
-				code.append(context.getIndentation())
-				.append(context.formatOutputVariable(outputVariable.getName().getValue())).append(" = \"").append(value)
-				.append("\";\n");
-				break;
-			default:
-				throw new TranslationException("Unsupported data type for output variable: "+outputVariable.getDataType());
-		}
-	} 
+	private void assignExplanation(StringBuilder code, TranslationContext context, Node node) {
+		code.append(context.getIndentation())
+		.append(context.getModelResultTrackingVariable())
+		.append(" = \"")
+		.append(node.getId())
+		.append("\";\n");
+	}
 	
 	private void generateCodeForNode(Node node, TranslationContext context, StringBuilder code, DataField outputVariable) throws TranslationException {
 		
-		assignOutputVariable(code, node.getScore(), context, outputVariable);
-
+		TranslatorUtil.assignOutputVariable(code, node.getScore(), context, outputVariable);
+		assignExplanation(code, context, node);
+		
 		if (context.getModelResultTrackingVariable()!=null) {
 				code.append(context.getIndentation())
 					.append(context.getModelResultTrackingVariable()).append(" = \"").append(node.getId()).append("\"")
@@ -145,14 +133,14 @@ public class TreeModelTranslator extends TreeModelManager implements Translator 
 				.append("if (").append(predicateValue).append("==").append(PredicateTranslationUtil.TRUE)
 				.append(") {\n");
 			context.incIndentation();
-			
+
 			code.append(context.getIndentation()).append(succVariable).append(" = true;\n");
 			// predicate is true - insert code for nested nodes 
 			generateCodeForNode(child, context, code, outputVariable);
 
 			context.decIndentation();
 			code.append(context.getIndentation()).append("}\n");
-			
+
 			code.append(context.getIndentation())
 				.append("else if (").append(predicateValue).append("==").append(PredicateTranslationUtil.UNKNOWN)
 				.append(") {\n");
@@ -212,6 +200,11 @@ public class TreeModelTranslator extends TreeModelManager implements Translator 
 				.append(context.formatOutputVariable(outputVariable.getName().getValue()))
 				.append(" = ").append(context.getNullValueForVariable(findOutputVariableType()))
 				.append(";\n");
+			code.append(context.getIndentation())
+			.append(context.getModelResultTrackingVariable())
+			.append(" = ")
+			.append(context.getNullValueForVariable(OpType.CATEGORICAL))
+			.append(";\n");
 
 			context.decIndentation();
 			

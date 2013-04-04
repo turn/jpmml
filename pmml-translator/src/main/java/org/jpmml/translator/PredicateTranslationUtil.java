@@ -35,7 +35,7 @@ public class PredicateTranslationUtil {
 	}
 	
 	static private String operationWrapper(String operation, String variableString, String constant, TranslationContext context) {
-		return String.format("%s==%s? %s : ((%s %s %s)? %s : %s)",
+		return String.format("%s == %s? %s : ((%s %s %s)? %s : %s)",
 				variableString, context.getMissingValue(OpType.CONTINUOUS),
 				PredicateTranslationUtil.UNKNOWN,
 				variableString, operation, constant,
@@ -53,24 +53,24 @@ public class PredicateTranslationUtil {
 		String variableString = context.formatVariableName(modelManager, predicate.getField());
 		String constant = context.formatConstant(modelManager, predicate.getField(), predicate.getValue());
 
-		if (dataField.getOptype()==OpType.CATEGORICAL) {
+		if (dataField.getOptype() == OpType.CATEGORICAL) {
 			switch(predicate.getOperator()) {
 				case EQUAL: 
-					code = String.format("%s==%s? %s : (%s.equals(\"%s\")? %s : %s)",
+					code = String.format("%s == %s? %s : (%s.equals(\"%s\") ? %s : %s)",
 											variableString, context.getMissingValue(OpType.CATEGORICAL),
 											PredicateTranslationUtil.UNKNOWN,
 											variableString, constant,
 											PredicateTranslationUtil.TRUE, PredicateTranslationUtil.FALSE);
 					break;
 				case NOT_EQUAL: 
-					code = String.format("%s==%s? %s : (%s.equals(\"%s\")? %s : %s)",
+					code = String.format("%s == %s? %s : (%s.equals(\"%s\") ? %s : %s)",
 							variableString, context.getMissingValue(OpType.CATEGORICAL),
 							PredicateTranslationUtil.UNKNOWN,
 							variableString, constant,
 							PredicateTranslationUtil.FALSE, PredicateTranslationUtil.TRUE);
 					break;
 				case IS_MISSING: 
-					code = String.format("%s==%s? %s : %s", 
+					code = String.format("%s == %s? %s : %s", 
 							variableString, context.getMissingValue(OpType.CATEGORICAL),
 							PredicateTranslationUtil.TRUE, PredicateTranslationUtil.FALSE);
 					break;
@@ -176,17 +176,17 @@ public class PredicateTranslationUtil {
 				break;
 			case OR:
 				
-				for (int i=0;i<predicateResults.length;i++) {
-					if (i==0) {
+				for (int i = 0; i < predicateResults.length; i++) {
+					if (i == 0) {
 						result = predicateResults[i];
 					}
 					else {
 						// regular OR; if at least one is not missing and TRUE - return TRUE
-						if (result!=PredicateTranslationUtil.UNKNOWN && predicateResults[i]!=PredicateTranslationUtil.UNKNOWN) {
-							result = ((result==PredicateTranslationUtil.TRUE) || (predicateResults[i]==PredicateTranslationUtil.TRUE))? 
+						if (result != PredicateTranslationUtil.UNKNOWN && predicateResults[i] != PredicateTranslationUtil.UNKNOWN) {
+							result = ((result == PredicateTranslationUtil.TRUE) || (predicateResults[i] == PredicateTranslationUtil.TRUE))? 
 								PredicateTranslationUtil.TRUE : PredicateTranslationUtil.FALSE;						
 						}
-						else if ((result==PredicateTranslationUtil.TRUE) || (predicateResults[i]==PredicateTranslationUtil.TRUE)) {
+						else if ((result == PredicateTranslationUtil.TRUE) || (predicateResults[i] == PredicateTranslationUtil.TRUE)) {
 							result = PredicateTranslationUtil.TRUE;
 						}
 						else { 
@@ -196,17 +196,17 @@ public class PredicateTranslationUtil {
 				}
 				break;
 			case AND:
-				for (int i=0;i<predicateResults.length;i++) {
-					if (i==0) {
+				for (int i = 0; i < predicateResults.length; i++) {
+					if (i == 0) {
 						result = predicateResults[i];
 					}
 					else {
 						// regular AND; if at least one is not missing and FALSE - return FALSE
-						if (result!=PredicateTranslationUtil.UNKNOWN && predicateResults[i]!=PredicateTranslationUtil.UNKNOWN) {
-							result = ((result==PredicateTranslationUtil.TRUE) && (predicateResults[i]==PredicateTranslationUtil.TRUE))? 
+						if (result != PredicateTranslationUtil.UNKNOWN && predicateResults[i] != PredicateTranslationUtil.UNKNOWN) {
+							result = ((result == PredicateTranslationUtil.TRUE) && (predicateResults[i] == PredicateTranslationUtil.TRUE))? 
 								PredicateTranslationUtil.TRUE : PredicateTranslationUtil.FALSE;						
 						}
-						else if ((result==PredicateTranslationUtil.FALSE) || (predicateResults[i]==PredicateTranslationUtil.FALSE)) {
+						else if ((result == PredicateTranslationUtil.FALSE) || (predicateResults[i] == PredicateTranslationUtil.FALSE)) {
 							result = PredicateTranslationUtil.FALSE;
 						}
 						else { 
@@ -216,14 +216,14 @@ public class PredicateTranslationUtil {
 				}
 				break;
 			case XOR:
-				for (int i=0;i<predicateResults.length;i++) {
-					if (i==0) {
+				for (int i = 0; i < predicateResults.length; i++) {
+					if (i == 0) {
 						result = predicateResults[i];
 					}
 					else {
 						// regular XOR; return null if at least is missing
-						if (result!=PredicateTranslationUtil.UNKNOWN && predicateResults[i]!=PredicateTranslationUtil.UNKNOWN) {
-							result = ((result==PredicateTranslationUtil.TRUE) ^ (predicateResults[i]==PredicateTranslationUtil.TRUE))? 
+						if (result != PredicateTranslationUtil.UNKNOWN && predicateResults[i] != PredicateTranslationUtil.UNKNOWN) {
+							result = ((result == PredicateTranslationUtil.TRUE) ^ (predicateResults[i] == PredicateTranslationUtil.TRUE))? 
 								PredicateTranslationUtil.TRUE : PredicateTranslationUtil.FALSE;						
 						}
 						else { 
