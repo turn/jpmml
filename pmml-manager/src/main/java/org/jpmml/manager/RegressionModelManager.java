@@ -84,14 +84,14 @@ public class RegressionModelManager extends ModelManager<RegressionModel> {
 		return regressionTable;
 	}
 
-	public List<NumericPredictor> getNumericPrecictors(){
+	public List<NumericPredictor> getNumericPredictors(){
 		RegressionTable regressionTable = getOrCreateRegressionTable();
 
 		return regressionTable.getNumericPredictors();
 	}
 
 	public NumericPredictor getNumericPredictor(FieldName name){
-		List<NumericPredictor> numericPredictors = getNumericPrecictors();
+		List<NumericPredictor> numericPredictors = getNumericPredictors();
 
 		for(NumericPredictor numericPredictor : numericPredictors){
 
@@ -112,6 +112,34 @@ public class RegressionModelManager extends ModelManager<RegressionModel> {
 		return numericPredictor;
 	}
 
+	public List<CategoricalPredictor> getCategoricalPredictors(){
+		RegressionTable regressionTable = getOrCreateRegressionTable();
+
+		return regressionTable.getCategoricalPredictors();
+	}
+
+	public CategoricalPredictor getCategoricalPredictor(FieldName name){
+		List<CategoricalPredictor> categoricalPredictors = getCategoricalPredictors();
+
+		for(CategoricalPredictor categoricalPredictor : categoricalPredictors){
+
+			if((categoricalPredictor.getName()).equals(name)){
+				return categoricalPredictor;
+			}
+		}
+
+		return null;
+	}
+
+	public CategoricalPredictor addCategoricalPredictor(FieldName name, String value, Double coefficient){
+		RegressionTable regressionTable = getOrCreateRegressionTable();
+
+		CategoricalPredictor categoricalPredictor = new CategoricalPredictor(name, value, coefficient);
+		regressionTable.getCategoricalPredictors().add(categoricalPredictor);
+
+		return categoricalPredictor;
+	}
+	
 	public RegressionTable getOrCreateRegressionTable(){
 
 		if(this.regressionTable == null){

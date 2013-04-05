@@ -43,9 +43,14 @@ public class RegressionModelEvaluator extends RegressionModelManager implements 
 
 		result += getIntercept();
 
-		List<NumericPredictor> numericPredictors = getNumericPrecictors();
+		List<NumericPredictor> numericPredictors = getNumericPredictors();
 		for(NumericPredictor numericPredictor : numericPredictors){
 			result += evaluateNumericPredictor(numericPredictor, parameters);
+		}
+		
+		List<CategoricalPredictor> categoricalPredictors = getCategoricalPredictors();
+		for (CategoricalPredictor categoricalPredictor : categoricalPredictors) {
+			result += evaluateCategoricalPredictor(categoricalPredictor, parameters);
 		}
 
 		return Double.valueOf(result);
@@ -55,5 +60,12 @@ public class RegressionModelEvaluator extends RegressionModelManager implements 
 		Number value = (Number)ParameterUtil.getValue(parameters, numericPredictor.getName());
 
 		return numericPredictor.getCoefficient() * value.doubleValue();
+	}
+	
+	private double evaluateCategoricalPredictor(CategoricalPredictor categoricalPredictor, Map<FieldName, ?> parameters){
+		String value = (String) ParameterUtil.getValue(parameters, categoricalPredictor.getName());
+		
+		
+		return categoricalPredictor.getCoefficient() * (categoricalPredictor.getValue().equalsIgnoreCase(value) ? 1 : 0);
 	}
 }
