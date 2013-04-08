@@ -59,7 +59,8 @@ public class RegressionModelEvaluator extends RegressionModelManager implements 
 	private double evaluateNumericPredictor(NumericPredictor numericPredictor, Map<FieldName, ?> parameters){
 		Number value = (Number)ParameterUtil.getValue(parameters, numericPredictor.getName());
 
-		return numericPredictor.getCoefficient() * value.doubleValue();
+		return numericPredictor.getCoefficient()
+				* Math.pow(value.doubleValue(), numericPredictor.getExponent().doubleValue());
 	}
 	
 	private double evaluateCategoricalPredictor(CategoricalPredictor categoricalPredictor, Map<FieldName, ?> parameters){
