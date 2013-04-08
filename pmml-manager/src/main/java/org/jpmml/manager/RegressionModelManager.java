@@ -157,4 +157,9 @@ public class RegressionModelManager extends ModelManager<RegressionModel> {
 
 		return this.regressionTable;
 	}
+	
+	public RegressionNormalizationMethodType getNormalizationMethodType() {
+		
+		return regressionModel.getNormalizationMethod();
+	}
 }
