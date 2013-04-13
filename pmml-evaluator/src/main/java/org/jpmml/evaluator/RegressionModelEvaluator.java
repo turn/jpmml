@@ -9,6 +9,14 @@ import org.jpmml.manager.*;
 
 import org.dmg.pmml.*;
 
+/**
+ * This class evaluates the variables on the model. It reads the pmml object
+ * to return a result.
+ * For information about the regression model, see {@link RegressionModelManager}.
+ * 
+ * @author tbadie
+ *
+ */
 public class RegressionModelEvaluator extends RegressionModelManager implements Evaluator {
 
 	public RegressionModelEvaluator(PMML pmml){
@@ -24,7 +32,9 @@ public class RegressionModelEvaluator extends RegressionModelManager implements 
 	}
 
 	/**
-	 * @see #evaluateRegression(Map)
+	 * This method evaluate the model with the given parameters.
+	 * 
+	 * @see #evaluateRegression(Map), @see #evaluateClassification(Map).
 	 */
 	public Object evaluate(Map<FieldName, ?> parameters){
 		RegressionModel regressionModel = getModel();
@@ -40,6 +50,12 @@ public class RegressionModelEvaluator extends RegressionModelManager implements 
 		}
 	}
 
+	/**
+	 * Evaluate a classification.
+	 * 
+	 * @param parameters The set of parameters.
+	 * @return The name of the chosen category.
+	 */
 	private String evaluateClassification(Map<FieldName, ?> parameters) {
 		TreeMap<String, Double> targetCategoryToScore = new TreeMap<String, Double>();
 		
@@ -121,6 +137,8 @@ public class RegressionModelEvaluator extends RegressionModelManager implements 
 	}
 
 	private Double evaluateRegression(Map<FieldName, ?> parameters) {
+		// When it's a simple regression, there is only one table. So we just
+		// evaluate it, normalize the result and return it.   
 		double result = evaluateRegressionTable(getOrCreateRegressionTable(), parameters);
 
 		RegressionNormalizationMethodType normalizationMethod = getNormalizationMethodType();
@@ -144,11 +162,21 @@ public class RegressionModelEvaluator extends RegressionModelManager implements 
 		return result;
 	}
 
+	/**
+	 * Evaluate a regression table.
+	 * 
+	 * @param rt The regression table.
+	 * @param parameters The set of parameters.
+	 * @return The evaluation.
+	 */
 	private double evaluateRegressionTable(RegressionTable rt, Map<FieldName, ?> parameters) {
+		// Evaluating a regression table is only evaluate all the numeric predictors,
+		// and all the categorical predictors.
 		double result = 0D;
 
 		result += getIntercept(rt);
 		
+		// If a value is missing for a numeric predictors, it's an error. 
 		List<NumericPredictor> numericPredictors = rt.getNumericPredictors();
 		for(NumericPredictor numericPredictor : numericPredictors) {
 			result += evaluateNumericPredictor(numericPredictor, parameters);
@@ -162,6 +190,13 @@ public class RegressionModelEvaluator extends RegressionModelManager implements 
 		return Double.valueOf(result);
 	}
 	
+	/**
+	 * Evaluate a numeric predictor on a set of parameters.
+	 * 
+	 * @param numericPredictor The numeric predictor.
+	 * @param parameters The set of parameters.
+	 * @return
+	 */
 	private double evaluateNumericPredictor(NumericPredictor numericPredictor, Map<FieldName, ?> parameters){
 		Number value = (Number)ParameterUtil.getValue(parameters, numericPredictor.getName());
 
@@ -169,7 +204,21 @@ public class RegressionModelEvaluator extends RegressionModelManager implements 
 				* Math.pow(value.doubleValue(), numericPredictor.getExponent().doubleValue());
 	}
 	
+	/**
+	 * Evaluate a categorical predictor on a set of parameters.
+	 * 
+	 * @param categoricalPredictor The predictor.
+	 * @param parameters The parameters.
+	 * @return The result of the evaluation.
+	 */
 	private double evaluateCategoricalPredictor(CategoricalPredictor categoricalPredictor, Map<FieldName, ?> parameters) {
+		// The concept of the categorical predictor is: if a variable has a
+		// certain value, we return the coefficient. Otherwise we return 0.
+		// The problem is, the value can be a string, a double, an integer...
+		// And the equality is not done the same way. So we have to look the
+		// type of the variable used to know how to compare them. Because 0.0 != "0".
+		// This is why there is this ugly switch below. It's unfortunate, but it's the
+		// only way that works I have found.
 		Object blobValue =  ParameterUtil.getValue(parameters, categoricalPredictor.getName());
 		boolean isEqual = false;
 		List<DataField> ldf = getDataDictionary().getDataFields();
@@ -197,6 +246,7 @@ public class RegressionModelEvaluator extends RegressionModelManager implements 
 				}
 			}
 		}
+
 		return categoricalPredictor.getCoefficient() * (isEqual ? 1 : 0);
 	}
 }
