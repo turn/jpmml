@@ -29,12 +29,15 @@ public class ModelEvaluatorFactory extends ModelManagerFactory {
 
 		if(model instanceof MiningModel){
 
-			if(RandomForestManager.isRandomForest((MiningModel)model)){
-				return new RandomForestEvaluator(pmml, (MiningModel)model);
-			}
+//			if(RandomForestManager.isRandomForest((MiningModel)model)){
+//				return new RandomForestEvaluator(pmml, (MiningModel)model);
+//			}
+//			else {
+				return new MiningModelEvaluator(pmml, (MiningModel) model);
+			//}
 		}
 		if (model instanceof Scorecard) {
-			return new ScorecardEvaluator(pmml, (Scorecard) model);	
+			return new ScorecardEvaluator(pmml, (Scorecard) model);
 		}
 
 		throw new UnsupportedFeatureException(model);
