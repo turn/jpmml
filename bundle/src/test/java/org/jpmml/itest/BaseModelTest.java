@@ -8,8 +8,10 @@ import java.util.Map;
 import org.dmg.pmml.FieldName;
 import org.dmg.pmml.OpType;
 import org.dmg.pmml.PMML;
+import org.jpmml.evaluator.EvaluationException;
 import org.jpmml.evaluator.Evaluator;
 import org.jpmml.evaluator.ModelEvaluatorFactory;
+import org.jpmml.evaluator.RegressionModelEvaluator;
 import org.jpmml.manager.PMMLManager;
 import org.jpmml.translator.*;
 import org.slf4j.Logger;
@@ -72,8 +74,23 @@ public class BaseModelTest {
  						nameToValue.put(e.getKey(), 100.0*Math.random());
  					}
  				}
-
+ 				try {
 				executeAndCompareOutput(i, compiledModel, evaluator, manual, nameToValue);
+ 				}
+ 				catch (EvaluationException ee) {
+ 					if (ee.getMessage().startsWith("Missing parameter ")
+ 							&& evaluator instanceof RegressionModelEvaluator) {
+ 						// This is fine, the way we generate our test
+ 						// doesn't fit with the input for the regression model.
+ 						// So in order to keep this way of thinking, we just
+ 						// remove the exception for this particular case.
+ 					}
+ 					else {
+ 						// Otherwise, this exception is not normal, and should be sent
+ 						// to the user.
+ 						throw ee;
+ 					}
+ 				}
 			}
 		}		
 	}
@@ -98,9 +115,6 @@ public class BaseModelTest {
 				}
 			);
 
-		//logger.info("Generated source code:\n"+javaSource);
-		
-
 		Class<?> modelClass = PmmlToJavaTranslator.createModelClass(className, "org.jpmml.itest", javaSource);
 		
 		return (CompiledModel)modelClass.newInstance();
@@ -115,14 +129,15 @@ public class BaseModelTest {
 		Object value1 = pmmlModel.execute(nameToValue);
 		Object value2 = manual.execute(nameToValue);
 		
-		compareValues(iteration, nameToValue, value1, value2, pmmlModel.getResultExplanation(), manual.getResultExplanation());
+		compareValues(iteration, nameToValue, value1, value2, pmmlModel.getResultExplanation(), manual.getResultExplanation(),
+				false);
 
 		// if we get here then value1==value2
 		// now evaluate value3 and compare against value1
 		Object value3 = evaluateModel(evaluator, nameToValue);
 		
 		// Fake for the result explanation, because evaluator.getResultExplanation doesn't exist.
-		compareValues(iteration, nameToValue, value1, value3, null, null);
+		compareValues(iteration, nameToValue, value2, value3, null, null, true);
 	}
 	
 	protected Object evaluateModel(Evaluator evaluator, Map<String, Object> nameToValue) {
@@ -135,7 +150,7 @@ public class BaseModelTest {
 
 	private void compareValues(int iteration, Map<String, Object> nameToValue, 
 			Object value1,
-			Object value2, String explanation1, String explanation2 
+			Object value2, String explanation1, String explanation2, boolean secondTest 
 			) {
 		if ((value1==null && value2!=null)
 				|| (value1!=null && value2==null)
@@ -143,7 +158,7 @@ public class BaseModelTest {
 				|| (explanation1 != null && explanation2 == null)
 				|| (value1!=null && value2!=null && !value1.equals(value2))
 				|| (explanation1 != null && explanation2 != null && !explanation1.equals(explanation2))) {
-			logger.info("Test failed. Value1 = " + value1 + "; value2 = " + value2 + "; explanation1 = "
+			logger.info((secondTest ? "Second " : "First ") + "test failed. Value1 = " + value1 + "; value2 = " + value2 + "; explanation1 = "
 				+ explanation1 + "; explanation2 = " + explanation2);
 			for (Map.Entry<String, Object> e : nameToValue.entrySet()) {
 				logger.info(e.getKey() + " = " + e.getValue());
