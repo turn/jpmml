@@ -13,7 +13,7 @@ import org.dmg.pmml.*;
  * This class evaluates the variables on the model. It reads the pmml object
  * to return a result.
  * For information about the regression model, see {@link RegressionModelManager}.
- * 
+ *
  * @author tbadie
  *
  */
@@ -32,11 +32,11 @@ public class RegressionModelEvaluator extends RegressionModelManager implements 
 	}
 
 	/**
-	 * This method evaluate the model with the given parameters.
-	 * 
+	 * Evaluate the model with the given parameters.
+	 *
 	 * @see #evaluateRegression(Map), @see #evaluateClassification(Map).
 	 */
-	public Object evaluate(Map<FieldName, ?> parameters){
+	public IPMMLResult evaluate(Map<FieldName, ?> parameters){
 		RegressionModel regressionModel = getModel();
 
 		MiningFunctionType miningFunction = regressionModel.getFunctionName();
@@ -52,13 +52,13 @@ public class RegressionModelEvaluator extends RegressionModelManager implements 
 
 	/**
 	 * Evaluate a classification.
-	 * 
+	 *
 	 * @param parameters The set of parameters.
 	 * @return The name of the chosen category.
 	 */
-	private String evaluateClassification(Map<FieldName, ?> parameters) {
+	private IPMMLResult evaluateClassification(Map<FieldName, ?> parameters) {
 		TreeMap<String, Double> targetCategoryToScore = new TreeMap<String, Double>();
-		
+
 		for (RegressionTable rt : getOrCreateRegressionTables()) {
 			Double rtValue = evaluateRegressionTable(rt, parameters);
 			if (rtValue != null) {
@@ -67,7 +67,7 @@ public class RegressionModelEvaluator extends RegressionModelManager implements 
 		}
 		String result = new String();
 		if (targetCategoryToScore.isEmpty()) return null;
-		
+
 		TreeMap<Double, String> scoreToCategory = new TreeMap<Double, String>();
 		switch (getNormalizationMethodType()) {
 			case NONE:
@@ -88,7 +88,7 @@ public class RegressionModelEvaluator extends RegressionModelManager implements 
 				result = scoreToCategory.lastEntry().getValue();
 				break;
 			case EXP:
-				// pick the max of exp(yj) 
+				// pick the max of exp(yj)
 				for (Map.Entry<String, Double> categoryScore : targetCategoryToScore.entrySet()) {
 					double yj = categoryScore.getValue();
 					double pj = Math.exp(yj);
@@ -97,7 +97,7 @@ public class RegressionModelEvaluator extends RegressionModelManager implements 
 				result = scoreToCategory.lastEntry().getValue();
 				break;
 			case SOFTMAX:
-				// pj = exp(yj) / (Sum[i = 1 to N](exp(yi) ) ) 
+				// pj = exp(yj) / (Sum[i = 1 to N](exp(yi) ) )
 				double sum = 0.0;
 				for (Map.Entry<String, Double> categoryScore : targetCategoryToScore.entrySet()) {
 					double yj = categoryScore.getValue();
@@ -111,7 +111,7 @@ public class RegressionModelEvaluator extends RegressionModelManager implements 
 				result = scoreToCategory.lastEntry().getValue();
 				break;
 			case CLOGLOG:
-				// pick the max of pj = 1 - exp( -exp( yj ) ) 
+				// pick the max of pj = 1 - exp( -exp( yj ) )
 				for (Map.Entry<String, Double> categoryScore : targetCategoryToScore.entrySet()) {
 					double yj = categoryScore.getValue();
 					double pj = 1 - Math.exp(-Math.exp(yj));
@@ -120,7 +120,7 @@ public class RegressionModelEvaluator extends RegressionModelManager implements 
 				result = scoreToCategory.lastEntry().getValue();
 				break;
 			case LOGLOG:
-				// pick the max of pj = exp( -exp( -yj ) ) 
+				// pick the max of pj = exp( -exp( -yj ) )
 				for (Map.Entry<String, Double> categoryScore : targetCategoryToScore.entrySet()) {
 					double yj = categoryScore.getValue();
 					double pj = Math.exp(-Math.exp( -yj));
@@ -129,16 +129,23 @@ public class RegressionModelEvaluator extends RegressionModelManager implements 
 				result = scoreToCategory.lastEntry().getValue();
 				break;
 			default:
-				
-				result = null;					
+
+				result = null;
 		}
 
-		return result;
+		IPMMLResult res = new PMMLResult();
+		try {
+			res.put(getOutputField(this).getName(), result);
+		} catch (Exception e) {
+			throw new EvaluationException(e.getMessage());
+		}
+
+		return res;
 	}
 
-	private Double evaluateRegression(Map<FieldName, ?> parameters) {
+	private IPMMLResult evaluateRegression(Map<FieldName, ?> parameters) {
 		// When it's a simple regression, there is only one table. So we just
-		// evaluate it, normalize the result and return it.   
+		// evaluate it, normalize the result and return it.
 		double result = evaluateRegressionTable(getOrCreateRegressionTable(), parameters);
 
 		RegressionNormalizationMethodType normalizationMethod = getNormalizationMethodType();
@@ -158,13 +165,20 @@ public class RegressionModelEvaluator extends RegressionModelManager implements 
 				assert false;
 				break;
 		}
-				
-		return result;
+
+		IPMMLResult res = new PMMLResult();
+		try {
+			res.put(getOutputField(this).getName(), result);
+		} catch (Exception e) {
+			throw new EvaluationException(e.getMessage());
+		}
+
+		return res;
 	}
 
 	/**
 	 * Evaluate a regression table.
-	 * 
+	 *
 	 * @param rt The regression table.
 	 * @param parameters The set of parameters.
 	 * @return The evaluation.
@@ -175,8 +189,8 @@ public class RegressionModelEvaluator extends RegressionModelManager implements 
 		double result = 0D;
 
 		result += getIntercept(rt);
-		
-		// If a value is missing for a numeric predictors, it's an error. 
+
+		// If a value is missing for a numeric predictors, it's an error.
 		List<NumericPredictor> numericPredictors = rt.getNumericPredictors();
 		for(NumericPredictor numericPredictor : numericPredictors) {
 			result += evaluateNumericPredictor(numericPredictor, parameters);
@@ -189,10 +203,10 @@ public class RegressionModelEvaluator extends RegressionModelManager implements 
 
 		return Double.valueOf(result);
 	}
-	
+
 	/**
 	 * Evaluate a numeric predictor on a set of parameters.
-	 * 
+	 *
 	 * @param numericPredictor The numeric predictor.
 	 * @param parameters The set of parameters.
 	 * @return
@@ -203,10 +217,10 @@ public class RegressionModelEvaluator extends RegressionModelManager implements 
 		return numericPredictor.getCoefficient()
 				* Math.pow(value.doubleValue(), numericPredictor.getExponent().doubleValue());
 	}
-	
+
 	/**
 	 * Evaluate a categorical predictor on a set of parameters.
-	 * 
+	 *
 	 * @param categoricalPredictor The predictor.
 	 * @param parameters The parameters.
 	 * @return The result of the evaluation.
@@ -219,7 +233,12 @@ public class RegressionModelEvaluator extends RegressionModelManager implements 
 		// type of the variable used to know how to compare them. Because 0.0 != "0".
 		// This is why there is this ugly switch below. It's unfortunate, but it's the
 		// only way that works I have found.
-		Object blobValue =  ParameterUtil.getValue(parameters, categoricalPredictor.getName());
+		Object blobValue = null;
+		try {
+			blobValue = ParameterUtil.getValue(parameters, categoricalPredictor.getName());
+		} catch (EvaluationException e) {
+			return 0.0;
+		}
 		boolean isEqual = false;
 		List<DataField> ldf = getDataDictionary().getDataFields();
 

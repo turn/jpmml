@@ -38,7 +38,7 @@ public class TreeModelEvaluator extends TreeModelManager implements Evaluator {
 		return null;
 	}
 
-	public String evaluate(Map<FieldName, ?> parameters) {
+	public IPMMLResult evaluate(Map<FieldName, ?> parameters) {
 
 		String result = null;
 		Node currentNode = null;
@@ -165,7 +165,14 @@ public class TreeModelEvaluator extends TreeModelManager implements Evaluator {
 			}
 		}
 
-		return result;
+		IPMMLResult res = new PMMLResult();
+		try {
+			res.put(getOutputField(this).getName(), result);
+		} catch (Exception e) {
+			throw new EvaluationException(e.getMessage());
+		}
+
+		return res;
 	}
 
 

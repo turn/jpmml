@@ -16,5 +16,5 @@ public interface Evaluator extends Consumer {
 	 *
 	 * @see #getActiveFields()
 	 */
-	Object evaluate(Map<FieldName, ?> parameters);
+	IPMMLResult evaluate(Map<FieldName, ?> parameters);
 	}
