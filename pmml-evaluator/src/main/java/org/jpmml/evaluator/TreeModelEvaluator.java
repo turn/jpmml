@@ -165,9 +165,13 @@ public class TreeModelEvaluator extends TreeModelManager implements Evaluator {
 			}
 		}
 
-		IPMMLResult res = new PMMLResult();
+		TreePMMLResult res = new TreePMMLResult();
 		try {
 			res.put(getOutputField(this).getName(), result);
+			// Sometimes we ends up with no currentNode.
+			if (currentNode != null) {
+				res.setNodeId(currentNode.getId());
+			}
 		} catch (Exception e) {
 			throw new EvaluationException(e.getMessage());
 		}
