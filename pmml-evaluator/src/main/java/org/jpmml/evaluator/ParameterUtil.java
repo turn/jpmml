@@ -21,7 +21,7 @@ public class ParameterUtil {
 	public Object getValue(Map<FieldName, ?> parameters, FieldName name, boolean nullable){
 		Object value = parameters.get(name);
 
-		if(value == null && !nullable){
+		if (!parameters.containsKey(name) && !nullable){
 			throw new EvaluationException("Missing parameter " + name.getValue());
 		}
 

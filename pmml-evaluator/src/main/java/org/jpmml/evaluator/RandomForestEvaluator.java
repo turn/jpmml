@@ -26,7 +26,7 @@ public class RandomForestEvaluator extends RandomForestManager implements Evalua
 	/**
 	 * @see #evaluateRegression(Map)
 	 */
-	public Object evaluate(Map<FieldName, ?> parameters){
+	public IPMMLResult evaluate(Map<FieldName, ?> parameters){
 		MiningModel model = getModel();
 
 		MiningFunctionType miningFunction = model.getFunctionName();
@@ -38,7 +38,7 @@ public class RandomForestEvaluator extends RandomForestManager implements Evalua
 		}
 	}
 
-	public Double evaluateRegression(Map<FieldName, ?> parameters){
+	public IPMMLResult evaluateRegression(Map<FieldName, ?> parameters){
 		Segmentation segmentation = getSegmentation();
 
 		double sum = 0;
@@ -66,7 +66,15 @@ public class RandomForestEvaluator extends RandomForestManager implements Evalua
 
 			TreeModelEvaluator treeModelEvaluator = new TreeModelEvaluator(getPmml(), treeModel);
 
-			String score = treeModelEvaluator.evaluate(parameters);
+			IPMMLResult res = treeModelEvaluator.evaluate(parameters);
+			String score;
+			try {
+				score = (String) res.getValue(getOutputField(treeModelEvaluator).getName());
+			} catch (NoSuchElementException e) {
+				throw new EvaluationException();
+			} catch (Exception e) {
+				throw new EvaluationException();
+			}
 			if(score == null){
 				throw new EvaluationException();
 			}
@@ -82,13 +90,25 @@ public class RandomForestEvaluator extends RandomForestManager implements Evalua
 		MultipleModelMethodType multipleModelMethod = segmentation.getMultipleModelMethod();
 		switch(multipleModelMethod){
 			case SUM:
-				return sum;
+				// Sum already contains the good result.
+				break;
 			case AVERAGE:
-				return (sum / count);
+				sum = (sum / count);
+				break;
 			case WEIGHTED_AVERAGE:
-				return (weightedSum / count); // XXX
+				sum = (weightedSum / count); // XXX
+				break;
 			default:
 				throw new UnsupportedFeatureException(multipleModelMethod);
 		}
+
+		PMMLResult res = new PMMLResult();
+		try {
+			res.put(getOutputField(this).getName(), sum);
+		} catch (Exception e) {
+			throw new EvaluationException(e.getMessage());
+		}
+
+		return res;
 	}
 }
