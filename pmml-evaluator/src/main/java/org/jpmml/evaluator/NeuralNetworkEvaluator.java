@@ -27,18 +27,29 @@ public class NeuralNetworkEvaluator extends NeuralNetworkManager implements Eval
 	 * @see #evaluateRegression(Map)
 	 * @see #evaluateClassification(Map)
 	 */
-	public Map<FieldName, ?> evaluate(Map<FieldName, ?> parameters) {
+	public IPMMLResult evaluate(Map<FieldName, ?> parameters) {
 		NeuralNetwork neuralNetwork = getModel();
 
+
+		Map<FieldName, ?> res = new TreeMap<FieldName, Object>();
 		MiningFunctionType miningFunction = neuralNetwork.getFunctionName();
 		switch(miningFunction){
 			case REGRESSION:
-				return evaluateRegression(parameters);
+				res = evaluateRegression(parameters);
+				break;
 			case CLASSIFICATION:
-				return evaluateClassification(parameters);
+				res = evaluateClassification(parameters);
+				break;
 			default:
 				throw new UnsupportedFeatureException(miningFunction);
 		}
+
+		PMMLResult result = new PMMLResult();
+		for (Map.Entry<FieldName, ?> e : res.entrySet()) {
+			result.put(e.getKey(), e.getValue());
+		}
+
+		return result;
 	}
 
 	public Map<FieldName, Double> evaluateRegression(Map<FieldName, ?> parameters) {

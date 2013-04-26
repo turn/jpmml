@@ -37,16 +37,16 @@ public class TreeModelEvaluator extends TreeModelManager implements Evaluator {
 
 		return null;
 	}
-	
-	public String evaluate(Map<FieldName, ?> parameters) {
-		
+
+	public IPMMLResult evaluate(Map<FieldName, ?> parameters) {
+
 		String result = null;
 		Node currentNode = null;
 		Node rootNode = getOrCreateRoot();
-		
+
 		Predicate rootPredicate = rootNode.getPredicate();
 		Boolean predicateResult = PredicateUtil.evaluatePredicate(rootPredicate, parameters);
-		
+
 		if (predicateResult!=null) {
 			if (predicateResult.booleanValue()) {
 				result = rootNode.getScore();
@@ -54,17 +54,17 @@ public class TreeModelEvaluator extends TreeModelManager implements Evaluator {
 			}
 		}
 		else {
-			// if root evaluates to "UNKNOWN" - we are done for all missing value 
+			// if root evaluates to "UNKNOWN" - we are done for all missing value
 			//  strategies, except default child
-			
+
 			switch (getModel().getMissingValueStrategy()) {
-				case NONE: 
-				case LAST_PREDICTION:  
-				case NULL_PREDICTION:  
+				case NONE:
+				case LAST_PREDICTION:
+				case NULL_PREDICTION:
 					break;
 				/* use default node if available */
 				case DEFAULT_CHILD:
-					
+
 					String defaultChildId = rootNode.getDefaultChild();
 					if (defaultChildId==null) {
 						throw new EvaluationException("Default child is undefined");
@@ -86,19 +86,19 @@ public class TreeModelEvaluator extends TreeModelManager implements Evaluator {
 					}
 					break;
 				default:
-					throw new EvaluationException("Unsupported missing value strategy: " 
+					throw new EvaluationException("Unsupported missing value strategy: "
 								+ getModel().getMissingValueStrategy());
 			}
 		}
 
-		while (currentNode!=null && currentNode.getNodes()!=null && !currentNode.getNodes().isEmpty()) {			
-			
+		while (currentNode!=null && currentNode.getNodes()!=null && !currentNode.getNodes().isEmpty()) {
+
 			boolean pickedNextNode = false;
-			for (Node node : currentNode.getNodes()) {				
-				
+			for (Node node : currentNode.getNodes()) {
+
 				Predicate predicate = node.getPredicate();
 				predicateResult = PredicateUtil.evaluatePredicate(predicate, parameters);
-				
+
 				if (predicateResult!=null) {
 					if (predicateResult.booleanValue()) {
 						result = node.getScore();
@@ -109,21 +109,21 @@ public class TreeModelEvaluator extends TreeModelManager implements Evaluator {
 				}
 				else {
 					// UNKNOWN value from predicate evaluation
-					
+
 					switch (getModel().getMissingValueStrategy()) {
 						/* same as FALSE for current predicate */
 						case NONE: break;
 						/* abort with current prediction */
-						case LAST_PREDICTION:  
-							currentNode = null; 
+						case LAST_PREDICTION:
+							currentNode = null;
 							break;
 						/* abort with null prediction */
-						case NULL_PREDICTION:  
-							result = null; 
+						case NULL_PREDICTION:
+							result = null;
 							currentNode = null; break;
 						/* use default node if available */
 						case DEFAULT_CHILD:
-							
+
 							String defaultChildId = node.getDefaultChild();
 							if (defaultChildId==null) {
 								throw new EvaluationException("Default child is undefined");
@@ -145,12 +145,12 @@ public class TreeModelEvaluator extends TreeModelManager implements Evaluator {
 							}
 							break;
 						default:
-							throw new EvaluationException("Unsupported missing value strategy: " 
+							throw new EvaluationException("Unsupported missing value strategy: "
 										+ getModel().getMissingValueStrategy());
 					}
 				}
-			}	
-				
+			}
+
 			// no abort yet and no node evaluated to TRUE
 			if (currentNode!=null && !pickedNextNode) {
 				switch (getModel().getNoTrueChildStrategy()) {
@@ -164,7 +164,19 @@ public class TreeModelEvaluator extends TreeModelManager implements Evaluator {
 				}
 			}
 		}
-		return result;
+
+		TreePMMLResult res = new TreePMMLResult();
+		try {
+			res.put(getOutputField(this).getName(), result);
+			// Sometimes we ends up with no currentNode.
+			if (currentNode != null) {
+				res.setNodeId(currentNode.getId());
+			}
+		} catch (Exception e) {
+			throw new EvaluationException(e.getMessage());
+		}
+
+		return res;
 	}
 
 
@@ -224,7 +236,7 @@ public class TreeModelEvaluator extends TreeModelManager implements Evaluator {
 			}
 
 			return new Prediction(lastNode, node);
-		} else 
+		} else
 		{
 			return new Prediction(lastNode, null);
 		}
