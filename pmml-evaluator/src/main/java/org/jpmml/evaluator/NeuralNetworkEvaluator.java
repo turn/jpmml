@@ -44,7 +44,7 @@ public class NeuralNetworkEvaluator extends NeuralNetworkManager implements Eval
 				throw new UnsupportedFeatureException(miningFunction);
 		}
 
-		IPMMLResult result = new PMMLResult();
+		PMMLResult result = new PMMLResult();
 		for (Map.Entry<FieldName, ?> e : res.entrySet()) {
 			result.put(e.getKey(), e.getValue());
 		}

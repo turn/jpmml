@@ -133,7 +133,7 @@ public class RegressionModelEvaluator extends RegressionModelManager implements 
 				result = null;
 		}
 
-		IPMMLResult res = new PMMLResult();
+		PMMLResult res = new PMMLResult();
 		try {
 			res.put(getOutputField(this).getName(), result);
 		} catch (Exception e) {
@@ -166,7 +166,7 @@ public class RegressionModelEvaluator extends RegressionModelManager implements 
 				break;
 		}
 
-		IPMMLResult res = new PMMLResult();
+		PMMLResult res = new PMMLResult();
 		try {
 			res.put(getOutputField(this).getName(), result);
 		} catch (Exception e) {

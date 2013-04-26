@@ -102,7 +102,7 @@ public class RandomForestEvaluator extends RandomForestManager implements Evalua
 				throw new UnsupportedFeatureException(multipleModelMethod);
 		}
 
-		IPMMLResult res = new PMMLResult();
+		PMMLResult res = new PMMLResult();
 		try {
 			res.put(getOutputField(this).getName(), sum);
 		} catch (Exception e) {
