@@ -129,8 +129,7 @@ public class RegressionModelEvaluator extends RegressionModelManager implements 
 				result = scoreToCategory.lastEntry().getValue();
 				break;
 			default:
-
-				result = null;
+				throw new UnsupportedFeatureException(getNormalizationMethodType() + " is not supported.");
 		}
 
 		PMMLResult res = new PMMLResult();
