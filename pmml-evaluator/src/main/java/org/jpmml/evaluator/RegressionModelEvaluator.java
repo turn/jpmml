@@ -81,7 +81,7 @@ public class RegressionModelEvaluator extends RegressionModelManager implements 
 				// pick the max of pj = 1 / ( 1 + exp( -yj ) )
 				for (Map.Entry<String, Double> categoryScore : targetCategoryToScore.entrySet()) {
 					double yj = categoryScore.getValue();
-					double pj = 1.0/(1.0 + Math.exp(yj));
+					double pj = 1.0/(1.0 + Math.exp(-yj));
 
 					scoreToCategory.put(pj, categoryScore.getKey());
 				}
@@ -129,8 +129,7 @@ public class RegressionModelEvaluator extends RegressionModelManager implements 
 				result = scoreToCategory.lastEntry().getValue();
 				break;
 			default:
-
-				result = null;
+				throw new UnsupportedFeatureException(getNormalizationMethodType() + " is not supported.");
 		}
 
 		PMMLResult res = new PMMLResult();
