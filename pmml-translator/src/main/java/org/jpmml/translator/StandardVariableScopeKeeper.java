@@ -6,20 +6,22 @@ import java.util.Map;
 import org.dmg.pmml.DataDictionary;
 import org.dmg.pmml.DataField;
 import org.dmg.pmml.DataType;
+import org.dmg.pmml.FieldName;
+import org.jpmml.manager.ModelManager;
 
 public class StandardVariableScopeKeeper implements IVariableScopeKeeper {
 	HashMap<String, String> nameToVariable = new HashMap<String, String>();
 	HashMap<String, String> nameToValue = new HashMap<String, String>();
 
 
-	public StandardVariableScopeKeeper(DataDictionary dataDictionary, TranslationContext context) throws TranslationException {
+	public StandardVariableScopeKeeper(DataDictionary dataDictionary, TranslationContext context, ModelManager<?> manager) throws TranslationException {
 		for (DataField df : dataDictionary.getDataFields()) {
-			if (df.getValues() == null || df.getValues().size() == 0 || df.getName().getValue().charAt(0) != '$')
+			if (df.getValues() == null || df.getValues().size() == 0 || !df.getName().getValue().startsWith("in_"))
 				continue;
 
-			nameToValue.put(df.getName().getValue(), expand(context, df.getValues().get(0).getValue()));
+			nameToValue.put(df.getName().getValue(), expand(context, df.getValues().get(0).getValue().replaceAll("\\s", ""), manager));
 
-			nameToVariable.put(df.getName().getValue(), df.getName().getValue().substring(2, df.getName().getValue().length() - 1));
+			nameToVariable.put(df.getName().getValue(), df.getName().getValue());
 		}
 	}
 
@@ -31,7 +33,7 @@ public class StandardVariableScopeKeeper implements IVariableScopeKeeper {
 	}
 
 	public String getValue(TranslationContext context, String variable) throws TranslationException {
-		return expand(context, variable);
+		return nameToVariable.get(variable);
 	}
 
 	/**
@@ -68,16 +70,19 @@ public class StandardVariableScopeKeeper implements IVariableScopeKeeper {
 		return result;
 	}
 
-	private String expand(TranslationContext context, String expandMe) throws TranslationException {
-		return expand(context, expandMe, 0);
+	private String expand(TranslationContext context, String expandMe, ModelManager<?> manager) throws TranslationException {
+		int[] offset = new int[1];
+		offset[0] = 0;
+		return expand(context, expandMe, manager, offset);
 	}
 
-	private String expand(TranslationContext context, String expandMe, int offset) throws TranslationException {
+	private String expand(TranslationContext context, String expandMe, ModelManager<?> manager, int[] offset) throws TranslationException {
 		if (expandMe.charAt(0) == '$') {
 			return expandVariable(expandMe);
 		}
 		else if (expandMe.charAt(0) == '%') {
-			return expandFunction(context, expandMe, offset + 1);
+			++offset[0];
+			return expandFunction(context, expandMe, manager, offset);
 		}
 		return expandMe;
 	}
@@ -87,66 +92,58 @@ public class StandardVariableScopeKeeper implements IVariableScopeKeeper {
 	 * and apply format variables to all arguments.
 	 *
 	 * @param context The translation context, useful for apply formatVariableName.
-	 * @param functionCall The string formatted as: "&functionCall(arg1, arg2, ...)"
+	 * @param functionCall The string formatted as: "%functionCall(arg1, arg2, ...)"
 	 * where arg* can be a variable or a functionCall.
+	 * @param manager Needed to format the arguments.
+	 * @param offset The beginning of the string.
 	 * @return a code that is correct.
 	 * @throws TranslationException If functionCall is invalid.
 	 */
-	// FIXME: Not nested at this time.
-	// FIXME: Apply formatVariableName.
-//	private String expandFunction(TranslationContext context, String functionCall) throws TranslationException {
-//		// Remove all the whitespaces to make the code simpler.
-//		String noWhitespaceFunctionCall = functionCall.replaceAll("\\s","");
-//		if (noWhitespaceFunctionCall.charAt(0) != '&') {
-//			throw new TranslationException(functionCall + " is not a valid function call. Missing &.");
-//		}
-//		return expandFunction(context, noWhitespaceFunctionCall, 1);
-//	}
-
-	private String expandFunction(TranslationContext context, String functionCall, int offset) throws TranslationException {
+	private String expandFunction(TranslationContext context, String functionCall, ModelManager<?> manager, int[] offset) throws TranslationException {
 		StringBuilder result = new StringBuilder();
 
 		int length = functionCall.length();
-		int beginFunctionName = offset;
-		int endFunctionName = offset;
-		while (offset < length && functionCall.charAt(offset) != '(') {
-			++offset;
+		int beginFunctionName = offset[0];
+		int endFunctionName = offset[0];
+		while (offset[0] < length && functionCall.charAt(offset[0]) != '(') {
+			++offset[0];
 		}
 
-		endFunctionName = offset++;
+		endFunctionName = offset[0]++;
 
 		result.append(functionCall.substring(beginFunctionName, endFunctionName)).append("(");
 
 		// Now we have to parse the args.
 		// Eat the paren.
 		// If there is no args, return empty parenthesis.
-		if (functionCall.charAt(offset + 1) == ')') {
+		if (functionCall.charAt(offset[0] + 1) == ')') {
 			result.append(")");
 			return result.toString();
 		}
 
 		do {
-			int beginArg = offset;
-			char cur = functionCall.charAt(offset);
+			int beginArg = offset[0];
+			char cur = functionCall.charAt(offset[0]);
 			if (cur == ',') {
-				++offset;
+				++offset[0];
+				++beginArg;
 				result.append(",");
 			}
 			if (cur == '$' || cur == '%') {
-				result.append(expand(context, functionCall, offset));
+				result.append(expand(context, functionCall, manager, offset));
 			}
 			else {
-				while (functionCall.charAt(offset) != ',' && functionCall.charAt(offset) != ')') {
-					++offset;
+				while (functionCall.charAt(offset[0]) != ',' && functionCall.charAt(offset[0]) != ')') {
+					++offset[0];
 				}
-				result.append(functionCall.substring(beginArg, offset));
+				result.append(context.formatVariableName(manager, new FieldName(functionCall.substring(beginArg, offset[0]))));
 			}
 
-		} while (functionCall.charAt(offset) == ','); // While there is more args,
+		} while (functionCall.charAt(offset[0]) == ','); // While there is more args,
 		// eat them.
 
 		result.append(")");
+		++offset[0];
 		return result.toString();
 	}
-
 }

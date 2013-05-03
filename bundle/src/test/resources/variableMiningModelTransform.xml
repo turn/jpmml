@@ -8,7 +8,7 @@
     <DataField name="v4" optype="continuous" dataType="double"/>
     <DataField name="v5" optype="continuous" dataType="double"/>
     <DataField name="result" optype="continuous" dataType="double"/>
-    <DataField name="${v6}" optype="continuous" dataType="double">
+    <DataField name="in_v6" optype="continuous" dataType="double">
       <Value value="121.0"/>
     </DataField>
   </DataDictionary>
@@ -66,7 +66,7 @@
           <NumericPredictor name="v1" exponent="1" coefficient="0"/>
           <NumericPredictor name="v3" exponent="1" coefficient="0"/>
           <NumericPredictor name="v4" exponent="1" coefficient="0"/>
-          <NumericPredictor name="v6" exponent="1" coefficient="1"/>
+          <NumericPredictor name="in_v6" exponent="1" coefficient="1"/>
         </RegressionTable>
       </RegressionModel>
     </Segment>

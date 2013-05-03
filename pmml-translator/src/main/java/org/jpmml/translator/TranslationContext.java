@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.dmg.pmml.DataDictionary;
+import org.dmg.pmml.DataField;
 import org.dmg.pmml.FieldName;
 import org.dmg.pmml.OpType;
 import org.dmg.pmml.PMML;
@@ -48,6 +49,7 @@ public class TranslationContext {
 	}
 
 	protected String prefix = "__";
+	protected String prefix_internal = "in_";
 
 	public TranslationContext() {
 		indentationString = "\t\t";
@@ -58,8 +60,8 @@ public class TranslationContext {
 		formatter = new StandardCodeFormatter();
 	}
 
-	public void createVariableKeeper(DataDictionary dataDictionary) throws TranslationException {
-		standardVariableScopeKeeper = new StandardVariableScopeKeeper(dataDictionary, this);
+	public void createVariableKeeper(DataDictionary dataDictionary, ModelManager<?> manager) throws TranslationException {
+		standardVariableScopeKeeper = new StandardVariableScopeKeeper(dataDictionary, this, manager);
 	}
 
 	public void incIndentation() {
@@ -80,11 +82,7 @@ public class TranslationContext {
 	}
 
 	public Boolean isLocalVariable(String var) {
-		return var.startsWith(prefix);
-	}
-
-	public Boolean isVariableOrFunction(String var) {
-		return var.charAt(0) == '$' || var.charAt(0) == '%';
+		return var.startsWith(prefix) || var.startsWith(prefix_internal);
 	}
 
 	/**
@@ -96,7 +94,43 @@ public class TranslationContext {
 	 * @return formatted variable name
 	 */
 	public String formatOutputVariable(String variable) {
+		if (variable.charAt(0) == '$') {
+			return variable.substring(2, variable.length() - 1);
+		}
 		return variable;
+	}
+
+	public void assignOutputVariable(StringBuilder code,
+			String value,
+			TranslationContext context,
+			DataField outputVariable)
+					throws TranslationException {
+
+		if (value.charAt(0) == '$') {
+			value = value.substring(2, value.length() - 1);
+		}
+
+		switch(outputVariable.getDataType()) {
+		case INTEGER:
+		case FLOAT:
+		case DOUBLE:
+			code.append(context.getIndentation())
+			.append(context.formatOutputVariable(outputVariable.getName().getValue())).append(" = ").append(value)
+			.append(";\n");
+			break;
+		case STRING:
+			code.append(context.getIndentation())
+			.append(context
+					.formatOutputVariable(outputVariable.getName()
+							.getValue()))
+							.append(" = \"").append(value)
+							.append("\";\n");
+			break;
+		default:
+			throw new
+			TranslationException("Unsupported data type for output"
+					+ "variable: " +outputVariable.getDataType());
+		}
 	}
 
 	/**
@@ -113,14 +147,9 @@ public class TranslationContext {
 	 * variable, and there is no variable keeper.
 	 */
 	public String formatVariableName(ModelManager<?> modelManager, FieldName variableName) throws TranslationException {
-		if (isVariableOrFunction(variableName.getValue()))
-			if (standardVariableScopeKeeper == null) {
-				throw new TranslationException("Attempt to expand a variable without a"
-						+ " variable keeper. Call createVariableKeeper before.");
-			}
-			else {
-				return standardVariableScopeKeeper.getValue(this, variableName.getValue());
-			}
+		if (variableName.getValue().charAt(0) == '$') {
+			return variableName.getValue().substring(2, variableName.getValue().length() - 1);
+		}
 		else if (isLocalVariable(variableName.getValue()))
 			return variableName.getValue();
 		else
@@ -249,9 +278,9 @@ public class TranslationContext {
 		}
 	}
 
-	public Object initialize(PMML pmml, TranslationContext context) {
+	public Object initialize(PMML pmml, TranslationContext context, ModelManager<?> manager) {
 		try {
-			createVariableKeeper(pmml.getDataDictionary());
+			createVariableKeeper(pmml.getDataDictionary(), manager);
 		} catch (TranslationException e) {
 			return "";
 		}
@@ -261,5 +290,4 @@ public class TranslationContext {
 
 		return code.toString();
 	}
-
 }

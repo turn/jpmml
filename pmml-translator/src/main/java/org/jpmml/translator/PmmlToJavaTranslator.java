@@ -22,6 +22,7 @@ import javax.tools.ToolProvider;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.dmg.pmml.PMML;
+import org.jpmml.manager.ModelManager;
 import org.jpmml.manager.PMMLManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,7 +56,7 @@ public class PmmlToJavaTranslator {
         //parameters.put("outputVariable", context.getOutputVariableName());
         //parameters.put("predictedVariables", translator.getPredictedFields());
 
-        parameters.put("hookBeforeTranslation", context.initialize(pmml, context));
+        parameters.put("hookBeforeTranslation", context.initialize(pmml, context, (ModelManager<?>) translator));
         parameters.put("modelCode", translator.translate(context));
         parameters.put("constants", context.getConstantDeclarations());
         parameters.put("imports", context.getRequiredImports());

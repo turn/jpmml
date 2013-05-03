@@ -49,20 +49,18 @@ public class TreeModelTest extends BaseModelTest {
 	}
 
 	@Test
-	public void testGolfModelFunctionCall() throws Exception {
-
-		PMML pmmlDoc = IOUtil.unmarshal(getClass().getResourceAsStream("/golf_tree.xml"));
+	public void testVariableReturn() throws Exception {
+		PMML pmmlDoc = IOUtil.unmarshal(getClass().getResourceAsStream("/golf_tree_call.xml"));
 		Map<String, List<?>> variableToValues = new HashMap<String, List<?>>();
-		variableToValues.put("temperature", null);
-		variableToValues.put("humidity", null);
-		variableToValues.put("windy", Arrays.asList("true", "false"));
-		variableToValues.put("outlook", Arrays.asList("sunny", "outcast", "rain"));
+
+		variableToValues.put("input", Arrays.asList(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0));
 
 		testModelEvaluation(pmmlDoc,
-			GOLF_MODEL_TEMPLATE,
-			new GolfModel(),
+			VARIABLE_RETURN_TEMPLATE,
+			new ReturnVariableModel(),
 			variableToValues,
-			20);
+			20,
+			false);
 	}
 
 	@Test
@@ -118,6 +116,18 @@ public class TreeModelTest extends BaseModelTest {
 
 	protected double getMissingVarProbability() {
 		return 0.01;
+	}
+
+	static public class ReturnVariableModel implements ManualModelImplementation {
+
+		public Object execute(Map<String, Object> nameToValue) {
+			return (Double)nameToValue.get("input");
+		}
+
+		String resultExplanation = null;
+		public String getResultExplanation() {
+			return "0";
+		}
 	}
 
 
@@ -251,6 +261,35 @@ public class TreeModelTest extends BaseModelTest {
 		}
 
 	}
+
+	static private final String VARIABLE_RETURN_TEMPLATE = "" +
+			"package org.jpmml.itest;\n" +
+			"import java.util.Map;\n" +
+			"import org.jpmml.itest.BaseModelTest.CompiledModel;\n" +
+			"" +
+			"#foreach($import in $imports) \n" +
+			"${import}\n" +
+			"#end\n" +
+			"\n" +
+			"#foreach($constant in $constants) \n" +
+			"static private final ${constant}\n" +
+			"#end" +
+			"\n" +
+			"public class ${className} implements CompiledModel {\n" +
+			"\n" +
+			"	public Object execute(Map<String, Object> nameToValue) {\n" +
+			"		Double res = null;\n" +
+			"		Double input = (Double)nameToValue.get(\"input\");\n" +
+			"		\n" +
+			"		${modelCode}\n" +
+			"		\n" +
+			"		return res;\n" +
+			"	}\n" +
+			"	String resultExplanation = null;\n" +
+			" 	public String getResultExplanation() {\n" +
+			" 		return resultExplanation;\n" +
+			"	}\n" +
+			"}\n";
 
 	static private final String GOLF_MODEL_TEMPLATE = "" +
 			"package org.jpmml.itest;\n" +
