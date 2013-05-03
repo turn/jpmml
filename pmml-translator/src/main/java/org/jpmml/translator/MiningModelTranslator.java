@@ -48,12 +48,14 @@ public class MiningModelTranslator extends MiningModelManager implements Transla
 			return translate(context, getOutputField(this));
 		}
 		catch (Exception e) {
+			e.printStackTrace();
 			throw new TranslationException(e.getMessage());
 		}
 	}
 
 	public String translate(TranslationContext context, DataField outputField) throws TranslationException {
 		StringBuilder sb = new StringBuilder();
+
 		try	{
 			switch (getFunctionType()) {
 			case CLASSIFICATION:
@@ -97,6 +99,8 @@ public class MiningModelTranslator extends MiningModelManager implements Transla
 			cf.addLine(code, context, "do {");
 		}
 
+
+
 		// FIXME: Here we are in trouble because there is two Predicted results.
 		for (Segment s : getSegment()) {
 			Translator t = (Translator) factory.getModelManager(getPmml(), s.getModel());
@@ -127,9 +131,6 @@ public class MiningModelTranslator extends MiningModelManager implements Transla
 		if (getMultipleMethodModel() == MultipleModelMethodType.SELECT_FIRST) {
 			cf.addLine(code, context, "} while (false);");
 		}
-
-
-
 	}
 
 	private void translateRegression(TranslationContext context, StringBuilder code, DataField outputField) throws Exception {

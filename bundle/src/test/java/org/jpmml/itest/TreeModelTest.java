@@ -49,6 +49,23 @@ public class TreeModelTest extends BaseModelTest {
 	}
 
 	@Test
+	public void testGolfModelFunctionCall() throws Exception {
+
+		PMML pmmlDoc = IOUtil.unmarshal(getClass().getResourceAsStream("/golf_tree.xml"));
+		Map<String, List<?>> variableToValues = new HashMap<String, List<?>>();
+		variableToValues.put("temperature", null);
+		variableToValues.put("humidity", null);
+		variableToValues.put("windy", Arrays.asList("true", "false"));
+		variableToValues.put("outlook", Arrays.asList("sunny", "outcast", "rain"));
+
+		testModelEvaluation(pmmlDoc,
+			GOLF_MODEL_TEMPLATE,
+			new GolfModel(),
+			variableToValues,
+			20);
+	}
+
+	@Test
 	public void testGolfModelModifiedName() throws Exception {
 
 		PMML pmmlDoc = IOUtil.unmarshal(getClass().getResourceAsStream("/golf_tree.xml"));

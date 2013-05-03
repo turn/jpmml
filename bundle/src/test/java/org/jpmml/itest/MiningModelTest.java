@@ -85,6 +85,43 @@ public class MiningModelTest extends BaseModelTest {
 	}
 
 	@Test
+	public void testVariableTransformationMiningModel2() throws Exception {
+		PMML pmmlDoc = IOUtil.unmarshal(getClass().getResourceAsStream("/variableMiningModelTransform2.xml"));
+		Map<String, List<?>> variableToValues = new HashMap<String, List<?>>();
+		variableToValues.put("v1", Arrays.asList(0.2, 0.3, 0.4, 0.5, 0.6));
+		variableToValues.put("v2", Arrays.asList(69.0));
+		variableToValues.put("v3", Arrays.asList(1.1, 1.4, 1.6, 0.4, 0.5, 0.9));
+		variableToValues.put("v4", Arrays.asList(51.0));
+		variableToValues.put("v5", Arrays.asList(42.0));
+
+		testModelEvaluation(pmmlDoc,
+			VARIABLE_REGRESSION_MULTIPLE_MODEL_TEMPLATE,
+			new VariableMiningModel(),
+			variableToValues,
+			20,
+			false);
+	}
+
+	@Test
+	public void testVariableTransformationMiningModel() throws Exception {
+		PMML pmmlDoc = IOUtil.unmarshal(getClass().getResourceAsStream("/variableMiningModelTransform.xml"));
+		Map<String, List<?>> variableToValues = new HashMap<String, List<?>>();
+		variableToValues.put("v1", Arrays.asList(0.2, 0.3, 0.4, 0.5, 0.6));
+		variableToValues.put("v2", Arrays.asList(69.0));
+		variableToValues.put("v3", Arrays.asList(1.1, 1.4, 1.6, 0.4, 0.5, 0.9));
+		variableToValues.put("v4", Arrays.asList(51.0));
+		variableToValues.put("v5", Arrays.asList(42.0));
+
+		testModelEvaluation(pmmlDoc,
+			VARIABLE_REGRESSION_MULTIPLE_MODEL_TEMPLATE,
+			new VariableMiningModelTransform(),
+			variableToValues,
+			20,
+			false);
+	}
+
+
+	@Test
 	public void testNestedMiningModel() throws Exception {
 		PMML pmmlDoc = IOUtil.unmarshal(getClass().getResourceAsStream("/miningModelNested.xml"));
 		Map<String, List<?>> variableToValues = new HashMap<String, List<?>>();
@@ -136,25 +173,6 @@ public class MiningModelTest extends BaseModelTest {
 	}
 
 
-//  Work on a simple example.
-//	@Test
-//	public void testFunctionCallRegressionMultipleEasyMiningModel() throws Exception {
-//		PMML pmmlDoc = IOUtil.unmarshal(getClass().getResourceAsStream("/callMiningModel.xml"));
-//		Map<String, List<?>> variableToValues = new HashMap<String, List<?>>();
-//		variableToValues.put("v1", Arrays.asList(0.2, 0.3, 0.4, 0.5, 0.6));
-//		variableToValues.put("v2", Arrays.asList(69.0));
-//		variableToValues.put("v3", Arrays.asList(1.1, 1.4, 1.6, 0.4, 0.5, 0.9));
-//		variableToValues.put("v4", Arrays.asList(51.0));
-//		variableToValues.put("v5", Arrays.asList(42.0));
-//
-//		testModelEvaluation(pmmlDoc,
-//			VARIABLE_REGRESSION_MULTIPLE_MODEL_TEMPLATE,
-//			new VariableMiningModel(),
-//			variableToValues,
-//			20);
-//	}
-
-
 	protected double getMissingVarProbability() {
 		return 0.01;
 	}
@@ -175,6 +193,7 @@ public class MiningModelTest extends BaseModelTest {
 			Double v4 = (Double) nameToValue.get("v4");
 			Double v5 = (Double) nameToValue.get("v5");
 
+
 			if (v1 == null || v2 == null || v3 == null || v4 == null || v5 == null)
 				return null;
 
@@ -186,6 +205,39 @@ public class MiningModelTest extends BaseModelTest {
 			}
 			else
 				result = v5;
+
+			return result;
+		}
+	}
+
+	static public class VariableMiningModelTransform implements ManualModelImplementation {
+
+
+		String resultExplanation = null;
+		public String getResultExplanation() {
+			return resultExplanation;
+		}
+
+		public Object execute(Map<String, Object> nameToValue) {
+			Double result = null;
+			Double v1 = (Double) nameToValue.get("v1");
+			Double v2 = (Double) nameToValue.get("v2");
+			Double v3 = (Double) nameToValue.get("v3");
+			Double v4 = (Double) nameToValue.get("v4");
+			Double v5 = (Double) nameToValue.get("v5");
+			Double v6 = 121.0;
+
+			if (v1 == null || v2 == null || v3 == null || v4 == null || v5 == null)
+				return null;
+
+			if (v1 > 0.4) {
+				result = v2;
+			}
+			else if (v3 > 1.0) {
+				result = v4;
+			}
+			else
+				result = v6;
 
 			return result;
 		}
@@ -590,6 +642,7 @@ public class MiningModelTest extends BaseModelTest {
 			"		Double v4 = (Double)nameToValue.get(\"v4\");\n" +
 			"		Double v5 = (Double)nameToValue.get(\"v5\");\n" +
 			"		\n" +
+			"${hookBeforeTranslation}\n" +
 			"${modelCode}\n" +
 			"		return result;\n" +
 			"	} catch (Exception eee) { return null; }\n" +

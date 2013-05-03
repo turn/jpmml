@@ -76,6 +76,20 @@ public class ModelManager<M extends Model> extends PMMLManager implements Consum
 		return getModel().getMiningSchema();
 	}
 
+	public List<DerivedField> getDerivedFields() {
+		LocalTransformations lt = getModel().getLocalTransformations();
+		if (lt == null) {
+			return null;
+		}
+
+		return lt.getDerivedFields();
+	}
+
+
+	public TransformationDictionary getTransformationDictionary() {
+		return getPmml().getTransformationDictionary();
+	}
+
 	static
 	protected void ensureNull(Object object) throws ModelManagerException {
 

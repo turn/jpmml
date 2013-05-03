@@ -29,32 +29,33 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Convert PMML model to java class
- * 
+ *
  * @author asvirsky
  *
  */
 public class PmmlToJavaTranslator {
 	private static final Logger logger = LoggerFactory.getLogger(PmmlToJavaTranslator.class);
-    	
+
 	static public String generateJavaCode(PMML pmml, String className, Reader templateReader, TranslationContext context) throws Exception {
-        
+
 		if (className==null || className.isEmpty()) {
            logger.error("You need provide unique class name");
                 return null;
         }
-		
+
 		PMMLManager pmmlManager = new PMMLManager(pmml);
 
 		// get translator
 		Translator translator = (Translator)pmmlManager.getModelManager(null, ModelTranslatorFactory.getInstance());
-		
+
         String result = null;
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("className", className);
         parameters.put("activeVariables", translator.getActiveFields());
         //parameters.put("outputVariable", context.getOutputVariableName());
-        //parameters.put("predictedVariables", translator.getPredictedFields());        
+        //parameters.put("predictedVariables", translator.getPredictedFields());
 
+        parameters.put("hookBeforeTranslation", context.initialize(pmml, context));
         parameters.put("modelCode", translator.translate(context));
         parameters.put("constants", context.getConstantDeclarations());
         parameters.put("imports", context.getRequiredImports());
@@ -62,41 +63,41 @@ public class PmmlToJavaTranslator {
         VelocityEngine velocity = new VelocityEngine();
         VelocityContext vc = new VelocityContext(parameters);
 	    StringWriter writer = new StringWriter();
-	
+
 	    if (velocity.evaluate(vc, writer, className, templateReader)) {
 	        result = writer.toString();
 	    }
 
 	    return result;
 	}
-		
+
 	static public Class<?> createModelClass(String className, String packageName, String javaSource) throws Exception {
 		List<String> compilerOptions = new ArrayList<String>();
         compilerOptions.add("-cp");
         compilerOptions.add(System.getProperty("java.class.path"));
-		
+
 		return createModelClass(className, packageName, javaSource, compilerOptions);
 	}
-	
+
     static public Class<?> createModelClass(String className, String packageName, String javaSource, List<String> compilerOptions) throws Exception {
 		Class<?> result = null;
 
-        // make a copy 
+        // make a copy
         compilerOptions = compilerOptions!=null? new ArrayList<String>(compilerOptions) : new ArrayList<String>();
 		// compile class into temp folder
         String tempPath = System.getProperty("java.io.tmpdir");
         compilerOptions.add("-d");
         compilerOptions.add(tempPath);
         // compilerOptions.add("-g");
-        
+
         if (packageName!=null) {
         	// create corresponding folders
         	String dirs = packageName.replaceAll("\\.", File.separator);
         	File classPath = new File(tempPath, dirs);
         	classPath.mkdirs();
         }
-        
-        
+
+
         String classFullName = packageName!=null? packageName + "." + className : className;
 
         JavaFileObject javaObject = new RAMResidentJavaFileObject(classFullName, javaSource);
@@ -116,10 +117,10 @@ public class PmmlToJavaTranslator {
 
         return result;
      }
-	 
+
      /**
       * Compile from within this JVM without spawning javac.exe or a separate JVM.
-      * 
+      *
       * @param source points to source, possibly in RAM.
       * @return status of the compile, true all went perfectly without error.
       * @throws java.io.IOException
@@ -135,8 +136,8 @@ public class PmmlToJavaTranslator {
          }
 
          final JavaCompiler.CompilationTask task = compiler.getTask(
-        		 		// System.err if writer is null	
-        		 		writer, 
+        		 		// System.err if writer is null
+        		 		writer,
                         null, // standard file manager, If we wrote our own we could
                                    // control the location of the generated class files
                         null, // standard DiagnosticListener
@@ -149,7 +150,7 @@ public class PmmlToJavaTranslator {
 
          return task.call();
      }
-	 
+
 
      static private class RAMResidentJavaFileObject extends SimpleJavaFileObject {
 
@@ -157,7 +158,7 @@ public class PmmlToJavaTranslator {
 
              /**
               * constructor
-              * 
+              *
               * @param className
               *            class name, without package
               * @param programText
@@ -173,7 +174,7 @@ public class PmmlToJavaTranslator {
 
              /**
               * Get the text of the java program
-              * 
+              *
               * @param ignoreEncodingErrors
               *            ignored.
               */

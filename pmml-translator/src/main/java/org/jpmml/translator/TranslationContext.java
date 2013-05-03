@@ -6,8 +6,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.dmg.pmml.DataDictionary;
 import org.dmg.pmml.FieldName;
 import org.dmg.pmml.OpType;
+import org.dmg.pmml.PMML;
 import org.jpmml.manager.ModelManager;
 
 /**
@@ -39,6 +41,11 @@ public class TranslationContext {
 
 	protected int localVariablesIndex;
 	protected CodeFormatter formatter;
+	protected IVariableScopeKeeper standardVariableScopeKeeper;
+
+	public IVariableScopeKeeper getVariableScopeKeeper() {
+		return standardVariableScopeKeeper;
+	}
 
 	protected String prefix = "__";
 
@@ -49,6 +56,10 @@ public class TranslationContext {
 		requiredImports = new TreeSet<String>();
 		localVariablesIndex = 0;
 		formatter = new StandardCodeFormatter();
+	}
+
+	public void createVariableKeeper(DataDictionary dataDictionary) throws TranslationException {
+		standardVariableScopeKeeper = new StandardVariableScopeKeeper(dataDictionary, this);
 	}
 
 	public void incIndentation() {
@@ -72,6 +83,10 @@ public class TranslationContext {
 		return var.startsWith(prefix);
 	}
 
+	public Boolean isVariableOrFunction(String var) {
+		return var.charAt(0) == '$' || var.charAt(0) == '%';
+	}
+
 	/**
 	 * Output variable is identified by model mining schema - variable with usageType='predicted'
 	 *
@@ -83,6 +98,7 @@ public class TranslationContext {
 	public String formatOutputVariable(String variable) {
 		return variable;
 	}
+
 	/**
 	 * Format variable name
 	 *
@@ -93,9 +109,19 @@ public class TranslationContext {
 	 * @param modelManager
 	 * @param variableName
 	 * @return
+	 * @throws TranslationException If the variable is a function or a pmml
+	 * variable, and there is no variable keeper.
 	 */
-	public String formatVariableName(ModelManager<?> modelManager, FieldName variableName) {
-		if (isLocalVariable(variableName.getValue()))
+	public String formatVariableName(ModelManager<?> modelManager, FieldName variableName) throws TranslationException {
+		if (isVariableOrFunction(variableName.getValue()))
+			if (standardVariableScopeKeeper == null) {
+				throw new TranslationException("Attempt to expand a variable without a"
+						+ " variable keeper. Call createVariableKeeper before.");
+			}
+			else {
+				return standardVariableScopeKeeper.getValue(this, variableName.getValue());
+			}
+		else if (isLocalVariable(variableName.getValue()))
 			return variableName.getValue();
 		else
 			return formatExternalVariable(modelManager, variableName);
@@ -221,6 +247,19 @@ public class TranslationContext {
 		default:
 			throw new UnsupportedOperationException("Unknown variable type: " + variableType);
 		}
+	}
+
+	public Object initialize(PMML pmml, TranslationContext context) {
+		try {
+			createVariableKeeper(pmml.getDataDictionary());
+		} catch (TranslationException e) {
+			return "";
+		}
+
+		StringBuilder code = new StringBuilder();
+		standardVariableScopeKeeper.declareAllVariables(context.getFormatter(), context, code);
+
+		return code.toString();
 	}
 
 }
