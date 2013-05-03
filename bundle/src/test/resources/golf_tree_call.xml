@@ -1,0 +1,17 @@
+<?xml version="1.0" ?>
+  <PMML version="4.1" xmlns="http://www.dmg.org/PMML-4_1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <Header copyright="www.dmg.org" description="A very small binary tree model to show structure."/>
+    <DataDictionary numberOfFields="5" >
+      <DataField name="input" optype="continuous" dataType="double"/>
+      <DataField name="res" optype="continuous" dataType="double"/>
+    </DataDictionary>
+    <TreeModel modelName="VariableReturn" functionName="regression">
+      <MiningSchema>
+	<MiningField name="input"/>
+        <MiningField name="res" usageType="predicted"/>
+      </MiningSchema>
+      <Node id="0" score="$input">
+        <True/>
+      </Node>
+    </TreeModel>
+  </PMML>
