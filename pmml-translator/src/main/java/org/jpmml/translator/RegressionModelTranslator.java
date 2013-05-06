@@ -1,5 +1,6 @@
 package org.jpmml.translator;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -24,6 +25,8 @@ import org.jpmml.translator.Variable.VariableType;
  *
  */
 public class RegressionModelTranslator extends RegressionModelManager implements Translator {
+	private HashMap<RegressionTable, String> regressionTableToId = new HashMap<RegressionTable, String>();
+
 	public RegressionModelTranslator(PMML pmml){
 		super(pmml);
 	}
@@ -192,6 +195,14 @@ public class RegressionModelTranslator extends RegressionModelManager implements
 						context.formatOutputVariable(scoreToCategoryVariable + ".lastEntry().getValue()"));
 	}
 
+	private String namify(RegressionTable rt, TranslationContext context) {
+		if (!regressionTableToId.containsKey(rt)) {
+			regressionTableToId.put(rt,
+					context.generateLocalVariableName("regressionTableNumber" + regressionTableToId.size()));
+		}
+
+		return regressionTableToId.get(rt);
+	}
 
 	/**
 	 * Produce a code that evaluates a regressionTable.
@@ -212,7 +223,7 @@ public class RegressionModelTranslator extends RegressionModelManager implements
 		List<NumericPredictor> lnp = getNumericPredictors(rt);
 		List<CategoricalPredictor> lcp = getCategoricalPredictors(rt);
 
-		String categoryVariableName = context.generateLocalVariableName(rt.getTargetCategory());
+		String categoryVariableName = namify(rt, context);
 		cf.declareVariable(sb, context, new Variable(Variable.VariableType.DOUBLE,
 				categoryVariableName), getIntercept(rt).toString());
 

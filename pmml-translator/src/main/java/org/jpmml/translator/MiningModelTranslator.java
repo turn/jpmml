@@ -48,7 +48,8 @@ public class MiningModelTranslator extends MiningModelManager implements Transla
 			return translate(context, getOutputField(this));
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			// The exception we may catch here may arrive from
+			// getOutputField or from translate.
 			throw new TranslationException(e.getMessage());
 		}
 	}

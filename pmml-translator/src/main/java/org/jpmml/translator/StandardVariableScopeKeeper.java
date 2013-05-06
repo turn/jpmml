@@ -35,40 +35,6 @@ public class StandardVariableScopeKeeper implements IVariableScopeKeeper {
 		return nameToVariable.get(variable);
 	}
 
-	/**
-	 * Take a variable and expand it. i.e: ${variableName}.
-	 *
-	 * @param variable The variable to expand into the variable that contains
-	 * the name of the variable that tracks the result at run time. Must start by '${'
-	 * and end with '}'. The variable name is everything between these braces.
-	 * It looks in the currently declared variable.
-	 *
-	 * @return The variable expanded.
-	 * @throws TranslationException If the variable is ill-formed or not
-	 * declared.
-	 */
-	private String expandVariable(String variable) throws TranslationException {
-		// Extract the real name.
-		if (variable.charAt(0) != '$' || variable.charAt(1) != '{'
-				|| variable.charAt(variable.length() - 1) != '}') {
-			throw new TranslationException(variable + " is ill-formed.");
-		}
-
-		// Simple way of doing this thing considering there is no nesting.
-		// Nesting doesn't make sense. So it might be enough.
-		String name = variable.substring(2, variable.length() - 1);
-
-		String result = "";
-		if (nameToVariable.containsKey(name)) {
-			result = nameToVariable.get(name);
-		}
-		else {
-			throw new TranslationException(name + " is not declared.");
-		}
-
-		return result;
-	}
-
 	private String expand(TranslationContext context, String expandMe, ModelManager<?> manager) throws TranslationException {
 		int[] offset = new int[1];
 		offset[0] = 0;
@@ -77,16 +43,13 @@ public class StandardVariableScopeKeeper implements IVariableScopeKeeper {
 
 	private String expand(TranslationContext context, String expandMe, ModelManager<?> manager, int[] offset) throws TranslationException {
 		if (expandMe.charAt(0) == '$') {
-			return expandVariable(expandMe);
-		}
-		else if (expandMe.charAt(0) == '%') {
 			++offset[0];
 			return expandFunction(context, expandMe, manager, offset);
 		}
 		return expandMe;
 	}
 
-	
+
 	private Boolean checkValidFunctionName(TranslationContext context, String functionName) {
 		int indexOfDot = functionName.indexOf('.');
 		if (indexOfDot < 0) {
@@ -103,26 +66,18 @@ public class StandardVariableScopeKeeper implements IVariableScopeKeeper {
 				}
 			}
 		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-			return false;
-		}
-		catch (Exception e) {
-			System.out.println(e.getMessage());
-			e.printStackTrace();
 			return false;
 		}
 
-		
-		
 		return false;
 	}
-	
+
 	/**
 	 * Take a function call, and format it correctly. Expand variables if needed,
 	 * and apply format variables to all arguments.
 	 *
 	 * @param context The translation context, useful for apply formatVariableName.
-	 * @param functionCall The string formatted as: "%functionCall(arg1, arg2, ...)"
+	 * @param functionCall The string formatted as: "$class.functionCall(arg1, arg2, ...)"
 	 * where arg* can be a variable or a functionCall.
 	 * @param manager Needed to format the arguments.
 	 * @param offset The beginning of the string.
@@ -143,8 +98,7 @@ public class StandardVariableScopeKeeper implements IVariableScopeKeeper {
 
 		String functionName = functionCall.substring(beginFunctionName, endFunctionName);
 		if (!checkValidFunctionName(context, functionName)) {
-			System.out.println("Fail.");
-			throw new TranslationException(functionName + " not found.");
+			throw new TranslationException("Function '" + context.getBasePackageFunctions() + "." + functionName + "' not found.");
 		}
 		result.append(functionName).append("(");
 
@@ -164,7 +118,7 @@ public class StandardVariableScopeKeeper implements IVariableScopeKeeper {
 				++beginArg;
 				result.append(",");
 			}
-			if (cur == '$' || cur == '%') {
+			if (cur == '$') {
 				result.append(expand(context, functionCall, manager, offset));
 			}
 			else {

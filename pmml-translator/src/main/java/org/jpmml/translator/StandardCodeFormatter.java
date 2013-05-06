@@ -1,7 +1,6 @@
 package org.jpmml.translator;
 
 import org.jpmml.manager.UnsupportedFeatureException;
-import org.jpmml.translator.Variable.VariableType;
 
 public class StandardCodeFormatter implements CodeFormatter {
 

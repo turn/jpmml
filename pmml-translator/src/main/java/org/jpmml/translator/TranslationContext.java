@@ -51,8 +51,8 @@ public class TranslationContext {
 	protected String prefix = "__";
 	protected String prefix_internal = "in_";
 	protected String basePackageFunctions = "org.jpmml.translator";
-	
-	
+
+
 
 	public TranslationContext() {
 		indentationString = "\t\t";
@@ -285,12 +285,9 @@ public class TranslationContext {
 		}
 	}
 
-	public Object initialize(PMML pmml, TranslationContext context, ModelManager<?> manager) {
-		try {
-			createVariableKeeper(pmml.getDataDictionary(), manager);
-		} catch (TranslationException e) {
-			return "";
-		}
+	public Object initialize(PMML pmml, TranslationContext context, ModelManager<?> manager) throws TranslationException {
+		createVariableKeeper(pmml.getDataDictionary(), manager);
+
 
 		StringBuilder code = new StringBuilder();
 		standardVariableScopeKeeper.declareAllVariables(context.getFormatter(), context, code);
