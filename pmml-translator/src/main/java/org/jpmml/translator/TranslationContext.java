@@ -49,6 +49,7 @@ public class TranslationContext {
 	}
 
 	protected String prefix = "__";
+	// FIXME: Turn.
 	protected String prefix_internal = "in_";
 	protected String basePackageFunctions = "org.jpmml.translator";
 
@@ -88,6 +89,7 @@ public class TranslationContext {
 		return var.startsWith(prefix) || var.startsWith(prefix_internal);
 	}
 
+	// FIXME: Turn.
 	public String getBasePackageFunctions() {
 		return basePackageFunctions;
 	}
@@ -101,6 +103,7 @@ public class TranslationContext {
 	 * @return formatted variable name
 	 */
 	public String formatOutputVariable(String variable) {
+		// FIXME: Turn.
 		if (variable.charAt(0) == '$') {
 			return variable.substring(2, variable.length() - 1);
 		}
@@ -113,6 +116,7 @@ public class TranslationContext {
 			DataField outputVariable)
 					throws TranslationException {
 
+		// FIXME: Turn.
 		if (value.charAt(0) == '$') {
 			value = value.substring(2, value.length() - 1);
 		}
@@ -153,6 +157,7 @@ public class TranslationContext {
 	 * @throws TranslationException If the variable is a function or a pmml
 	 * variable, and there is no variable keeper.
 	 */
+	// FIXME: Turn.
 	public String formatVariableName(ModelManager<?> modelManager, FieldName variableName) throws TranslationException {
 		if (variableName.getValue().charAt(0) == '$') {
 			return variableName.getValue().substring(2, variableName.getValue().length() - 1);

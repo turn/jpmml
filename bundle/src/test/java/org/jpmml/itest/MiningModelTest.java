@@ -707,7 +707,6 @@ public class MiningModelTest extends BaseModelTest {
 			"package org.jpmml.itest;\n" +
 			"import java.util.Map;\n" +
 			"import org.jpmml.itest.BaseModelTest.CompiledModel;\n" +
-			"import org.jpmml.translator.FunctionTest;\n" + 
 			"" +
 			"#foreach($import in $imports) \n" +
 			"${import}\n" +
@@ -743,7 +742,6 @@ public class MiningModelTest extends BaseModelTest {
 			"package org.jpmml.itest;\n" +
 			"import java.util.Map;\n" +
 			"import org.jpmml.itest.BaseModelTest.CompiledModel;\n" +
-			"import org.jpmml.translator.FunctionTest;\n" + 
 			"" +
 			"#foreach($import in $imports) \n" +
 			"${import}\n" +

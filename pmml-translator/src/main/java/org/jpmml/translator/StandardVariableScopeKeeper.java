@@ -50,17 +50,20 @@ public class StandardVariableScopeKeeper implements IVariableScopeKeeper {
 		return expandMe;
 	}
 
-
-	private Boolean checkValidFunctionName(TranslationContext context, String functionName) {
+	// Only check the name for now.
+	private Boolean checkValidFunctionName(TranslationContext context, String functionName, int arity) {
 		int indexOfDot = functionName.indexOf('.');
 		if (indexOfDot < 0) {
 			return false;
 		}
 
 		try {
-			Class<?> cls = Class.forName(context.getBasePackageFunctions() + "." + functionName.substring(0, indexOfDot));
+			String name = context.getBasePackageFunctions() + "." + functionName.substring(0, indexOfDot);
+			Class<?> cls = Class.forName(name);
 			for (Method m : cls.getDeclaredMethods()) {
-				if (m.getName().equals(functionName.substring(indexOfDot + 1))) {
+				if (m.getName().equals(functionName.substring(indexOfDot + 1))
+						&& m.getGenericParameterTypes().length == arity) {
+					context.addRequiredImport(name);
 					return true;
 				}
 			}
@@ -70,6 +73,7 @@ public class StandardVariableScopeKeeper implements IVariableScopeKeeper {
 
 		return false;
 	}
+
 
 	/**
 	 * Take a function call, and format it correctly. Expand variables if needed,
@@ -96,9 +100,7 @@ public class StandardVariableScopeKeeper implements IVariableScopeKeeper {
 		endFunctionName = offset[0]++;
 
 		String functionName = functionCall.substring(beginFunctionName, endFunctionName);
-		if (!checkValidFunctionName(context, functionName)) {
-			throw new TranslationException("Function '" + context.getBasePackageFunctions() + "." + functionName + "' not found.");
-		}
+
 		result.append(functionName).append("(");
 
 		// Now we have to parse the args.
@@ -109,7 +111,9 @@ public class StandardVariableScopeKeeper implements IVariableScopeKeeper {
 			return result.toString();
 		}
 
+		int arity = 0;
 		do {
+			++arity;
 			int beginArg = offset[0];
 			char cur = functionCall.charAt(offset[0]);
 			if (cur == ',') {
@@ -124,14 +128,21 @@ public class StandardVariableScopeKeeper implements IVariableScopeKeeper {
 				while (functionCall.charAt(offset[0]) != ',' && functionCall.charAt(offset[0]) != ')') {
 					++offset[0];
 				}
-				result.append(context.formatVariableName(manager, new FieldName(functionCall.substring(beginArg, offset[0]))));
+				String arg = functionCall.substring(beginArg, offset[0]);
+				result.append(context.formatVariableName(manager, new FieldName(arg)));
 			}
 
 		} while (functionCall.charAt(offset[0]) == ','); // While there is more args,
 		// eat them.
 
+
 		result.append(")");
 		++offset[0];
+
+		if (!checkValidFunctionName(context, functionName, arity)) {
+			throw new TranslationException("Function '" + context.getBasePackageFunctions() + "." + functionName + "' not found.");
+		}
 		return result.toString();
 	}
+
 }
