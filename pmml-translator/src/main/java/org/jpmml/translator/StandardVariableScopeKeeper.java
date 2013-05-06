@@ -13,7 +13,6 @@ public class StandardVariableScopeKeeper implements IVariableScopeKeeper {
 	HashMap<String, String> nameToVariable = new HashMap<String, String>();
 	HashMap<String, String> nameToValue = new HashMap<String, String>();
 
-
 	public StandardVariableScopeKeeper(DataDictionary dataDictionary, TranslationContext context, ModelManager<?> manager) throws TranslationException {
 		for (DataField df : dataDictionary.getDataFields()) {
 			if (df.getValues() == null || df.getValues().size() == 0 || !df.getName().getValue().startsWith("in_"))
@@ -87,6 +86,37 @@ public class StandardVariableScopeKeeper implements IVariableScopeKeeper {
 		return expandMe;
 	}
 
+	
+	private Boolean checkValidFunctionName(TranslationContext context, String functionName) {
+		int indexOfDot = functionName.indexOf('.');
+		if (indexOfDot < 0) {
+			return false;
+		}
+
+		try {
+			Class<?> cls = Class.forName(context.getBasePackageFunctions() + "." + functionName.substring(0, indexOfDot));
+			UserDefinedFunction udf = cls.getAnnotation(UserDefinedFunction.class);
+
+			for (String s : udf.methods()) {
+				if (s.equals(functionName.substring(indexOfDot + 1))) {
+					return true;
+				}
+			}
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+			return false;
+		}
+		catch (Exception e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+			return false;
+		}
+
+		
+		
+		return false;
+	}
+	
 	/**
 	 * Take a function call, and format it correctly. Expand variables if needed,
 	 * and apply format variables to all arguments.
@@ -111,7 +141,12 @@ public class StandardVariableScopeKeeper implements IVariableScopeKeeper {
 
 		endFunctionName = offset[0]++;
 
-		result.append(functionCall.substring(beginFunctionName, endFunctionName)).append("(");
+		String functionName = functionCall.substring(beginFunctionName, endFunctionName);
+		if (!checkValidFunctionName(context, functionName)) {
+			System.out.println("Fail.");
+			throw new TranslationException(functionName + " not found.");
+		}
+		result.append(functionName).append("(");
 
 		// Now we have to parse the args.
 		// Eat the paren.

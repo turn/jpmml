@@ -50,6 +50,9 @@ public class TranslationContext {
 
 	protected String prefix = "__";
 	protected String prefix_internal = "in_";
+	protected String basePackageFunctions = "org.jpmml.translator";
+	
+	
 
 	public TranslationContext() {
 		indentationString = "\t\t";
@@ -83,6 +86,10 @@ public class TranslationContext {
 
 	public Boolean isLocalVariable(String var) {
 		return var.startsWith(prefix) || var.startsWith(prefix_internal);
+	}
+
+	public String getBasePackageFunctions() {
+		return basePackageFunctions;
 	}
 
 	/**

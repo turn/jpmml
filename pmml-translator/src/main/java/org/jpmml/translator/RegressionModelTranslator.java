@@ -189,7 +189,7 @@ public class RegressionModelTranslator extends RegressionModelManager implements
 
 
 		cf.assignVariable(sb, context, outputField.getName().getValue(),
-						scoreToCategoryVariable + ".lastEntry().getValue()");
+						context.formatOutputVariable(scoreToCategoryVariable + ".lastEntry().getValue()"));
 	}
 
 

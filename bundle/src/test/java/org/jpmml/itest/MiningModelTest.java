@@ -707,6 +707,7 @@ public class MiningModelTest extends BaseModelTest {
 			"package org.jpmml.itest;\n" +
 			"import java.util.Map;\n" +
 			"import org.jpmml.itest.BaseModelTest.CompiledModel;\n" +
+			"import org.jpmml.translator.FunctionTest;\n" + 
 			"" +
 			"#foreach($import in $imports) \n" +
 			"${import}\n" +
@@ -718,7 +719,6 @@ public class MiningModelTest extends BaseModelTest {
 			"\n" +
 			"public class ${className} implements CompiledModel {\n" +
 			"\n" +
-			"public Double identity(Double v) { return v; }\n\n" +
 			"	public Object execute(Map<String, Object> nameToValue) {\n" +
 			"		try {\n" +
 			"		Double result = null;\n" +
@@ -743,6 +743,7 @@ public class MiningModelTest extends BaseModelTest {
 			"package org.jpmml.itest;\n" +
 			"import java.util.Map;\n" +
 			"import org.jpmml.itest.BaseModelTest.CompiledModel;\n" +
+			"import org.jpmml.translator.FunctionTest;\n" + 
 			"" +
 			"#foreach($import in $imports) \n" +
 			"${import}\n" +
@@ -754,8 +755,6 @@ public class MiningModelTest extends BaseModelTest {
 			"\n" +
 			"public class ${className} implements CompiledModel {\n" +
 			"\n" +
-			"public Double identity(Double v) { return v; }\n\n" +
-			"public Double add(Double v1, Double v2) { return v1 + v2; }\n\n" +
 			"	public Object execute(Map<String, Object> nameToValue) {\n" +
 			"		try {\n" +
 			"		Double result = null;\n" +

@@ -9,7 +9,7 @@
     <DataField name="v5" optype="continuous" dataType="double"/>
     <DataField name="result" optype="continuous" dataType="double"/>
     <DataField name="in_v6" optype="continuous" dataType="double">
-      <Value value="%identity(%identity(v5))"/>
+      <Value value="%FunctionTest.identity(%FunctionTest.identity(v5))"/>
     </DataField>
   </DataDictionary>
   <MiningModel functionName="regression">
