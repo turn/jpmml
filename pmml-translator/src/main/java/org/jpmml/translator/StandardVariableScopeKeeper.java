@@ -1,5 +1,6 @@
 package org.jpmml.translator;
 
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -58,10 +59,8 @@ public class StandardVariableScopeKeeper implements IVariableScopeKeeper {
 
 		try {
 			Class<?> cls = Class.forName(context.getBasePackageFunctions() + "." + functionName.substring(0, indexOfDot));
-			UserDefinedFunction udf = cls.getAnnotation(UserDefinedFunction.class);
-
-			for (String s : udf.methods()) {
-				if (s.equals(functionName.substring(indexOfDot + 1))) {
+			for (Method m : cls.getDeclaredMethods()) {
+				if (m.getName().equals(functionName.substring(indexOfDot + 1))) {
 					return true;
 				}
 			}
