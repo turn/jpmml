@@ -31,7 +31,7 @@ public class BaseModelTest {
 	public void runSingleModelEvaluation(PMML pmmlDoc,
 			String codeTemplate,
 			ManualModelImplementation manual,
-			Map<String, Object> variableValues
+			Map<String, Object> variableValues, Boolean executeEvaluator
 			) throws Exception {
 
 		// creating evaluator
@@ -41,7 +41,7 @@ public class BaseModelTest {
 		// translate and compile
 		CompiledModel compiledModel = createCompiledModel(pmmlDoc, codeTemplate, null);
 
-		executeAndCompareOutput(0, compiledModel, evaluator, manual, variableValues);
+		executeAndCompareOutput(0, compiledModel, evaluator, manual, variableValues, executeEvaluator);
 	}
 
 	public void testModelEvaluation(PMML pmmlDoc,
@@ -50,6 +50,16 @@ public class BaseModelTest {
 			Map<String, List<?>> variables,
 			final int iterations,
 			TranslationContext context) throws Exception {
+		testModelEvaluation(pmmlDoc, codeTemplate, manual, variables, iterations, context, true);
+	}
+
+
+	public void testModelEvaluation(PMML pmmlDoc,
+			String codeTemplate,
+			ManualModelImplementation manual,
+			Map<String, List<?>> variables,
+			final int iterations,
+			TranslationContext context, Boolean executeEvaluator) throws Exception {
 
 		// creating evaluator
 		PMMLManager pmmlManager = new PMMLManager(pmmlDoc);
@@ -80,7 +90,7 @@ public class BaseModelTest {
  					}
  				}
  				try {
-				executeAndCompareOutput(i, compiledModel, evaluator, manual, nameToValue);
+				executeAndCompareOutput(i, compiledModel, evaluator, manual, nameToValue, executeEvaluator);
  				}
  				catch (EvaluationException ee) {
  					if (ee.getMessage().startsWith("Missing parameter ")
@@ -105,8 +115,16 @@ public class BaseModelTest {
 			String codeTemplate,
 			ManualModelImplementation manual,
 			Map<String, List<?>> variables,
+			final int iterations, Boolean executeEvaluator) throws Exception {
+		testModelEvaluation(pmmlDoc, codeTemplate, manual, variables, iterations, null, executeEvaluator);
+	}
+
+	public void testModelEvaluation(PMML pmmlDoc,
+			String codeTemplate,
+			ManualModelImplementation manual,
+			Map<String, List<?>> variables,
 			final int iterations) throws Exception {
-		testModelEvaluation(pmmlDoc, codeTemplate, manual, variables, iterations, null);
+		testModelEvaluation(pmmlDoc, codeTemplate, manual, variables, iterations, null, true);
 	}
 
 	private CompiledModel createCompiledModel(PMML pmmlDoc, String codeTemplate, TranslationContext context) throws Exception {
@@ -142,7 +160,8 @@ public class BaseModelTest {
 			CompiledModel pmmlModel,
 			Evaluator evaluator,
 			ManualModelImplementation manual,
-			Map<String, Object> nameToValue) {
+			Map<String, Object> nameToValue,
+			Boolean executeEvaluator) {
 
 		Object value1 = pmmlModel.execute(nameToValue);
 		Object value2 = manual.execute(nameToValue);
@@ -150,21 +169,23 @@ public class BaseModelTest {
 		compareValues(iteration, nameToValue, value1, value2, pmmlModel.getResultExplanation(), manual.getResultExplanation(),
 				false);
 
-		// if we get here then value1==value2
-		// now evaluate value3 and compare against value1
-		Object value3 = null;
+		if (executeEvaluator) {
+			// if we get here then value1==value2
+			// now evaluate value3 and compare against value1
+			Object value3 = null;
 
-		try {
-			value3 = evaluateModel(evaluator, nameToValue)
-					.getValue(((PMMLManager) evaluator).getOutputField((ModelManager<?>) evaluator).getName());
-		} catch (NoSuchElementException e) {
-			value3 = null;
-		} catch (Exception e) {
-			value3 = null;
+			try {
+				value3 = evaluateModel(evaluator, nameToValue)
+						.getValue(((PMMLManager) evaluator).getOutputField((ModelManager<?>) evaluator).getName());
+			} catch (NoSuchElementException e) {
+				value3 = null;
+			} catch (Exception e) {
+				value3 = null;
+			}
+
+			// Fake for the result explanation, because evaluator.getResultExplanation doesn't exist.
+			compareValues(iteration, nameToValue, value2, value3, null, null, true);
 		}
-
-		// Fake for the result explanation, because evaluator.getResultExplanation doesn't exist.
-		compareValues(iteration, nameToValue, value2, value3, null, null, true);
 	}
 
 	protected IPMMLResult evaluateModel(Evaluator evaluator, Map<String, Object> nameToValue) {

@@ -16,11 +16,11 @@ import org.jpmml.translator.Variable.VariableType;
 /**
  * Translate score card model into java code.
  * @see ScoreCardModelManager.
- * 
+ *
  * @author tbadie
  *
  */
-public class ScorecardTranslator extends ScoreCardModelManager implements Translator {	
+public class ScorecardTranslator extends ScoreCardModelManager implements Translator {
 	public ScorecardTranslator(PMML pmml){
 		super(pmml);
 	}
@@ -35,7 +35,7 @@ public class ScorecardTranslator extends ScoreCardModelManager implements Transl
 
 	/**
 	 * Produce a code that evaluates the scorecard.
-	 * 
+	 *
 	 * @param context The translation context.
 	 */
 	public String translate(TranslationContext context) throws TranslationException {
@@ -49,30 +49,30 @@ public class ScorecardTranslator extends ScoreCardModelManager implements Transl
 		if (outputVariableName==null) {
 			throw new TranslationException("Predicted variable is not defined");
 		}
-		
-		DataField outputField = getDataField(new FieldName(outputVariableName));		
+
+		DataField outputField = getDataField(new FieldName(outputVariableName));
 		if (outputField==null || outputField.getDataType()==null) {
 			throw new TranslationException("Predicted variable [" +
 					outputVariableName + "] does not have type defined");
 		}
-		
+
 		return translate(context, outputField);
 	}
-	
+
 	public String translate(TranslationContext context, DataField outputField) throws TranslationException {
 		StringBuilder sb = new StringBuilder();
-		
+
 		List<Characteristic> cl
 		= scorecard.getCharacteristics().getCharacteristics();
-		
+
 		String diffToReasonCodeVariable = context.generateLocalVariableName("diffToReasonCode");
-		
+
 		context.requiredImports.add("import java.util.TreeMap;");
 		context.getFormatter().declareVariable(sb, context,
 				new Variable(VariableType.OBJECT, "TreeMap<Double, String>", diffToReasonCodeVariable));
-		
-		
-		// Analyze each characteristic and print the corresponding code. 
+
+
+		// Analyze each characteristic and print the corresponding code.
 		for (Characteristic c : cl) {
 			translateCharacteristic(c, context, sb, outputField, diffToReasonCodeVariable);
 		}
@@ -89,7 +89,7 @@ public class ScorecardTranslator extends ScoreCardModelManager implements Transl
 	// Method that takes a characteristics, and update the code.
 	/**
 	 * Generate a code that evaluates a characteristic.
-	 * 
+	 *
 	 * @param c The characteristic.
 	 * @param context The translation context.
 	 * @param code The string builder we are working with.
@@ -104,7 +104,7 @@ public class ScorecardTranslator extends ScoreCardModelManager implements Transl
 		CodeFormatter cf = context.getFormatter();
 		// Put some space between the different characteristics.
 		code.append("\n");
-		
+
 		for (Attribute a: c.getAttributes()) {
 			Predicate p = a.getPredicate();
 			if (p == null) {
@@ -118,12 +118,12 @@ public class ScorecardTranslator extends ScoreCardModelManager implements Transl
 			cf.beginControlFlowStructure(code, context, (first ? "" : "else ") + "if",
 					"(" + predicateCode + ") == " + PredicateTranslationUtil.TRUE);
 
-			
-			
+
+
 			// Update the outputVariable with the corresponding partial score.
 			cf.assignVariable(code, context, Operator.PLUS_EQUAL,
-					outputVariable.getName().getValue(), a.getPartialScore().toString());
-			
+					outputVariable.getName().getValue(), context.formatConstant(this, null, a.getPartialScore().toString()));
+
 			// Compute the diff, include the result in the generated code.
 			double diff = 0;
 			switch (reasonCodeAlgorithm) {

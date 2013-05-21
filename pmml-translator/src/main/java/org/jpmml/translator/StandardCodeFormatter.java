@@ -63,7 +63,7 @@ public class StandardCodeFormatter implements CodeFormatter {
 		default:
 			throw new UnsupportedFeatureException(variable.getType());
 		}
-		
+
 		assignVariable(code, context, Operator.EQUAL, variable, initializer);
 	}
 
@@ -82,9 +82,9 @@ public class StandardCodeFormatter implements CodeFormatter {
 		else {
 			code.append(" {\n");
 		}
-		
+
 		context.incIndentation();
-		
+
 	}
 
 	public void endControlFlowStructure(StringBuilder code,
@@ -96,14 +96,14 @@ public class StandardCodeFormatter implements CodeFormatter {
 	public void assignVariable(StringBuilder code, TranslationContext context,
 			Variable variable, String expression) {
 		assignVariable(code, context, Operator.EQUAL, variable, expression);
-		
+
 	}
 
 	public void assignVariable(StringBuilder code, TranslationContext context,
 			String variableName, String expression) {
 		code.append(context.getIndentation()).append(variableName)
 		.append(" = ").append(expression)
-		.append(";\n");	
+		.append(";\n");
 	}
 
 	public void assignVariable(StringBuilder code, TranslationContext context,

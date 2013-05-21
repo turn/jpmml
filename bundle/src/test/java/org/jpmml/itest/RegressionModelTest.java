@@ -6,12 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.dmg.pmml.FieldName;
-import org.dmg.pmml.OpType;
 import org.dmg.pmml.PMML;
 import org.jpmml.manager.IOUtil;
-import org.jpmml.manager.ModelManager;
-import org.jpmml.translator.TranslationContext;
 import org.testng.annotations.Test;
 
 @Test
@@ -63,39 +59,6 @@ public class RegressionModelTest extends BaseModelTest {
 			new SampleClassificationModel2(),
 			variableToValues,
 			20);
-	}
-
-	@Test
-	public void testSampleClassification2ModifiedName() throws Exception {
-		PMML pmmlDoc = IOUtil.unmarshal(getClass().getResourceAsStream("/regressionClassification2.xml"));
-		Map<String, List<?>> variableToValues = new HashMap<String, List<?>>();
-		variableToValues.put("age", Arrays.asList(22.0, 35.0, 45.0, 63.0, 33.0, 42.0, 51.0));
-		variableToValues.put("work", Arrays.asList(10.0, 20.0, 30.0));
-		variableToValues.put("sex", Arrays.asList("0", "1"));
-		variableToValues.put("minority", Arrays.asList(0, 1));
-
-		testModelEvaluation(pmmlDoc,
-			SAMPLE_CLASSIFICATION_MODEL_TEMPLATE_MODIFIED_NAME,
-			new SampleClassificationModel2(),
-			variableToValues,
-			20,
-			new TranslationContext() {
-			// override missing value method, since in our template numeric variables represented with Double class
-			public String getMissingValue(OpType variableType) {
-				if (variableType == OpType.CONTINUOUS)
-					return "null";
-
-				return super.getMissingValue(variableType);
-			}
-
-			public String getModelResultTrackingVariable() {
-				return "resultExplanation";
-			}
-
-			protected String formatExternalVariable(ModelManager<?> modelManager, FieldName variableName) {
-				return "p_" + variableName.getValue();
-			}
-		});
 	}
 
 	@Test
@@ -388,36 +351,4 @@ public class RegressionModelTest extends BaseModelTest {
 					"	}\n" +
 					"}\n";
 
-	static private final String SAMPLE_CLASSIFICATION_MODEL_TEMPLATE_MODIFIED_NAME =
-			"package org.jpmml.itest;\n" +
-			"import java.util.Map;\n" +
-			"import org.jpmml.itest.BaseModelTest.CompiledModel;\n" +
-			"" +
-			"#foreach($import in $imports) \n" +
-			"${import}\n" +
-			"#end\n" +
-			"\n" +
-			"#foreach($constant in $constants) \n" +
-			"static private final ${constant}\n" +
-			"#end" +
-			"\n" +
-			"public class ${className} implements CompiledModel {\n" +
-			"\n" +
-			"	public Object execute(Map<String, Object> nameToValue) {\n" +
-			"		try {\n" +
-			"		String jobcat = null;\n" +
-			"		Double p_work = (Double) nameToValue.get(\"work\");\n" +
-			"		Double p_age = (Double) nameToValue.get(\"age\");\n" +
-			"		String p_sex = (String) nameToValue.get(\"sex\");\n" +
-			"		Integer p_minority = (Integer) nameToValue.get(\"minority\");\n" +
-			"		\n" +
-			"${modelCode}\n" +
-			"		return jobcat;\n" +
-			"	} catch (Exception eee) { /*System.out.println(eee.getMessage())*/; return null; }\n" +
-			"	}\n" +
-			"	String resultExplanation = null;\n" +
-			" 	public String getResultExplanation() {\n" +
-			" 		return resultExplanation;\n" +
-			"	}\n" +
-			"}\n";
 }

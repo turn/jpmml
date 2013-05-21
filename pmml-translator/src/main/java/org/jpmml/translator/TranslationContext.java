@@ -6,8 +6,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.dmg.pmml.DataField;
+import org.dmg.pmml.DataType;
 import org.dmg.pmml.FieldName;
 import org.dmg.pmml.OpType;
+import org.dmg.pmml.PMML;
 import org.jpmml.manager.ModelManager;
 
 /**
@@ -41,6 +44,8 @@ public class TranslationContext {
 	protected CodeFormatter formatter;
 
 	protected String prefix = "__";
+
+
 
 	public TranslationContext() {
 		indentationString = "\t\t";
@@ -83,6 +88,18 @@ public class TranslationContext {
 	public String formatOutputVariable(String variable) {
 		return variable;
 	}
+
+	public void assignOutputVariable(StringBuilder code,
+			String value,
+			TranslationContext context,
+			DataField outputVariable)
+					throws TranslationException {
+		code.append(context.getIndentation())
+		.append(context.formatOutputVariable(outputVariable.getName().getValue())).append(" = ")
+		.append(formatConstant(null, outputVariable, value))
+		.append(";\n");
+	}
+
 	/**
 	 * Format variable name
 	 *
@@ -93,12 +110,11 @@ public class TranslationContext {
 	 * @param modelManager
 	 * @param variableName
 	 * @return
+	 * @throws TranslationException If the variable is a function or a pmml
+	 * variable, and there is no variable keeper.
 	 */
-	public String formatVariableName(ModelManager<?> modelManager, FieldName variableName) {
-		if (isLocalVariable(variableName.getValue()))
-			return variableName.getValue();
-		else
-			return formatExternalVariable(modelManager, variableName);
+	public String formatVariableName(ModelManager<?> modelManager, FieldName variableName) throws TranslationException {
+		return variableName.getValue();
 	}
 
 	/**
@@ -123,8 +139,16 @@ public class TranslationContext {
 	 * @param fieldName
 	 * @param constant
 	 * @return
+	 * @throws TranslationException
 	 */
-	public String formatConstant(ModelManager<?> modelManager, FieldName fieldName, String constant) {
+	public String formatConstant(ModelManager<?> modelManager, DataField formatForType, String constant) throws TranslationException {
+		if (constant == null) {
+			return null;
+		}
+
+		if (formatForType != null && formatForType.getDataType() == DataType.STRING) {
+			return "\"" + constant + "\"";
+		}
 		return constant;
 	}
 
@@ -221,6 +245,32 @@ public class TranslationContext {
 		default:
 			throw new UnsupportedOperationException("Unknown variable type: " + variableType);
 		}
+	}
+
+	/**
+	 * This function is used to generate some code that will be put in the variable "hookBeforeTranslation".
+	 *
+	 * @param pmml The pmml.
+	 * @param context The translation context.
+	 * @param manager The manager of the model.
+	 * @return The code that will contain the variable "hookBeforeTranslation".
+	 * @throws TranslationException
+	 */
+	public Object beforeTranslation(PMML pmml, TranslationContext context, ModelManager<?> manager) throws TranslationException {
+		return "";
+	}
+
+	/**
+	 * This function is used to generate some code that will be put in the variable "hookAfterTranslation".
+	 *
+	 * @param pmml The pmml.
+	 * @param context The translation context.
+	 * @param manager The manager of the model.
+	 * @return The code that will contain the variable "hookBeforeTranslation".
+	 * @throws TranslationException
+	 */
+	public Object afterTranslation(PMML pmml, TranslationContext context, ModelManager<?> manager) throws TranslationException {
+		return "";
 	}
 
 }
