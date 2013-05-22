@@ -7,7 +7,6 @@ import java.util.*;
 
 import org.dmg.pmml.*;
 
-abstract
 public class MiningModelManager extends ModelManager<MiningModel> {
 
 	private MiningModel miningModel = null;
