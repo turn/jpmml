@@ -10,7 +10,7 @@ import java.util.TreeMap;
 import org.dmg.pmml.FieldName;
 import org.dmg.pmml.OpType;
 import org.dmg.pmml.PMML;
-import org.jpmml.manager.IOUtil;
+import org.dmg.pmml.IOUtil;
 import org.jpmml.manager.ModelManager;
 import org.jpmml.translator.TranslationContext;
 import org.testng.annotations.Test;
