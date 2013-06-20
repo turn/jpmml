@@ -129,7 +129,8 @@ public class MiningModelTest extends BaseModelTest {
 				return "resultExplanation";
 			}
 
-			protected String formatExternalVariable(ModelManager<?> modelManager, FieldName variableName) {
+			@Override
+			public String formatVariableName(ModelManager<?> modelManager, FieldName variableName) {
 				return "p_" + variableName.getValue();
 			}
 		});
