@@ -74,8 +74,7 @@ public class TreeModelTranslator extends TreeModelManager implements Translator 
 	}
 
 	private void generateCodeForNode(Node node, TranslationContext context, StringBuilder code, DataField outputVariable, CodeFormatter cf) throws TranslationException {
-		TranslatorUtil.assignOutputVariable(code, node.getScore(), context, outputVariable);
-
+		context.assignOutputVariable(code, node.getScore(), context, outputVariable);
 
 		if (context.getModelResultTrackingVariable() != null && node.getId() != null) {
 			cf.assignVariable(code, context, context.getModelResultTrackingVariable(), cf.stringify(node.getId()));
