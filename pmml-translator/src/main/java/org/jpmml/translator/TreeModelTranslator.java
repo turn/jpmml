@@ -133,7 +133,7 @@ public class TreeModelTranslator extends TreeModelManager implements Translator 
 					cf.assignVariable(code, context, succVariable, "true");
 
 					cf.assignVariableToNullValue(code, context, new Variable(VariableType.OBJECT, "Double",
-																			outputVariable.getName().getValue()));
+																			context.formatOutputVariable(outputVariable.getName().getValue())));
 					break;
 
 				case DEFAULT_CHILD:
@@ -158,7 +158,7 @@ public class TreeModelTranslator extends TreeModelManager implements Translator 
 			cf.beginControlFlowStructure(code, context, "if", "!" + succVariable);
 
 			cf.assignVariableToNullValue(code, context, new Variable(VariableType.OBJECT, "Double",
-					outputVariable.getName().getValue()));
+					context.formatOutputVariable(outputVariable.getName().getValue())));
 
 
 			cf.assignVariable(code, context,

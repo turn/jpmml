@@ -122,7 +122,7 @@ public class ScorecardTranslator extends ScoreCardModelManager implements Transl
 
 			// Update the outputVariable with the corresponding partial score.
 			cf.assignVariable(code, context, Operator.PLUS_EQUAL,
-					outputVariable.getName().getValue(), context.formatConstant(this, null, a.getPartialScore().toString()));
+					context.formatOutputVariable(outputVariable.getName().getValue()), context.formatConstant(this, null, a.getPartialScore().toString()));
 
 			// Compute the diff, include the result in the generated code.
 			double diff = 0;

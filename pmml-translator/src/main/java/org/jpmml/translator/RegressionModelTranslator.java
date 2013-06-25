@@ -192,7 +192,7 @@ public class RegressionModelTranslator extends RegressionModelManager implements
 	}
 
 
-		cf.assignVariable(sb, context, outputField.getName().getValue(),
+		cf.assignVariable(sb, context, context.formatOutputVariable(outputField.getName().getValue()),
 						context.formatOutputVariable(scoreToCategoryVariable + ".lastEntry().getValue()"));
 	}
 
@@ -298,7 +298,7 @@ public class RegressionModelTranslator extends RegressionModelManager implements
 					+ context.formatVariableName(this, numericPredictor.getName()) + "\");");
 		cf.endControlFlowStructure(code, context);
 		cf.beginControlFlowStructure(code, context, "else", null);
-		cf.assignVariable(code, context, Operator.PLUS_EQUAL, outputVariableName,
+		cf.assignVariable(code, context, Operator.PLUS_EQUAL, context.formatOutputVariable(outputVariableName),
 				numericPredictor.getCoefficient()
 				+ " * Math.pow(" + context.formatVariableName(this, numericPredictor.getName()) + ", "
 				+ new Integer(numericPredictor.getExponent()).doubleValue() + ")");
@@ -320,7 +320,7 @@ public class RegressionModelTranslator extends RegressionModelManager implements
 
 		cf.beginControlFlowStructure(code, context, "if",
 				context.formatVariableName(this, categoricalPredictor.getName()) + " != null");
-		cf.assignVariable(code, context, Operator.PLUS_EQUAL, outputVariableName,
+		cf.assignVariable(code, context, Operator.PLUS_EQUAL, context.formatOutputVariable(outputVariableName),
 				categoricalPredictor.getCoefficient() + " * (("
 				+ generateEqualityExpression(categoricalPredictor, context) + ") ? 1 : 0)");
 		cf.endControlFlowStructure(code, context);

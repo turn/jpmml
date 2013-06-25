@@ -113,7 +113,7 @@ public class MiningModelTranslator extends MiningModelManager implements Transla
 
 
 			if (getMultipleMethodModel() == MultipleModelMethodType.SELECT_FIRST) {
-				cf.assignVariable(code, context, outputField.getName().getValue(), namify(s, context));
+				cf.assignVariable(code, context, context.formatOutputVariable(outputField.getName().getValue()), namify(s, context));
 				cf.addLine(code, context, "break;");
 			}
 
