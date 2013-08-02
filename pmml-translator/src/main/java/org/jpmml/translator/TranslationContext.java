@@ -163,6 +163,10 @@ public class TranslationContext {
 		}
 	}
 
+	public String getExceptionName() {
+		return "Exception";
+	}
+
 	public List<String> getConstantDeclarations() {
 		return constantDeclarations;
 	}

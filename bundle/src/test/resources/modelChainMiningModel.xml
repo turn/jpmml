@@ -19,7 +19,7 @@
     <DataField name="sepal_width" optype="continuous" dataType="double"/>
     <DataField name="day" optype="categorical" dataType="string"/>
     <DataField name="PollenIndex" optype="continuous" dataType="double" />
-    <DataField name="Class" optype="continuous" dataType="string"/>
+    <DataField name="Class" optype="categorical" dataType="string"/>
   </DataDictionary>
 <MiningModel functionName="regression">
   <MiningSchema>

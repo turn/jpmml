@@ -237,7 +237,7 @@ public class RegressionModelTranslator extends RegressionModelManager implements
 		}
 
 		if (storeResultInVariable) {
-			cf.assignVariable(sb, context, variableName, categoryVariableName);
+			cf.assignVariable(sb, context, context.formatOutputVariable(variableName), categoryVariableName);
 		}
 
 		return categoryVariableName;
@@ -290,11 +290,11 @@ public class RegressionModelTranslator extends RegressionModelManager implements
 	private void translateNumericPredictor(StringBuilder code, TranslationContext context, String outputVariableName,
 			NumericPredictor numericPredictor, CodeFormatter cf) throws TranslationException {
 
+		DataField dataField = getDataField(numericPredictor.getName());
 		cf.beginControlFlowStructure(code, context, "if",
-				context.formatVariableName(this, numericPredictor.getName()) + " == null");
+				context.formatVariableName(this, numericPredictor.getName()) + " == " + context.getNullValueForVariable(dataField.getOptype()));
 		cf.addLine(code, context,
-				 // FIXME: What exception would be useful instead of Exception?
-					"throw new Exception(\"Missing parameter "
+					"throw new " + context.getExceptionName() + "(\"Missing parameter "
 					+ context.formatVariableName(this, numericPredictor.getName()) + "\");");
 		cf.endControlFlowStructure(code, context);
 		cf.beginControlFlowStructure(code, context, "else", null);
@@ -318,8 +318,11 @@ public class RegressionModelTranslator extends RegressionModelManager implements
 	private void translateCategoricalPredictor(StringBuilder code, TranslationContext context, String outputVariableName,
 			CategoricalPredictor categoricalPredictor, CodeFormatter cf) throws TranslationException {
 
+		DataField dataField = getDataField(categoricalPredictor.getName());
+
+
 		cf.beginControlFlowStructure(code, context, "if",
-				context.formatVariableName(this, categoricalPredictor.getName()) + " != null");
+				context.formatVariableName(this, categoricalPredictor.getName()) + " != " + context.getNullValueForVariable(dataField.getOptype()));
 		cf.assignVariable(code, context, Operator.PLUS_EQUAL, context.formatOutputVariable(outputVariableName),
 				categoricalPredictor.getCoefficient() + " * (("
 				+ generateEqualityExpression(categoricalPredictor, context) + ") ? 1 : 0)");

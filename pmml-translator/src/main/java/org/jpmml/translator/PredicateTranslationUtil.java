@@ -50,6 +50,10 @@ public class PredicateTranslationUtil {
 
 		DataField dataField = modelManager.getDataField(predicate.getField());
 
+		if (dataField == null) {
+			throw new TranslationException(predicate.getField().getValue() + " is not defined.");
+		}
+
 		String variableString = context.formatVariableName(modelManager, predicate.getField());
 		String constant = context.formatConstant(modelManager, dataField, predicate.getValue());
 
