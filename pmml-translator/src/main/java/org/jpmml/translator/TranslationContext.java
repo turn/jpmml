@@ -38,7 +38,7 @@ public class TranslationContext {
 	protected List<String> constantDeclarations;
 	protected Set<String> requiredImports;
 
-	protected Set<String> createdVariables;
+	protected String createdVariables;
 
 	protected int localVariablesIndex;
 	protected CodeFormatter formatter;
@@ -49,7 +49,7 @@ public class TranslationContext {
 
 	public TranslationContext() {
 		indentationString = "\t\t";
-		createdVariables = new HashSet<String>();
+		createdVariables = new String();
 		constantDeclarations = new ArrayList<String>();
 		requiredImports = new TreeSet<String>();
 		localVariablesIndex = 0;
@@ -260,7 +260,7 @@ public class TranslationContext {
 	 * @return The code that will contain the variable "hookBeforeTranslation".
 	 * @throws TranslationException
 	 */
-	public Object beforeTranslation(PMML pmml, TranslationContext context, ModelManager<?> manager) throws TranslationException {
+	public Object beforeTranslation(PMML pmml, ModelManager<?> manager) throws TranslationException {
 		return "";
 	}
 
@@ -273,8 +273,18 @@ public class TranslationContext {
 	 * @return The code that will contain the variable "hookBeforeTranslation".
 	 * @throws TranslationException
 	 */
-	public Object afterTranslation(PMML pmml, TranslationContext context, ModelManager<?> manager) throws TranslationException {
+	public Object afterTranslation(PMML pmml, ModelManager<?> manager) throws TranslationException {
 		return "";
 	}
+
+	public Object declareExtraVariables(PMML pmml, ModelManager<?> manager) throws TranslationException {
+		return createdVariables;
+	}
+
+	public void setCreatedVariables(String createdVariables) {
+		this.createdVariables = createdVariables;
+	}
+
+
 
 }

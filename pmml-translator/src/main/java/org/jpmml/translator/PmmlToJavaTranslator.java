@@ -56,8 +56,9 @@ public class PmmlToJavaTranslator {
         //parameters.put("outputVariable", context.getOutputVariableName());
         //parameters.put("predictedVariables", translator.getPredictedFields());
 
-        parameters.put("hookBeforeTranslation", context.beforeTranslation(pmml, context, (ModelManager<?>) translator));
-        parameters.put("hookAfterTranslation", context.afterTranslation(pmml, context, (ModelManager<?>) translator));
+        parameters.put("hookBeforeTranslation", context.beforeTranslation(pmml, (ModelManager<?>) translator));
+        parameters.put("hookAfterTranslation", context.afterTranslation(pmml, (ModelManager<?>) translator));
+        parameters.put("extraVariables", context.declareExtraVariables(pmml, (ModelManager<?>) translator));
         parameters.put("modelCode", translator.translate(context));
         parameters.put("constants", context.getConstantDeclarations());
         parameters.put("imports", context.getRequiredImports());
