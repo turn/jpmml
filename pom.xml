@@ -8,14 +8,14 @@
 		<version>7</version>
 	</parent>
 
-	<groupId>com.turn.jpmml</groupId>
-	<artifactId>jpmml</artifactId>
+	<groupId>com.turn.tpmml</groupId>
+	<artifactId>tpmml</artifactId>
 	<version>1.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
-	<name>JPMML</name>
+	<name>tpmml</name>
 	<description>Java API for managing, evaluating and compiling (to java) models in Predictive Model Markup Language (PMML)</description>
-	<url>http://www.github.com/turn/jpmml</url>
+	<url>http://www.github.com/turn/tpmml</url>
 
 	<organization>
 		<name>Turn Inc.</name>
@@ -60,53 +60,53 @@
 	</modules>
 
 	<scm>
-		<connection>scm:git:git@github.com:turn/jpmml.git</connection>
-		<developerConnection>scm:git:git@github.com:turn/jpmml.git</developerConnection>
-		<url>git://github.com/turn/jpmml.git</url>
+		<connection>scm:git:git@github.com:turn/tpmml.git</connection>
+		<developerConnection>scm:git:git@github.com:turn/tpmml.git</developerConnection>
+		<url>git://github.com/turn/tpmml.git</url>
 	  <tag>HEAD</tag>
   </scm>
 	<issueManagement>
 		<system>GitHub</system>
-		<url>https://github.com/turn/jpmml/issues</url>
+		<url>https://github.com/turn/tpmml/issues</url>
 	</issueManagement>
 
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-				<groupId>com.turn.jpmml</groupId>
+				<groupId>com.turn.tpmml</groupId>
 				<artifactId>pmml-translator</artifactId>
 				<version>1.0-SNAPSHOT</version>
 			</dependency>
 			<dependency>
-				<groupId>com.turn.jpmml</groupId>
+				<groupId>com.turn.tpmml</groupId>
 				<artifactId>pmml-evaluator</artifactId>
 				<version>1.0-SNAPSHOT</version>
 			</dependency>
 			<dependency>
-				<groupId>com.turn.jpmml</groupId>
+				<groupId>com.turn.tpmml</groupId>
 				<artifactId>pmml-evaluator</artifactId>
 				<type>test-jar</type>
 				<version>1.0-SNAPSHOT</version>
 				<scope>test</scope>
 			</dependency>
 			<dependency>
-				<groupId>com.turn.jpmml</groupId>
+				<groupId>com.turn.tpmml</groupId>
 				<artifactId>pmml-manager</artifactId>
 				<version>1.0-SNAPSHOT</version>
 			</dependency>
 			<dependency>
-				<groupId>org.jpmml</groupId>
+				<groupId>org.tpmml</groupId>
 				<artifactId>pmml-model</artifactId>
 				<version>1.0-SNAPSHOT</version>
 			</dependency>
 			<dependency>
-				<groupId>org.jpmml</groupId>
+				<groupId>org.tpmml</groupId>
 				<artifactId>pmml-schema</artifactId>
 				<version>1.0-SNAPSHOT</version>
 			</dependency>
 
 			<dependency>
-				<groupId>org.jpmml</groupId>
+				<groupId>org.tpmml</groupId>
 				<artifactId>xjc</artifactId>
 				<version>1.0-SNAPSHOT</version>
 				<scope>provided</scope>
