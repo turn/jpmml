@@ -23,7 +23,7 @@ Copyright (c) 2009 University of Tartu
 
 		<jaxb:schemaBindings>
 			<jaxb:package
-				name="org.dmg.pmml"
+				name="com.turn.tpmml"
 			/>
 		</jaxb:schemaBindings>
 
@@ -32,16 +32,16 @@ Copyright (c) 2009 University of Tartu
 				name="CountTable"
 			/>
 			<java:superClass
-				name="org.dmg.pmml.DiscreteDistribution"
+				name="com.turn.tpmml.DiscreteDistribution"
 			/>
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_1"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_1"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='Aggregate']/xsd:complexType">
 			<java:superClass
-				name="org.dmg.pmml.Expression"
+				name="com.turn.tpmml.Expression"
 			/>
 		</jaxb:bindings>
 
@@ -53,40 +53,40 @@ Copyright (c) 2009 University of Tartu
 
 		<jaxb:bindings node="//xsd:element[@name='Alternate']/xsd:complexType">
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_1"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_1"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='Anova']/xsd:complexType">
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_0"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_0"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='AnovaRow']/xsd:complexType">
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_0"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_0"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='AnyDistribution']/xsd:complexType">
 			<java:superClass
-				name="org.dmg.pmml.ContinuousDistribution"
+				name="com.turn.tpmml.ContinuousDistribution"
 			/>
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_1"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_1"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='Apply']/xsd:complexType">
 			<java:superClass
-				name="org.dmg.pmml.Expression"
+				name="com.turn.tpmml.Expression"
 			/>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='Array']/xsd:complexType">
 			<java:superClass
-				name="org.dmg.pmml.ArrayBase"
+				name="com.turn.tpmml.ArrayBase"
 			/>
 		</jaxb:bindings>
 
@@ -98,88 +98,88 @@ Copyright (c) 2009 University of Tartu
 
 		<jaxb:bindings node="//xsd:element[@name='AssociationModel']/xsd:complexType">
 			<java:superClass
-				name="org.dmg.pmml.Model"
+				name="com.turn.tpmml.Model"
 			/>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='Attribute']/xsd:complexType">
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_1"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_1"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='BaseCumHazardTables']/xsd:complexType">
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_0"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_0"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='Baseline']/xsd:complexType">
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_1"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_1"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='BaselineCell']/xsd:complexType">
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_0"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_0"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='BaselineModel']/xsd:complexType">
 			<java:superClass
-				name="org.dmg.pmml.Model"
+				name="com.turn.tpmml.Model"
 			/>
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_1"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_1"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='BaselineStratum']/xsd:complexType">
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_0"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_0"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='BoundaryValueMeans']/xsd:complexType">
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_0"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_0"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='BoundaryValues']/xsd:complexType">
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_0"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_0"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='Categories']/xsd:complexType">
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_1"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_1"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='CategoricalPredictor']/xsd:complexType">
 			<java:superClass
-				name="org.dmg.pmml.Term"
+				name="com.turn.tpmml.Term"
 			/>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='Category']/xsd:complexType">
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_1"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_1"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='Characteristic']/xsd:complexType">
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_1"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_1"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='Characteristics']/xsd:complexType">
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_1"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_1"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
@@ -191,7 +191,7 @@ Copyright (c) 2009 University of Tartu
 
 		<jaxb:bindings node="//xsd:element[@name='ClassLabels']/xsd:complexType">
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_0"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_0"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
@@ -203,7 +203,7 @@ Copyright (c) 2009 University of Tartu
 
 		<jaxb:bindings node="//xsd:element[@name='ClusteringModel']/xsd:complexType">
 			<java:superClass
-				name="org.dmg.pmml.Model"
+				name="com.turn.tpmml.Model"
 			/>
 		</jaxb:bindings>
 
@@ -215,7 +215,7 @@ Copyright (c) 2009 University of Tartu
 
 		<jaxb:bindings node="//xsd:element[@name='ClusteringModelQuality']/xsd:complexType">
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_0"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_0"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
@@ -227,7 +227,7 @@ Copyright (c) 2009 University of Tartu
 
 		<jaxb:bindings node="//xsd:element[@name='CompoundPredicate']/xsd:complexType">
 			<java:superClass
-				name="org.dmg.pmml.Predicate"
+				name="com.turn.tpmml.Predicate"
 			/>
 		</jaxb:bindings>
 
@@ -239,7 +239,7 @@ Copyright (c) 2009 University of Tartu
 
 		<jaxb:bindings node="//xsd:element[@name='CompoundRule']/xsd:complexType">
 			<java:superClass
-				name="org.dmg.pmml.Rule"
+				name="com.turn.tpmml.Rule"
 			/>
 		</jaxb:bindings>
 
@@ -251,49 +251,49 @@ Copyright (c) 2009 University of Tartu
 
 		<jaxb:bindings node="//xsd:element[@name='ConfusionMatrix']/xsd:complexType">
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_0"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_0"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='Constant']/xsd:complexType">
 			<java:superClass
-				name="org.dmg.pmml.Expression"
+				name="com.turn.tpmml.Expression"
 			/>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='Constraints']/xsd:complexType">
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_3_1"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_3_1"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='CorrelationFields']/xsd:complexType">
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_0"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_0"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='CorrelationMethods']/xsd:complexType">
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_0"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_0"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='Correlations']/xsd:complexType">
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_0"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_0"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='CorrelationValues']/xsd:complexType">
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_0"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_0"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='DataField']/xsd:complexType">
 			<java:superClass
-				name="org.dmg.pmml.DictionaryField"
+				name="com.turn.tpmml.DictionaryField"
 			/>
 		</jaxb:bindings>
 
@@ -314,13 +314,13 @@ Copyright (c) 2009 University of Tartu
 
 		<jaxb:bindings node="//xsd:element[@name='Decision']/xsd:complexType">
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_1"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_1"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='Decisions']/xsd:complexType">
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_1"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_1"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
@@ -332,64 +332,64 @@ Copyright (c) 2009 University of Tartu
 
 		<jaxb:bindings node="//xsd:element[@name='DerivedField']/xsd:complexType">
 			<java:superClass
-				name="org.dmg.pmml.DictionaryField"
+				name="com.turn.tpmml.DictionaryField"
 			/>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='Discretize']/xsd:complexType">
 			<java:superClass
-				name="org.dmg.pmml.Expression"
+				name="com.turn.tpmml.Expression"
 			/>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='EventValues']/xsd:complexType">
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_0"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_0"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='ExponentialSmoothing']/xsd:complexType">
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_0"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_0"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='False']/xsd:complexType">
 			<java:superClass
-				name="org.dmg.pmml.Predicate"
+				name="com.turn.tpmml.Predicate"
 			/>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='FieldRef']/xsd:complexType">
 			<java:superClass
-				name="org.dmg.pmml.Expression"
+				name="com.turn.tpmml.Expression"
 			/>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='FieldValue']/xsd:complexType">
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_1"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_1"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='FieldValueCount']/xsd:complexType">
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_1"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_1"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='GaussianDistribution']/xsd:complexType">
 			<java:superClass
-				name="org.dmg.pmml.ContinuousDistribution"
+				name="com.turn.tpmml.ContinuousDistribution"
 			/>
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_1"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_1"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='GeneralRegressionModel']/xsd:complexType">
 			<java:superClass
-				name="org.dmg.pmml.Model"
+				name="com.turn.tpmml.Model"
 			/>
 		</jaxb:bindings>
 
@@ -407,13 +407,13 @@ Copyright (c) 2009 University of Tartu
 
 		<jaxb:bindings node="//xsd:element[@name='InstanceField']/xsd:complexType">
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_1"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_1"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='InstanceFields']/xsd:complexType">
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_1"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_1"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
@@ -422,7 +422,7 @@ Copyright (c) 2009 University of Tartu
 				name="IntSparseArray"
 			/>
 			<java:superClass
-				name="org.dmg.pmml.SparseArray"
+				name="com.turn.tpmml.SparseArray"
 			/>
 		</jaxb:bindings>
 
@@ -434,37 +434,37 @@ Copyright (c) 2009 University of Tartu
 
 		<jaxb:bindings node="//xsd:element[@name='KNNInput']/xsd:complexType">
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_1"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_1"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='KNNInputs']/xsd:complexType">
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_1"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_1"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='Level']/xsd:complexType">
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_0"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_0"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='LiftData']/xsd:complexType">
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_0"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_0"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='LiftGraph']/xsd:complexType">
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_0"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_0"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='MapValues']/xsd:complexType">
 			<java:superClass
-				name="org.dmg.pmml.Expression"
+				name="com.turn.tpmml.Expression"
 			/>
 		</jaxb:bindings>
 
@@ -476,13 +476,13 @@ Copyright (c) 2009 University of Tartu
 
 		<jaxb:bindings node="//xsd:element[@name='MiningField']/xsd:complexType">
 			<java:superClass
-				name="org.dmg.pmml.Field"
+				name="com.turn.tpmml.Field"
 			/>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='MiningModel']/xsd:complexType">
 			<java:superClass
-				name="org.dmg.pmml.Model"
+				name="com.turn.tpmml.Model"
 			/>
 		</jaxb:bindings>
 
@@ -494,46 +494,46 @@ Copyright (c) 2009 University of Tartu
 
 		<jaxb:bindings node="//xsd:element[@name='ModelExplanation']/xsd:complexType">
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_0"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_0"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='ModelLiftGraph']/xsd:complexType">
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_0"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_0"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='MultivariateStat']/xsd:complexType">
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_1"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_1"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='MultivariateStats']/xsd:complexType">
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_1"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_1"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='NaiveBayesModel']/xsd:complexType">
 			<java:superClass
-				name="org.dmg.pmml.Model"
+				name="com.turn.tpmml.Model"
 			/>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='NearestNeighborModel']/xsd:complexType">
 			<java:superClass
-				name="org.dmg.pmml.Model"
+				name="com.turn.tpmml.Model"
 			/>
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_1"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_1"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='NeuralNetwork']/xsd:complexType">
 			<java:superClass
-				name="org.dmg.pmml.Model"
+				name="com.turn.tpmml.Model"
 			/>
 		</jaxb:bindings>
 
@@ -545,13 +545,13 @@ Copyright (c) 2009 University of Tartu
 
 		<jaxb:bindings node="//xsd:element[@name='NormContinuous']/xsd:complexType">
 			<java:superClass
-				name="org.dmg.pmml.Expression"
+				name="com.turn.tpmml.Expression"
 			/>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='NormDiscrete']/xsd:complexType">
 			<java:superClass
-				name="org.dmg.pmml.Expression"
+				name="com.turn.tpmml.Expression"
 			/>
 		</jaxb:bindings>
 
@@ -563,19 +563,19 @@ Copyright (c) 2009 University of Tartu
 
 		<jaxb:bindings node="//xsd:element[@name='NumericPredictor']/xsd:complexType">
 			<java:superClass
-				name="org.dmg.pmml.Term"
+				name="com.turn.tpmml.Term"
 			/>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='OptimumLiftGraph']/xsd:complexType">
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_0"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_0"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='OutputField']/xsd:complexType">
 			<java:superClass
-				name="org.dmg.pmml.DictionaryField"
+				name="com.turn.tpmml.DictionaryField"
 			/>
 		</jaxb:bindings>
 
@@ -587,28 +587,28 @@ Copyright (c) 2009 University of Tartu
 
 		<jaxb:bindings node="//xsd:element[@name='PoissonDistribution']/xsd:complexType">
 			<java:superClass
-				name="org.dmg.pmml.ContinuousDistribution"
+				name="com.turn.tpmml.ContinuousDistribution"
 			/>
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_1"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_1"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='PredictiveModelQuality']/xsd:complexType">
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_0"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_0"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='PredictorTerm']/xsd:complexType">
 			<java:superClass
-				name="org.dmg.pmml.Term"
+				name="com.turn.tpmml.Term"
 			/>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='RandomLiftGraph']/xsd:complexType">
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_0"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_0"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
@@ -617,13 +617,13 @@ Copyright (c) 2009 University of Tartu
 				name="RealSparseArray"
 			/>
 			<java:superClass
-				name="org.dmg.pmml.SparseArray"
+				name="com.turn.tpmml.SparseArray"
 			/>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='RegressionModel']/xsd:complexType">
 			<java:superClass
-				name="org.dmg.pmml.Model"
+				name="com.turn.tpmml.Model"
 			/>
 		</jaxb:bindings>
 
@@ -635,19 +635,19 @@ Copyright (c) 2009 University of Tartu
 
 		<jaxb:bindings node="//xsd:element[@name='ResultField']/xsd:complexType">
 			<java:superClass
-				name="org.dmg.pmml.DictionaryField"
+				name="com.turn.tpmml.DictionaryField"
 			/>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='ROC']/xsd:complexType">
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_0"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_0"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='ROCGraph']/xsd:complexType">
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_0"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_0"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
@@ -659,50 +659,50 @@ Copyright (c) 2009 University of Tartu
 
 		<jaxb:bindings node="//xsd:element[@name='RuleSetModel']/xsd:complexType">
 			<java:superClass
-				name="org.dmg.pmml.Model"
+				name="com.turn.tpmml.Model"
 			/>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='Scorecard']/xsd:complexType">
 			<java:superClass
-				name="org.dmg.pmml.Model"
+				name="com.turn.tpmml.Model"
 			/>
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_1"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_1"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='Seasonality_ExpoSmooth']/xsd:complexType">
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_0"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_0"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='Segment']/xsd:complexType">
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_0"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_0"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='Segmentation']/xsd:complexType">
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_0"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_0"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='SequenceModel']/xsd:complexType">
 			<java:superClass
-				name="org.dmg.pmml.Model"
+				name="com.turn.tpmml.Model"
 			/>
 			<java:unsupportedProperty
 				property="output"
-				name="org.dmg.pmml.Output"
+				name="com.turn.tpmml.Output"
 			/>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='SimplePredicate']/xsd:complexType">
 			<java:superClass
-				name="org.dmg.pmml.Predicate"
+				name="com.turn.tpmml.Predicate"
 			/>
 		</jaxb:bindings>
 
@@ -714,13 +714,13 @@ Copyright (c) 2009 University of Tartu
 
 		<jaxb:bindings node="//xsd:element[@name='SimpleRule']/xsd:complexType">
 			<java:superClass
-				name="org.dmg.pmml.Rule"
+				name="com.turn.tpmml.Rule"
 			/>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='SimpleSetPredicate']/xsd:complexType">
 			<java:superClass
-				name="org.dmg.pmml.Predicate"
+				name="com.turn.tpmml.Predicate"
 			/>
 		</jaxb:bindings>
 
@@ -732,7 +732,7 @@ Copyright (c) 2009 University of Tartu
 
 		<jaxb:bindings node="//xsd:element[@name='SupportVectorMachineModel']/xsd:complexType">
 			<java:superClass
-				name="org.dmg.pmml.Model"
+				name="com.turn.tpmml.Model"
 			/>
 		</jaxb:bindings>
 
@@ -744,13 +744,13 @@ Copyright (c) 2009 University of Tartu
 
 		<jaxb:bindings node="//xsd:element[@name='TestDistributions']/xsd:complexType">
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_1"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_1"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='TextModel']/xsd:complexType">
 			<java:superClass
-				name="org.dmg.pmml.Model"
+				name="com.turn.tpmml.Model"
 			/>
 		</jaxb:bindings>
 
@@ -780,52 +780,52 @@ Copyright (c) 2009 University of Tartu
 
 		<jaxb:bindings node="//xsd:element[@name='TimeAnchor']/xsd:complexType">
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_0"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_0"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='TimeCycle']/xsd:complexType">
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_0"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_0"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='TimeException']/xsd:complexType">
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_0"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_0"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='TimeSeries']/xsd:complexType">
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_0"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_0"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='TimeSeriesModel']/xsd:complexType">
 			<java:superClass
-				name="org.dmg.pmml.Model"
+				name="com.turn.tpmml.Model"
 			/>
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_0"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_0"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='TimeValue']/xsd:complexType">
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_0"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_0"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='TrainingInstances']/xsd:complexType">
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_1"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_1"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='TreeModel']/xsd:complexType">
 			<java:superClass
-				name="org.dmg.pmml.Model"
+				name="com.turn.tpmml.Model"
 			/>
 		</jaxb:bindings>
 
@@ -840,22 +840,22 @@ Copyright (c) 2009 University of Tartu
 				name="TrendExpoSmooth"
 			/>
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_0"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_0"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='True']/xsd:complexType">
 			<java:superClass
-				name="org.dmg.pmml.Predicate"
+				name="com.turn.tpmml.Predicate"
 			/>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='UniformDistribution']/xsd:complexType">
 			<java:superClass
-				name="org.dmg.pmml.ContinuousDistribution"
+				name="com.turn.tpmml.ContinuousDistribution"
 			/>
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_1"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_1"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
@@ -867,19 +867,19 @@ Copyright (c) 2009 University of Tartu
 
 		<jaxb:bindings node="//xsd:element[@name='VectorFields']/xsd:complexType">
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_3_1"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_3_1"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='XCoordinates']/xsd:complexType">
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_0"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_0"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
 		<jaxb:bindings node="//xsd:element[@name='YCoordinates']/xsd:complexType">
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_0"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_0"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
@@ -918,7 +918,7 @@ Copyright (c) 2009 University of Tartu
 				name="BaselineTestStatisticType"
 			/>
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_1"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_1"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
@@ -927,7 +927,7 @@ Copyright (c) 2009 University of Tartu
 				name="CatScoringMethodType"
 			/>
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_1"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_1"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
@@ -942,7 +942,7 @@ Copyright (c) 2009 University of Tartu
 				name="ContScoringMethodType"
 			/>
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_1"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_1"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
@@ -951,7 +951,7 @@ Copyright (c) 2009 University of Tartu
 				name="CumulativeLinkFunctionType"
 			/>
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_3_2"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_3_2"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
@@ -996,7 +996,7 @@ Copyright (c) 2009 University of Tartu
 				name="InterpolationMethodType"
 			/>
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_0"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_0"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
@@ -1005,7 +1005,7 @@ Copyright (c) 2009 University of Tartu
 				name="InvalidValueTreatmentMethodType"
 			/>
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_3_1"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_3_1"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
@@ -1014,7 +1014,7 @@ Copyright (c) 2009 University of Tartu
 				name="LinkFunctionType"
 			/>
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_3_1"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_3_1"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
@@ -1029,7 +1029,7 @@ Copyright (c) 2009 University of Tartu
 				name="MissingValueStrategyType"
 			/>
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_3_1"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_3_1"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
@@ -1044,7 +1044,7 @@ Copyright (c) 2009 University of Tartu
 				name="MultipleModelMethodType"
 			/>
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_0"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_0"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
@@ -1059,7 +1059,7 @@ Copyright (c) 2009 University of Tartu
 				name="NoTrueChildStrategyType"
 			/>
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_3_1"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_3_1"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
@@ -1092,7 +1092,7 @@ Copyright (c) 2009 University of Tartu
 				name="RuleFeatureType"
 			/>
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_0"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_0"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
@@ -1101,7 +1101,7 @@ Copyright (c) 2009 University of Tartu
 				name="SvmClassificationMethodType"
 			/>
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_0"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_0"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
@@ -1116,7 +1116,7 @@ Copyright (c) 2009 University of Tartu
 				name="TimeAnchorType"
 			/>
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_0"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_0"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
@@ -1125,7 +1125,7 @@ Copyright (c) 2009 University of Tartu
 				name="TimeExceptionType"
 			/>
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_0"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_0"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
@@ -1134,7 +1134,7 @@ Copyright (c) 2009 University of Tartu
 				name="TimeSeriesAlgorithmType"
 			/>
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_0"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_0"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
@@ -1143,7 +1143,7 @@ Copyright (c) 2009 University of Tartu
 				name="TimeSeriesUsageType"
 			/>
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_0"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_0"/>
 			</annox:annotate>
 		</jaxb:bindings>
 
@@ -1152,7 +1152,7 @@ Copyright (c) 2009 University of Tartu
 				name="ValidTimeSpecType"
 			/>
 			<annox:annotate>
-				<annox:annotate annox:class="org.dmg.pmml.Schema" min="PMML_4_0"/>
+				<annox:annotate annox:class="com.turn.tpmml.Schema" min="PMML_4_0"/>
 			</annox:annotate>
 		</jaxb:bindings>
 	</jaxb:bindings>
