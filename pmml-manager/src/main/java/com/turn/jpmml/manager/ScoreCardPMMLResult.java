@@ -1,4 +1,4 @@
-package com.turn.jpmml.manager;
+package com.turn.tpmml.manager;
 
 /**
  * The score card needs to store the characteristic that made

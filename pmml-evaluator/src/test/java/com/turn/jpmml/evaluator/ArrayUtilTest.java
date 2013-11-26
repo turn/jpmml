@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2012 University of Tartu
  */
-package com.turn.jpmml.evaluator;
+package com.turn.tpmml.evaluator;
 
 import java.util.*;
 
@@ -9,7 +9,7 @@ import org.dmg.pmml.*;
 
 import org.junit.*;
 
-import com.turn.jpmml.evaluator.ArrayUtil;
+import com.turn.tpmml.evaluator.ArrayUtil;
 
 import static org.junit.Assert.*;
 

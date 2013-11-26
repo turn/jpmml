@@ -1,4 +1,4 @@
-package com.turn.jpmml.evaluator;
+package com.turn.tpmml.evaluator;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,11 +13,11 @@ import org.dmg.pmml.MultipleModelMethodType;
 import org.dmg.pmml.PMML;
 import org.dmg.pmml.Segment;
 
-import com.turn.jpmml.manager.IPMMLResult;
-import com.turn.jpmml.manager.MiningModelManager;
-import com.turn.jpmml.manager.ModelManager;
-import com.turn.jpmml.manager.PMMLResult;
-import com.turn.jpmml.manager.UnsupportedFeatureException;
+import com.turn.tpmml.manager.IPMMLResult;
+import com.turn.tpmml.manager.MiningModelManager;
+import com.turn.tpmml.manager.ModelManager;
+import com.turn.tpmml.manager.PMMLResult;
+import com.turn.tpmml.manager.UnsupportedFeatureException;
 
 public class MiningModelEvaluator extends MiningModelManager implements Evaluator {
 

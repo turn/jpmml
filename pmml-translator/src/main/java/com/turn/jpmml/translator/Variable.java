@@ -1,9 +1,9 @@
-package com.turn.jpmml.translator;
+package com.turn.tpmml.translator;
 
 import org.dmg.pmml.DataField;
 import org.dmg.pmml.DataType;
 
-import com.turn.jpmml.manager.UnsupportedFeatureException;
+import com.turn.tpmml.manager.UnsupportedFeatureException;
 
 /**
  * The aim of this class is to abstract the notion of variable

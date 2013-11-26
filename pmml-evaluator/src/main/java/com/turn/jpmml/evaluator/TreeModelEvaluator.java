@@ -1,14 +1,14 @@
 /*
  * Copyright (c) 2012 University of Tartu
  */
-package com.turn.jpmml.evaluator;
+package com.turn.tpmml.evaluator;
 
 import java.util.*;
 
 
 import org.dmg.pmml.*;
 
-import com.turn.jpmml.manager.*;
+import com.turn.tpmml.manager.*;
 
 public class TreeModelEvaluator extends TreeModelManager implements Evaluator {
 

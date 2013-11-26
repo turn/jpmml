@@ -1,4 +1,4 @@
-package com.turn.jpmml.translator;
+package com.turn.tpmml.translator;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -12,7 +12,7 @@ import org.dmg.pmml.FieldName;
 import org.dmg.pmml.OpType;
 import org.dmg.pmml.PMML;
 
-import com.turn.jpmml.manager.ModelManager;
+import com.turn.tpmml.manager.ModelManager;
 
 /**
  * Translation context

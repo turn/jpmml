@@ -1,4 +1,4 @@
-package com.turn.jpmml.translator;
+package com.turn.tpmml.translator;
 
 import java.util.List;
 
@@ -10,9 +10,9 @@ import org.dmg.pmml.PMML;
 import org.dmg.pmml.Predicate;
 import org.dmg.pmml.Scorecard;
 
-import com.turn.jpmml.manager.ScoreCardModelManager;
-import com.turn.jpmml.translator.CodeFormatter.Operator;
-import com.turn.jpmml.translator.Variable.VariableType;
+import com.turn.tpmml.manager.ScoreCardModelManager;
+import com.turn.tpmml.translator.CodeFormatter.Operator;
+import com.turn.tpmml.translator.Variable.VariableType;
 
 /**
  * Translate score card model into java code.

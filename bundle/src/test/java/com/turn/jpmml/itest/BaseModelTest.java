@@ -1,4 +1,4 @@
-package com.turn.jpmml.itest;
+package com.turn.tpmml.itest;
 
 import java.io.StringReader;
 import java.util.HashMap;
@@ -12,15 +12,15 @@ import org.dmg.pmml.PMML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.turn.jpmml.evaluator.EvaluationException;
-import com.turn.jpmml.evaluator.Evaluator;
-import com.turn.jpmml.evaluator.MiningModelEvaluator;
-import com.turn.jpmml.evaluator.ModelEvaluatorFactory;
-import com.turn.jpmml.evaluator.RegressionModelEvaluator;
-import com.turn.jpmml.manager.IPMMLResult;
-import com.turn.jpmml.manager.ModelManager;
-import com.turn.jpmml.manager.PMMLManager;
-import com.turn.jpmml.translator.*;
+import com.turn.tpmml.evaluator.EvaluationException;
+import com.turn.tpmml.evaluator.Evaluator;
+import com.turn.tpmml.evaluator.MiningModelEvaluator;
+import com.turn.tpmml.evaluator.ModelEvaluatorFactory;
+import com.turn.tpmml.evaluator.RegressionModelEvaluator;
+import com.turn.tpmml.manager.IPMMLResult;
+import com.turn.tpmml.manager.ModelManager;
+import com.turn.tpmml.manager.PMMLManager;
+import com.turn.tpmml.translator.*;
 
 public class BaseModelTest {
 	private static final Logger logger = LoggerFactory.getLogger(BaseModelTest.class);
@@ -134,7 +134,7 @@ public class BaseModelTest {
 				new StringReader(codeTemplate),
 				context);
 
-		Class<?> modelClass = PmmlToJavaTranslator.createModelClass(className, "com.turn.jpmml.itest", javaSource);
+		Class<?> modelClass = PmmlToJavaTranslator.createModelClass(className, "com.turn.tpmml.itest", javaSource);
 
 		return (CompiledModel)modelClass.newInstance();
 	}

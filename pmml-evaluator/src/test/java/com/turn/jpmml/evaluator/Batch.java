@@ -1,11 +1,11 @@
 /*
  * Copyright (c) 2013 University of Tartu
  */
-package com.turn.jpmml.evaluator;
+package com.turn.tpmml.evaluator;
 
 import java.io.*;
 
-import com.turn.jpmml.evaluator.Evaluator;
+import com.turn.tpmml.evaluator.Evaluator;
 
 public interface Batch {
 

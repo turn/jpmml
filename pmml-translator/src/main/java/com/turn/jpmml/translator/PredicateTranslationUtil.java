@@ -1,4 +1,4 @@
-package com.turn.jpmml.translator;
+package com.turn.tpmml.translator;
 
 import org.dmg.pmml.CompoundPredicate;
 import org.dmg.pmml.DataField;
@@ -9,7 +9,7 @@ import org.dmg.pmml.SimplePredicate;
 import org.dmg.pmml.SimpleSetPredicate;
 import org.dmg.pmml.True;
 
-import com.turn.jpmml.manager.ModelManager;
+import com.turn.tpmml.manager.ModelManager;
 
 public class PredicateTranslationUtil {
 	static public final int TRUE = 1;
@@ -136,7 +136,7 @@ public class PredicateTranslationUtil {
 			CompoundPredicate predicate,
 			ModelManager<?> modelManager,
 			TranslationContext context) throws TranslationException {
-		context.addRequiredImport("com.turn.jpmml.translator.PredicateTranslationUtil");
+		context.addRequiredImport("com.turn.tpmml.translator.PredicateTranslationUtil");
 		context.addRequiredImport("org.dmg.pmml.CompoundPredicate.BooleanOperator");
 
 		StringBuilder code = new StringBuilder();

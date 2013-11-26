@@ -1,4 +1,4 @@
-package org.jpmml.translator;
+package org.tpmml.translator;
 
 import java.io.IOException;
 import java.util.ArrayList;

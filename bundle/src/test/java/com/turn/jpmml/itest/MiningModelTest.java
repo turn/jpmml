@@ -1,4 +1,4 @@
-package com.turn.jpmml.itest;
+package com.turn.tpmml.itest;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,8 +13,8 @@ import org.dmg.pmml.PMML;
 import org.dmg.pmml.IOUtil;
 import org.testng.annotations.Test;
 
-import com.turn.jpmml.manager.ModelManager;
-import com.turn.jpmml.translator.TranslationContext;
+import com.turn.tpmml.manager.ModelManager;
+import com.turn.tpmml.translator.TranslationContext;
 
 @Test
 public class MiningModelTest extends BaseModelTest {
@@ -568,9 +568,9 @@ public class MiningModelTest extends BaseModelTest {
 	}
 
 	static private final String VARIABLE_REGRESSION_MULTIPLE_MODEL_TEMPLATE = "" +
-			"package com.turn.jpmml.itest;\n" +
+			"package com.turn.tpmml.itest;\n" +
 			"import java.util.Map;\n" +
-			"import com.turn.jpmml.itest.BaseModelTest.CompiledModel;\n" +
+			"import com.turn.tpmml.itest.BaseModelTest.CompiledModel;\n" +
 			"" +
 			"#foreach($import in $imports) \n" +
 			"${import}\n" +
@@ -603,9 +603,9 @@ public class MiningModelTest extends BaseModelTest {
 			"}\n";
 
 	static private final String VARIABLE_REGRESSION_MULTIPLE_MODEL_TEMPLATE2 = "" +
-			"package com.turn.jpmml.itest;\n" +
+			"package com.turn.tpmml.itest;\n" +
 			"import java.util.Map;\n" +
-			"import com.turn.jpmml.itest.BaseModelTest.CompiledModel;\n" +
+			"import com.turn.tpmml.itest.BaseModelTest.CompiledModel;\n" +
 			"" +
 			"#foreach($import in $imports) \n" +
 			"${import}\n" +
@@ -638,9 +638,9 @@ public class MiningModelTest extends BaseModelTest {
 			"}\n";
 
 	static private final String SAMPLE_REGRESSION_MULTIPLE_MODEL_TEMPLATE = "" +
-			"package com.turn.jpmml.itest;\n" +
+			"package com.turn.tpmml.itest;\n" +
 			"import java.util.Map;\n" +
-			"import com.turn.jpmml.itest.BaseModelTest.CompiledModel;\n" +
+			"import com.turn.tpmml.itest.BaseModelTest.CompiledModel;\n" +
 			"" +
 			"#foreach($import in $imports) \n" +
 			"${import}\n" +
@@ -676,9 +676,9 @@ public class MiningModelTest extends BaseModelTest {
 
 
 	static private final String SAMPLE_REGRESSION_MODEL_TEMPLATE = "" +
-			"package com.turn.jpmml.itest;\n" +
+			"package com.turn.tpmml.itest;\n" +
 			"import java.util.Map;\n" +
-			"import com.turn.jpmml.itest.BaseModelTest.CompiledModel;\n" +
+			"import com.turn.tpmml.itest.BaseModelTest.CompiledModel;\n" +
 			"" +
 			"#foreach($import in $imports) \n" +
 			"${import}\n" +
@@ -709,9 +709,9 @@ public class MiningModelTest extends BaseModelTest {
 			"}\n";
 
 	static private final String SAMPLE_CLASSIFICATION_MODEL_TEMPLATE = "" +
-			"package com.turn.jpmml.itest;\n" +
+			"package com.turn.tpmml.itest;\n" +
 			"import java.util.Map;\n" +
-			"import com.turn.jpmml.itest.BaseModelTest.CompiledModel;\n" +
+			"import com.turn.tpmml.itest.BaseModelTest.CompiledModel;\n" +
 			"" +
 			"#foreach($import in $imports) \n" +
 			"${import}\n" +

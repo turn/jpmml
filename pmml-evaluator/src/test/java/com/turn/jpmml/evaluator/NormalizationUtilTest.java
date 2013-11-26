@@ -1,13 +1,13 @@
 /*
  * Copyright (c) 2011 University of Tartu
  */
-package com.turn.jpmml.evaluator;
+package com.turn.tpmml.evaluator;
 
 import org.dmg.pmml.*;
 
 import org.junit.*;
 
-import com.turn.jpmml.evaluator.NormalizationUtil;
+import com.turn.tpmml.evaluator.NormalizationUtil;
 
 import static org.junit.Assert.*;
 

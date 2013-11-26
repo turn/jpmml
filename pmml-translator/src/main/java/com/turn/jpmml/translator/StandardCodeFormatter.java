@@ -1,6 +1,6 @@
-package com.turn.jpmml.translator;
+package com.turn.tpmml.translator;
 
-import com.turn.jpmml.manager.UnsupportedFeatureException;
+import com.turn.tpmml.manager.UnsupportedFeatureException;
 
 public class StandardCodeFormatter implements CodeFormatter {
 

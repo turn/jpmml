@@ -1,4 +1,4 @@
-package com.turn.jpmml.translator;
+package com.turn.tpmml.translator;
 
 import org.dmg.pmml.MiningModel;
 import org.dmg.pmml.Model;
@@ -7,9 +7,9 @@ import org.dmg.pmml.RegressionModel;
 import org.dmg.pmml.Scorecard;
 import org.dmg.pmml.TreeModel;
 
-import com.turn.jpmml.manager.ModelManager;
-import com.turn.jpmml.manager.ModelManagerFactory;
-import com.turn.jpmml.manager.UnsupportedFeatureException;
+import com.turn.tpmml.manager.ModelManager;
+import com.turn.tpmml.manager.ModelManagerFactory;
+import com.turn.tpmml.manager.UnsupportedFeatureException;
 
 public class ModelTranslatorFactory extends ModelManagerFactory {
 

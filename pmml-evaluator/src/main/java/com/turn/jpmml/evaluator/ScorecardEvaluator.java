@@ -1,4 +1,4 @@
-package com.turn.jpmml.evaluator;
+package com.turn.tpmml.evaluator;
 
 import java.util.List;
 import java.util.Map;
@@ -10,9 +10,9 @@ import org.dmg.pmml.FieldName;
 import org.dmg.pmml.PMML;
 import org.dmg.pmml.Scorecard;
 
-import com.turn.jpmml.manager.IPMMLResult;
-import com.turn.jpmml.manager.ScoreCardModelManager;
-import com.turn.jpmml.manager.ScoreCardPMMLResult;
+import com.turn.tpmml.manager.IPMMLResult;
+import com.turn.tpmml.manager.ScoreCardModelManager;
+import com.turn.tpmml.manager.ScoreCardPMMLResult;
 
 public class ScorecardEvaluator extends ScoreCardModelManager implements Evaluator {
 

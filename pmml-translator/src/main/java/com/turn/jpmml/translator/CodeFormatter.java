@@ -1,4 +1,4 @@
-package com.turn.jpmml.translator;
+package com.turn.tpmml.translator;
 
 public interface CodeFormatter {
 

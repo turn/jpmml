@@ -1,4 +1,4 @@
-package com.turn.jpmml.translator;
+package com.turn.tpmml.translator;
 
 import java.util.List;
 
@@ -11,8 +11,8 @@ import org.dmg.pmml.PMML;
 import org.dmg.pmml.Predicate;
 import org.dmg.pmml.TreeModel;
 
-import com.turn.jpmml.manager.TreeModelManager;
-import com.turn.jpmml.translator.Variable.VariableType;
+import com.turn.tpmml.manager.TreeModelManager;
+import com.turn.tpmml.translator.Variable.VariableType;
 
 /**
  * Translate tree model into java code

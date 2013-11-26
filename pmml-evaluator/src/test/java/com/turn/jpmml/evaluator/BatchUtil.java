@@ -1,19 +1,19 @@
 /*
  * Copyright (c) 2013 University of Tartu
  */
-package com.turn.jpmml.evaluator;
+package com.turn.tpmml.evaluator;
 
 import java.util.*;
 
 
 import org.dmg.pmml.*;
 
-import com.turn.jpmml.evaluator.Evaluator;
-import com.turn.jpmml.evaluator.EvaluatorUtil;
-import com.turn.jpmml.evaluator.ModelEvaluatorFactory;
-import com.turn.jpmml.evaluator.ParameterUtil;
-import com.turn.jpmml.evaluator.VerificationUtil;
-import com.turn.jpmml.manager.*;
+import com.turn.tpmml.evaluator.Evaluator;
+import com.turn.tpmml.evaluator.EvaluatorUtil;
+import com.turn.tpmml.evaluator.ModelEvaluatorFactory;
+import com.turn.tpmml.evaluator.ParameterUtil;
+import com.turn.tpmml.evaluator.VerificationUtil;
+import com.turn.tpmml.manager.*;
 
 public class BatchUtil {
 

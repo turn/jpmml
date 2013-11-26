@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2010 University of Tartu
  */
-package org.jpmml.xjc;
+package org.tpmml.xjc;
 
 import java.util.*;
 

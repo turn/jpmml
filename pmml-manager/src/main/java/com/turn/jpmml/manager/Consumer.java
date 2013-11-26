@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2012 University of Tartu
  */
-package com.turn.jpmml.manager;
+package com.turn.tpmml.manager;
 
 import java.io.*;
 import java.util.*;

@@ -1,4 +1,4 @@
-package com.turn.jpmml.translator;
+package com.turn.tpmml.translator;
 
 import java.util.HashMap;
 
@@ -11,11 +11,11 @@ import org.dmg.pmml.OpType;
 import org.dmg.pmml.PMML;
 import org.dmg.pmml.Segment;
 
-import com.turn.jpmml.manager.MiningModelManager;
-import com.turn.jpmml.manager.ModelManager;
-import com.turn.jpmml.manager.UnsupportedFeatureException;
-import com.turn.jpmml.translator.CodeFormatter.Operator;
-import com.turn.jpmml.translator.Variable.VariableType;
+import com.turn.tpmml.manager.MiningModelManager;
+import com.turn.tpmml.manager.ModelManager;
+import com.turn.tpmml.manager.UnsupportedFeatureException;
+import com.turn.tpmml.translator.CodeFormatter.Operator;
+import com.turn.tpmml.translator.Variable.VariableType;
 
 /**
  * Generate java code to manage MiningModel.

@@ -1,4 +1,4 @@
-package com.turn.jpmml.translator;
+package com.turn.tpmml.translator;
 
 import java.util.HashMap;
 import java.util.List;
@@ -13,10 +13,10 @@ import org.dmg.pmml.RegressionModel;
 import org.dmg.pmml.RegressionNormalizationMethodType;
 import org.dmg.pmml.RegressionTable;
 
-import com.turn.jpmml.manager.RegressionModelManager;
-import com.turn.jpmml.manager.UnsupportedFeatureException;
-import com.turn.jpmml.translator.CodeFormatter.Operator;
-import com.turn.jpmml.translator.Variable.VariableType;
+import com.turn.tpmml.manager.RegressionModelManager;
+import com.turn.tpmml.manager.UnsupportedFeatureException;
+import com.turn.tpmml.translator.CodeFormatter.Operator;
+import com.turn.tpmml.translator.Variable.VariableType;
 
 /**
  * Translate regression model into java code.

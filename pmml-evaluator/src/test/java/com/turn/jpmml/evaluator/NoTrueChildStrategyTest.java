@@ -1,15 +1,15 @@
 /*
  * Copyright (c) 2011 University of Tartu
  */
-package com.turn.jpmml.evaluator;
+package com.turn.tpmml.evaluator;
 
 
 import org.dmg.pmml.*;
 
 import org.junit.*;
 
-import com.turn.jpmml.evaluator.TreeModelEvaluator2;
-import com.turn.jpmml.manager.*;
+import com.turn.tpmml.evaluator.TreeModelEvaluator2;
+import com.turn.tpmml.manager.*;
 
 import static org.junit.Assert.*;
 

@@ -1,11 +1,11 @@
 /*
  * Copyright (c) 2013 University of Tartu
  */
-package com.turn.jpmml.evaluator;
+package com.turn.tpmml.evaluator;
 
 import org.junit.*;
 
-import com.turn.jpmml.evaluator.VerificationUtil;
+import com.turn.tpmml.evaluator.VerificationUtil;
 
 import static org.junit.Assert.*;
 

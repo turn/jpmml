@@ -1,8 +1,8 @@
-package com.turn.jpmml.translator;
+package com.turn.tpmml.translator;
 
 import org.dmg.pmml.DataField;
 
-import com.turn.jpmml.manager.Consumer;
+import com.turn.tpmml.manager.Consumer;
 
 /**
  * Common interface for model managers that can translate model to java source code

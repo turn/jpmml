@@ -1,4 +1,4 @@
-package com.turn.jpmml.translator;
+package com.turn.tpmml.translator;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,8 +25,8 @@ import org.dmg.pmml.PMML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.turn.jpmml.manager.ModelManager;
-import com.turn.jpmml.manager.PMMLManager;
+import com.turn.tpmml.manager.ModelManager;
+import com.turn.tpmml.manager.PMMLManager;
 
 
 /**

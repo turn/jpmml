@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2011 University of Tartu
  */
-package com.turn.jpmml.evaluator;
+package com.turn.tpmml.evaluator;
 
 import java.util.*;
 
