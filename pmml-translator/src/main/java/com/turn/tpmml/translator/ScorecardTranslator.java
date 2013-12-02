@@ -22,6 +22,10 @@ import com.turn.tpmml.translator.Variable.VariableType;
  *
  */
 public class ScorecardTranslator extends ScoreCardModelManager implements Translator {
+
+	private static final long serialVersionUID = 1L;
+
+
 	public ScorecardTranslator(PMML pmml){
 		super(pmml);
 	}

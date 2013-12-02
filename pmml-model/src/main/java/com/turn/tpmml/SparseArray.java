@@ -7,9 +7,12 @@ import java.util.*;
 
 import javax.xml.bind.annotation.*;
 
+@SuppressWarnings("restriction")
 @XmlTransient
 abstract
 public class SparseArray extends PMMLObject {
+ 
+	private static final long serialVersionUID = 1L;
 
 	abstract
 	public List<Integer> getIndices();

@@ -13,6 +13,8 @@ import com.turn.tpmml.manager.*;
 
 public class MiningModelEvaluator2 extends MiningModelManager implements Evaluator {
 
+	private static final long serialVersionUID = 1L;
+
 	public MiningModelEvaluator2(PMML pmml){
 		super(pmml);
 	}

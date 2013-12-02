@@ -3,12 +3,19 @@
  */
 package com.turn.tpmml.manager;
 
+/**
+ * Generic exception when something happens within ModelManager.
+ * 
+ */
+// FIXME: Specialize this exception, make it better.
 public class ModelManagerException extends RuntimeException {
 
-	public ModelManagerException(){
+	private static final long serialVersionUID = 1L;
+
+	public ModelManagerException() {
 	}
 
-	public ModelManagerException(String message){
+	public ModelManagerException(String message) {
 		super(message);
 	}
 }

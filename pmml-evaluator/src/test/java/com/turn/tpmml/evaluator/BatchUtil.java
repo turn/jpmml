@@ -10,7 +10,6 @@ import com.turn.tpmml.*;
 
 import com.turn.tpmml.evaluator.Evaluator;
 import com.turn.tpmml.evaluator.EvaluatorUtil;
-import com.turn.tpmml.evaluator.ModelEvaluatorFactory;
 import com.turn.tpmml.evaluator.ParameterUtil;
 import com.turn.tpmml.evaluator.VerificationUtil;
 import com.turn.tpmml.manager.*;
@@ -29,7 +28,7 @@ public class BatchUtil {
 
 		PMMLManager pmmlManager = new PMMLManager(pmml);
 
-		Evaluator evaluator = (Evaluator)pmmlManager.getModelManager(null, ModelEvaluatorFactory.getInstance());
+		Evaluator evaluator = (Evaluator)pmmlManager.getModelManager(null);
 
 		List<Map<FieldName, String>> input = CsvUtil.load(batch.getInput());
 		List<Map<FieldName, String>> output = CsvUtil.load(batch.getOutput());

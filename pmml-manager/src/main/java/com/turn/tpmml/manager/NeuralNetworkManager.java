@@ -9,6 +9,8 @@ import com.turn.tpmml.*;
 
 public class NeuralNetworkManager extends ModelManager<NeuralNetwork> {
 
+	private static final long serialVersionUID = 1L;
+
 	private NeuralNetwork neuralNetwork = null;
 
 	private int neuronCount = 0;

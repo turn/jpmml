@@ -21,6 +21,7 @@ import com.turn.tpmml.manager.UnsupportedFeatureException;
 
 public class MiningModelEvaluator extends MiningModelManager implements Evaluator {
 
+	private static final long serialVersionUID = 1L;
 	private HashMap<Segment, Integer> segmentToId = new HashMap<Segment, Integer>();
 	private Integer segmentMaxId = 0;
 

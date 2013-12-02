@@ -13,6 +13,8 @@ import com.turn.tpmml.*;
  *
  */
 public class ScoreCardModelManager extends ModelManager<Scorecard> {
+
+	private static final long serialVersionUID = 1L;
 	protected Scorecard scorecard = null;
 
 	public ScoreCardModelManager(){

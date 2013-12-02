@@ -19,6 +19,7 @@ public class TableUtilTest {
 		Map<String, String> second = createRow(new String[][]{{"value", "2"}, {"output", "second"}});
 		Map<String, String> third = createRow(new String[][]{{"value", "3"}, {"output", "third"}});
 
+		@SuppressWarnings("unchecked")
 		List<Map<String, String>> rows = Arrays.asList(first, second, third);
 
 		assertEquals(third, TableUtil.match(rows, createRow(new String[][]{{"value", "3"}})));
@@ -34,6 +35,7 @@ public class TableUtilTest {
 		Map<String, String> thirdTrue = createRow(new String[][]{{"value", "3"}, {"flag", "true"}, {"output", "thirdTrue"}});
 		Map<String, String> thirdFalse = createRow(new String[][]{{"value", "3"}, {"flag", "false"}, {"output", "thirdFalse"}});
 
+		@SuppressWarnings("unchecked")
 		List<Map<String, String>> rows = Arrays.asList(firstTrue, firstFalse, secondTrue, secondFalse, thirdTrue, thirdFalse);
 
 		assertEquals(null, TableUtil.match(rows, createRow(new String[][]{{"value", "3"}})));

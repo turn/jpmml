@@ -10,6 +10,8 @@ import com.turn.tpmml.*;
 abstract
 public class ModelManager<M extends Model> extends PMMLManager implements Consumer {
 
+	private static final long serialVersionUID = 1L;
+
 	private LocalTransformations localTransformations = null;
 
 	private Output output = null;

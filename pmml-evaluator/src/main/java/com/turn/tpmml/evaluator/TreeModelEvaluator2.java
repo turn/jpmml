@@ -12,6 +12,8 @@ import com.turn.tpmml.manager.*;
 
 public class TreeModelEvaluator2 extends TreeModelManager implements Evaluator {
 
+	private static final long serialVersionUID = 1L;
+
 	public TreeModelEvaluator2(PMML pmml){
 		super(pmml);
 	}
@@ -38,7 +40,7 @@ public class TreeModelEvaluator2 extends TreeModelManager implements Evaluator {
 
 		NodeClassificationMap values = new NodeClassificationMap(node);
 
-		Map<FieldName, NodeClassificationMap> predictions = Collections.singletonMap(getTarget(), values);
+		// Map<FieldName, NodeClassificationMap> predictions = Collections.singletonMap(getTarget(), values);
 
 		TreePMMLResult res = new TreePMMLResult();
 		res.put(getTarget(), values);
@@ -50,21 +52,6 @@ public class TreeModelEvaluator2 extends TreeModelManager implements Evaluator {
 		}
 
 		return res;
-	}
-
-	private String computeScore(Node node){
-		ScoreDistribution result = null;
-
-		List<ScoreDistribution> scoreDistributions = node.getScoreDistributions();
-
-		for(ScoreDistribution scoreDistribution : scoreDistributions){
-
-			if(result == null || result.getRecordCount() < scoreDistribution.getRecordCount()){
-				result = scoreDistribution;
-			}
-		}
-
-		return result != null ? result.getValue() : null;
 	}
 
 	public Node evaluateTree(EvaluationContext context){

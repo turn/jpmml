@@ -7,6 +7,8 @@ import com.turn.tpmml.*;
 
 public class MissingParameterException extends EvaluationException {
 
+	private static final long serialVersionUID = 1L;
+
 	public MissingParameterException(FieldName name){
 		super(name != null ? name.getValue() : "(empty)");
 	}

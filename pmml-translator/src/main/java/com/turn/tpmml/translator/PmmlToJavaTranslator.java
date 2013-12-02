@@ -21,10 +21,10 @@ import javax.tools.ToolProvider;
 
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
-import com.turn.tpmml.PMML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.turn.tpmml.PMML;
 import com.turn.tpmml.manager.ModelManager;
 import com.turn.tpmml.manager.PMMLManager;
 
@@ -35,13 +35,14 @@ import com.turn.tpmml.manager.PMMLManager;
  * @author asvirsky
  *
  */
+@SuppressWarnings("restriction")
 public class PmmlToJavaTranslator {
 	private static final Logger logger = LoggerFactory.getLogger(PmmlToJavaTranslator.class);
 
 	static public String generateJavaCode(PMML pmml, String className, Reader templateReader, TranslationContext context) throws Exception {
 
 		if (className==null || className.isEmpty()) {
-           logger.error("You need provide unique class name");
+           logger.error("You need to provide unique class name");
                 return null;
         }
 

@@ -27,6 +27,7 @@ public class IOUtil {
 		return new SAXSource(filter, source);
 	}
 
+	@SuppressWarnings("restriction")
 	static
 	public PMML unmarshal(File file) throws IOException, SAXException, JAXBException {
 		InputStream is = new FileInputStream(file);
@@ -38,11 +39,13 @@ public class IOUtil {
 		}
 	}
 
+	@SuppressWarnings("restriction")
 	static
 	public PMML unmarshal(InputStream is) throws SAXException, JAXBException {
 		return unmarshal(new InputSource(is));
 	}
 
+	@SuppressWarnings("restriction")
 	static
 	public PMML unmarshal(InputSource source) throws SAXException, JAXBException {
 		Source importSource = createImportSource(source);
@@ -52,6 +55,7 @@ public class IOUtil {
 		return (PMML)unmarshaller.unmarshal(importSource);
 	}
 
+	@SuppressWarnings("restriction")
 	static
 	public void marshal(PMML pmml, File file) throws IOException, JAXBException {
 		OutputStream os = new FileOutputStream(file);
@@ -63,11 +67,13 @@ public class IOUtil {
 		}
 	}
 
+	@SuppressWarnings("restriction")
 	static
 	public void marshal(PMML pmml, OutputStream os) throws JAXBException {
 		marshal(pmml, new StreamResult(os));
 	}
 
+	@SuppressWarnings("restriction")
 	static
 	public void marshal(PMML pmml, Result result) throws JAXBException {
 		Marshaller marshaller = getJAXBContext().createMarshaller();
@@ -76,6 +82,7 @@ public class IOUtil {
 		marshaller.marshal(pmml, result);
 	}
 
+	@SuppressWarnings("restriction")
 	static
 	private JAXBContext getJAXBContext() throws JAXBException {
 
@@ -86,5 +93,6 @@ public class IOUtil {
 		return IOUtil.jaxbCtx;
 	}
 
+	@SuppressWarnings("restriction")
 	private static JAXBContext jaxbCtx = null;
 }

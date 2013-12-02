@@ -59,8 +59,8 @@
 						<Bundle-Name>tpmml</Bundle-Name>
 						<Embed-Dependency>*;scope=compile|runtime;inline=true</Embed-Dependency>
 						<Embed-Transitive>true</Embed-Transitive>
-<!-- 						<Export-Package>com.turn.tpmml.*;-split-package:=merge-first,org.tpmml.*</Export-Package> -->
-						<Import-Package>*</Import-Package>
+<!--  						<Export-Package>com.turn.tpmml.*;-split-package:=merge-first,com.turn.tpmml.*</Export-Package>
+ -->						<Import-Package>*</Import-Package>
 					</instructions>
 				</configuration>
 			</plugin>

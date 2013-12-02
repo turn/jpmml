@@ -10,9 +10,12 @@ import javax.xml.bind.annotation.*;
 import org.jvnet.jaxb2_commons.lang.*;
 import org.jvnet.jaxb2_commons.locator.*;
 
+@SuppressWarnings("restriction")
 @XmlTransient
 abstract
 public class PMMLObject implements Equals, HashCode, ToString, Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	public boolean equals(ObjectLocator thisLocator, ObjectLocator thatLocator, Object that, EqualsStrategy equalsStrategy){
 		return true;

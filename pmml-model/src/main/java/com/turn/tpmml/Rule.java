@@ -5,7 +5,11 @@ package com.turn.tpmml;
 
 import javax.xml.bind.annotation.*;
 
+@SuppressWarnings("restriction")
 @XmlTransient
 abstract
 public class Rule extends PMMLObject {
+
+
+	private static final long serialVersionUID = 1L;
 }

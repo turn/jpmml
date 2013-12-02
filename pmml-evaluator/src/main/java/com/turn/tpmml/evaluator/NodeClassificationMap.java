@@ -3,12 +3,13 @@
  */
 package com.turn.tpmml.evaluator;
 
-import java.math.*;
 import java.util.*;
 
 import com.turn.tpmml.*;
 
 class NodeClassificationMap extends ClassificationMap {
+
+	private static final long serialVersionUID = 1L;
 
 	private Node node = null;
 

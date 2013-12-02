@@ -24,6 +24,8 @@ import com.turn.tpmml.translator.Variable.VariableType;
  *
  */
 public class MiningModelTranslator extends MiningModelManager implements Translator {
+
+	private static final long serialVersionUID = 1L;
 	private HashMap<Segment, String> segmentToId = new HashMap<Segment, String>();
 
 	public MiningModelTranslator(PMML pmml){

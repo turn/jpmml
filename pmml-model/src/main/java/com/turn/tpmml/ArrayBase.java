@@ -7,9 +7,13 @@ import java.util.*;
 
 import javax.xml.bind.annotation.*;
 
+@SuppressWarnings("restriction")
 @XmlTransient
 abstract
 public class ArrayBase extends PMMLObject {
+
+
+	private static final long serialVersionUID = 1L;
 
 	@XmlTransient
 	private List<String> content = null;

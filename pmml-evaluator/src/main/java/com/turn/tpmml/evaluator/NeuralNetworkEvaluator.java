@@ -12,6 +12,8 @@ import com.turn.tpmml.manager.*;
 
 public class NeuralNetworkEvaluator extends NeuralNetworkManager implements Evaluator {
 
+	private static final long serialVersionUID = 1L;
+
 	public NeuralNetworkEvaluator(PMML pmml){
 		super(pmml);
 	}

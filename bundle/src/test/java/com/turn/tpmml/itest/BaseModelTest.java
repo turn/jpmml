@@ -157,7 +157,7 @@ public class BaseModelTest {
 
 		try {
 			value3 = evaluateModel(evaluator, nameToValue)
-					.getValue(((PMMLManager) evaluator).getOutputField((ModelManager<?>) evaluator).getName());
+					.getValue((PMMLManager.getOutputField((ModelManager<?>) evaluator).getName()));
 		} catch (NoSuchElementException e) {
 			value3 = null;
 		} catch (Exception e) {

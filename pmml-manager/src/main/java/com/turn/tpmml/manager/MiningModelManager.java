@@ -9,6 +9,7 @@ import com.turn.tpmml.*;
 
 public class MiningModelManager extends ModelManager<MiningModel> {
 
+	private static final long serialVersionUID = 1L;
 	private MiningModel miningModel = null;
 
 
@@ -94,28 +95,6 @@ public class MiningModelManager extends ModelManager<MiningModel> {
 
 	public List<Segment> getSegments(){
 		return getSegmentation().getSegments();
-	}
-
-	static
-	private boolean isRandomForest(MiningModel miningModel){
-		Segmentation segmentation = miningModel.getSegmentation();
-
-		if(segmentation == null){
-			return false;
-		}
-
-		List<Segment> segments = segmentation.getSegments();
-
-		// How many trees does it take to make a forest?
-		boolean result = (segments.size() > 3);
-
-		for(Segment segment : segments){
-			Model model = segment.getModel();
-
-			result &= (model instanceof TreeModel);
-		}
-
-		return result;
 	}
 
 	public MiningFunctionType getFunctionType() {

@@ -21,6 +21,9 @@ import com.turn.tpmml.translator.Variable.VariableType;
  *
  */
 public class TreeModelTranslator extends TreeModelManager implements Translator {
+
+	private static final long serialVersionUID = 1L;
+
 	public TreeModelTranslator(PMML pmml){
 		super(pmml);
 	}

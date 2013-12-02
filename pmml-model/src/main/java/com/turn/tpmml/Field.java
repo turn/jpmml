@@ -5,9 +5,12 @@ package com.turn.tpmml;
 
 import javax.xml.bind.annotation.*;
 
+@SuppressWarnings("restriction")
 @XmlTransient
 abstract
 public class Field extends PMMLObject implements HasName {
+
+	private static final long serialVersionUID = 1L;
 
 	abstract
 	public FieldName getName();

@@ -5,9 +5,12 @@ package com.turn.tpmml;
 
 import javax.xml.bind.annotation.*;
 
+@SuppressWarnings("restriction")
 @XmlTransient
 abstract
 public class DictionaryField extends Field {
+
+	private static final long serialVersionUID = 1L;
 
 	abstract
 	public String getDisplayName();

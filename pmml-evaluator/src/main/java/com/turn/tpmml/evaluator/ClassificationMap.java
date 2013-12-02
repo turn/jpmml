@@ -7,6 +7,8 @@ import java.util.*;
 
 class ClassificationMap extends LinkedHashMap<String, Double> implements Classification {
 
+	private static final long serialVersionUID = 1L;
+
 	ClassificationMap(){
 	}
 

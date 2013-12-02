@@ -22,6 +22,7 @@ public class PMMLResult implements IPMMLResult {
 		results = new HashMap<FieldName, Object>();
 	}
 
+	@SuppressWarnings("unchecked")
 	public PMMLResult(PMMLResult other) {
 		results = (HashMap<FieldName, Object>) other.results.clone();
 	}

@@ -26,6 +26,8 @@ import com.turn.tpmml.translator.Variable.VariableType;
  *
  */
 public class RegressionModelTranslator extends RegressionModelManager implements Translator {
+
+	private static final long serialVersionUID = 1L;
 	private HashMap<RegressionTable, String> regressionTableToId = new HashMap<RegressionTable, String>();
 
 	public RegressionModelTranslator(PMML pmml){

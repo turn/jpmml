@@ -12,6 +12,8 @@ import com.turn.tpmml.manager.*;
 
 public class TreeModelEvaluator extends TreeModelManager implements Evaluator {
 
+	private static final long serialVersionUID = 1L;
+
 	public TreeModelEvaluator(PMML pmml){
 		super(pmml);
 	}

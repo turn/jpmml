@@ -9,7 +9,6 @@ import com.turn.tpmml.CategoricalPredictor;
 import com.turn.tpmml.FieldName;
 import com.turn.tpmml.MiningFunctionType;
 import com.turn.tpmml.MiningSchema;
-import com.turn.tpmml.Model;
 import com.turn.tpmml.NumericPredictor;
 import com.turn.tpmml.PMML;
 import com.turn.tpmml.RegressionModel;
@@ -33,6 +32,8 @@ import com.turn.tpmml.RegressionTable;
  *
  */
 public class RegressionModelManager extends ModelManager<RegressionModel> {
+
+	private static final long serialVersionUID = 1L;
 
 	private RegressionModel regressionModel = null;
 

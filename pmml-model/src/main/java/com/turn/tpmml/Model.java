@@ -5,9 +5,12 @@ package com.turn.tpmml;
 
 import javax.xml.bind.annotation.*;
 
+@SuppressWarnings("restriction")
 @XmlTransient
 abstract
 public class Model extends PMMLObject {
+
+	private static final long serialVersionUID = 1L;
 
 	abstract
 	public String getModelName();

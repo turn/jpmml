@@ -9,6 +9,9 @@ import com.turn.tpmml.*;
 
 public class TreeModelManager extends ModelManager<TreeModel> {
 
+
+	private static final long serialVersionUID = 1L;
+
 	private TreeModel treeModel = null;
 
 	private Node root = null;

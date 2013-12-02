@@ -7,6 +7,9 @@ import com.turn.tpmml.*;
 
 public class UnsupportedFeatureException extends ModelManagerException {
 
+
+	private static final long serialVersionUID = 1L;
+
 	public UnsupportedFeatureException(){
 	}
 

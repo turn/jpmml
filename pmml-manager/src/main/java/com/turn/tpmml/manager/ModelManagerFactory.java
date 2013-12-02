@@ -5,28 +5,31 @@ package com.turn.tpmml.manager;
 
 import com.turn.tpmml.*;
 
+/**
+ * Allow to get a manager for a model.
+ */
 public class ModelManagerFactory {
 
 	protected boolean alternateImplementation = true;
 
-	protected ModelManagerFactory(){
+	protected ModelManagerFactory() {
 	}
 
-	public ModelManager<? extends Model> getModelManager(PMML pmml, Model model){
+	public ModelManager<? extends Model> getModelManager(PMML pmml, Model model) {
 
-		if (model instanceof RegressionModel){
-			return new RegressionModelManager(pmml, (RegressionModel)model);
+		if (model instanceof RegressionModel) {
+			return new RegressionModelManager(pmml, (RegressionModel) model);
 		} else
 
-		if (model instanceof TreeModel){
-			return new TreeModelManager(pmml, (TreeModel)model);
+		if (model instanceof TreeModel) {
+			return new TreeModelManager(pmml, (TreeModel) model);
 		} else
 
-		if (model instanceof NeuralNetwork){
-			return new NeuralNetworkManager(pmml, (NeuralNetwork)model);
+		if (model instanceof NeuralNetwork) {
+			return new NeuralNetworkManager(pmml, (NeuralNetwork) model);
 		} else
 
-		if (model instanceof MiningModel){
+		if (model instanceof MiningModel) {
 			return new MiningModelManager(pmml, (MiningModel) model);
 		} else
 

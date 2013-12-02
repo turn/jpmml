@@ -20,6 +20,8 @@ import com.turn.tpmml.manager.*;
  */
 public class RegressionModelEvaluator extends RegressionModelManager implements Evaluator {
 
+	private static final long serialVersionUID = 1L;
+
 	public RegressionModelEvaluator(PMML pmml){
 		super(pmml);
 	}

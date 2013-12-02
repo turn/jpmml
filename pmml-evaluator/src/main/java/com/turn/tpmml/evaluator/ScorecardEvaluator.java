@@ -17,6 +17,8 @@ import com.turn.tpmml.manager.ScoreCardPMMLResult;
 public class ScorecardEvaluator extends ScoreCardModelManager implements Evaluator {
 
 
+	private static final long serialVersionUID = 1L;
+
 	public ScorecardEvaluator(PMML pmml) {
 		super(pmml);
 	}
