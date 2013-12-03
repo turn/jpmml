@@ -3,21 +3,29 @@
  */
 package com.turn.tpmml.evaluator;
 
+import com.turn.tpmml.DataType;
+import com.turn.tpmml.FieldName;
+import com.turn.tpmml.FieldUsageType;
+import com.turn.tpmml.NoTrueChildStrategyType;
+import com.turn.tpmml.Node;
+import com.turn.tpmml.OpType;
+import com.turn.tpmml.SimplePredicate;
+import com.turn.tpmml.TreeModel;
+import com.turn.tpmml.manager.TreeModelManager;
 
-import com.turn.tpmml.*;
+import org.junit.Test;
 
-import org.junit.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
-import com.turn.tpmml.evaluator.TreeModelEvaluator2;
-import com.turn.tpmml.manager.*;
-
-import static org.junit.Assert.*;
 
 public class NoTrueChildStrategyTest {
 
 	@Test
-	public void returnNullPrediction(){
-		TreeModelEvaluator2 treeModelManager = prepareModel(NoTrueChildStrategyType.RETURN_NULL_PREDICTION);
+	public void returnNullPrediction() {
+		TreeModelEvaluator2 treeModelManager =
+				prepareModel(NoTrueChildStrategyType.RETURN_NULL_PREDICTION);
 
 		FieldName name = new FieldName("prob1");
 
@@ -32,8 +40,9 @@ public class NoTrueChildStrategyTest {
 	}
 
 	@Test
-	public void returnLastPrediction(){
-		TreeModelEvaluator2 treeModelManager = prepareModel(NoTrueChildStrategyType.RETURN_LAST_PREDICTION);
+	public void returnLastPrediction() {
+		TreeModelEvaluator2 treeModelManager =
+				prepareModel(NoTrueChildStrategyType.RETURN_LAST_PREDICTION);
 
 		FieldName name = new FieldName("prob1");
 
@@ -48,21 +57,22 @@ public class NoTrueChildStrategyTest {
 		assertEquals("T1", t1.getId());
 	}
 
-	static
-	private TreeModelEvaluator2 prepareModel(NoTrueChildStrategyType noTrueChildStrategy){
+	private static TreeModelEvaluator2 prepareModel(NoTrueChildStrategyType noTrueChildStrategy) {
 		TreeModelManager treeModelManager = new TreeModelManager();
 
 		TreeModel treeModel = treeModelManager.createClassificationModel();
 		treeModel.setNoTrueChildStrategy(noTrueChildStrategy);
 
 		FieldName prob1 = new FieldName("prob1");
-		treeModelManager.addField(prob1, null, OpType.CONTINUOUS, DataType.DOUBLE, FieldUsageType.ACTIVE);
+		treeModelManager.addField(prob1, null, OpType.CONTINUOUS, DataType.DOUBLE,
+				FieldUsageType.ACTIVE);
 
 		Node n1 = treeModelManager.getOrCreateRoot();
 		n1.setId("N1");
 		n1.setScore("0");
 
-		SimplePredicate t1Predicate = new SimplePredicate(prob1, SimplePredicate.Operator.GREATER_THAN);
+		SimplePredicate t1Predicate = new SimplePredicate(prob1,
+				SimplePredicate.Operator.GREATER_THAN);
 		t1Predicate.setValue("0.33");
 
 		Node t1 = treeModelManager.addNode(n1, t1Predicate);

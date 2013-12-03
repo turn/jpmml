@@ -3,39 +3,44 @@
  */
 package com.turn.tpmml.evaluator;
 
-import java.util.*;
+import com.turn.tpmml.DataType;
+import com.turn.tpmml.Expression;
+import com.turn.tpmml.FieldName;
+import com.turn.tpmml.Output;
+import com.turn.tpmml.OutputField;
+import com.turn.tpmml.ResultFeatureType;
+import com.turn.tpmml.manager.ModelManager;
+import com.turn.tpmml.manager.PMMLResult;
+import com.turn.tpmml.manager.UnsupportedFeatureException;
 
-
-import com.turn.tpmml.*;
-
-import com.turn.tpmml.manager.*;
+import java.util.List;
+import java.util.Map;
 
 public class OutputUtil {
 
-	private OutputUtil(){
+	private OutputUtil() {
 	}
 
-
-	static public PMMLResult evaluate(
-			Map<FieldName, ?> predictions, ModelManagerEvaluationContext context) {
+	public static PMMLResult evaluate(Map<FieldName, ?> predictions,
+			ModelManagerEvaluationContext context) {
 		PMMLResult res = new PMMLResult();
 		for (Map.Entry<FieldName, ?> e : predictions.entrySet()) {
 			res.put(e.getKey(), e.getValue());
 		}
-
 
 		return evaluate(res, context);
 	}
 
 	/**
 	 * Evaluates the {@link Output} element.
-	 *
+	 * 
 	 * @param predictions Map of {@link Evaluator#getPredictedFields() predicted field} values.
-	 *
-	 * @return Map of {@link Evaluator#getPredictedFields() predicted field} values together with {@link Evaluator#getOutputFields() output field} values.
+	 * 
+	 * @return Map of {@link Evaluator#getPredictedFields() predicted field} values together with
+	 *         {@link Evaluator#getOutputFields() output field} values.
 	 */
-	static
-	public PMMLResult evaluate(PMMLResult predictions, ModelManagerEvaluationContext context){
+	public static PMMLResult evaluate(PMMLResult predictions,
+							ModelManagerEvaluationContext context) {
 		PMMLResult result = new PMMLResult(predictions);
 
 		// Create a modifiable context instance
@@ -46,53 +51,47 @@ public class OutputUtil {
 		Output output = modelManager.getOrCreateOutput();
 
 		List<OutputField> outputFields = output.getOutputFields();
-		for(OutputField outputField : outputFields){
+		for (OutputField outputField : outputFields) {
 			ResultFeatureType resultFeature = outputField.getFeature();
 
 			Object value;
 
-			switch(resultFeature){
-				case PREDICTED_VALUE:
-					{
-						FieldName target = getTarget(modelManager, outputField);
+			switch (resultFeature) {
+			case PREDICTED_VALUE:
+				FieldName target = getTarget(modelManager, outputField);
 
-						if(!predictions.containsKey(target)){
-							throw new EvaluationException();
-						}
+				if (!predictions.containsKey(target)) {
+					throw new EvaluationException();
+				}
 
-						// Prediction results may be either simple or complex values
-						value = EvaluatorUtil.decode(predictions.getValue(target));
-					}
-					break;
-				case TRANSFORMED_VALUE:
-					{
-						Expression expression = outputField.getExpression();
-						if(expression == null){
-							throw new EvaluationException();
-						}
+				// Prediction results may be either simple or complex values
+				value = EvaluatorUtil.decode(predictions.getValue(target));
+				break;
+			case TRANSFORMED_VALUE:
+				Expression expression = outputField.getExpression();
+				if (expression == null) {
+					throw new EvaluationException();
+				}
 
-						value = ExpressionUtil.evaluate(expression, context);
-					}
-					break;
-				case PROBABILITY:
-					{
-						FieldName target = getTarget(modelManager, outputField);
+				value = ExpressionUtil.evaluate(expression, context);
+				break;
+			case PROBABILITY:
+				FieldName target2 = getTarget(modelManager, outputField);
 
-						if(!predictions.containsKey(target)){
-							throw new EvaluationException();
-						}
+				if (!predictions.containsKey(target2)) {
+					throw new EvaluationException();
+				}
 
-						value = getProbability(predictions.getValue(target), outputField.getValue());
-					}
-					break;
-				default:
-					throw new UnsupportedFeatureException(resultFeature);
+				value = getProbability(predictions.getValue(target2), outputField.getValue());
+				break;
+			default:
+				throw new UnsupportedFeatureException(resultFeature);
 			}
 
 			FieldName name = outputField.getName();
 
 			DataType dataType = outputField.getDataType();
-			if(dataType != null){
+			if (dataType != null) {
 				value = ParameterUtil.cast(dataType, value);
 			}
 
@@ -105,24 +104,23 @@ public class OutputUtil {
 		return result;
 	}
 
-	static
-	private FieldName getTarget(ModelManager<?> modelManager, OutputField outputField){
+	private static FieldName getTarget(ModelManager<?> modelManager,
+										OutputField outputField) {
 		FieldName result = outputField.getTargetField();
-		if(result == null){
+		if (result == null) {
 			result = modelManager.getTarget();
 		}
 
 		return result;
 	}
 
-	static
-	private Double getProbability(Object result, String value){
+	private static Double getProbability(Object result, String value) {
 
-		if(!(result instanceof Classification)){
+		if (!(result instanceof Classification)) {
 			throw new EvaluationException();
 		}
 
-		Classification classification = (Classification)result;
+		Classification classification = (Classification) result;
 
 		return classification.getProbability(value);
 	}

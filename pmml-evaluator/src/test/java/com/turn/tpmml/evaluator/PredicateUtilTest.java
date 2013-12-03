@@ -3,16 +3,15 @@
  */
 package com.turn.tpmml.evaluator;
 
-import org.junit.*;
+import org.junit.Test;
 
-import com.turn.tpmml.evaluator.PredicateUtil;
+import static org.junit.Assert.assertEquals;
 
-import static org.junit.Assert.*;
 
 public class PredicateUtilTest {
 
 	@Test
-	public void binaryAnd(){
+	public void binaryAnd() {
 		assertEquals(Boolean.TRUE, PredicateUtil.binaryAnd(Boolean.TRUE, Boolean.TRUE));
 		assertEquals(Boolean.FALSE, PredicateUtil.binaryAnd(Boolean.TRUE, Boolean.FALSE));
 		assertEquals(null, PredicateUtil.binaryAnd(Boolean.TRUE, null));
@@ -25,7 +24,7 @@ public class PredicateUtilTest {
 	}
 
 	@Test
-	public void binaryOr(){
+	public void binaryOr() {
 		assertEquals(Boolean.TRUE, PredicateUtil.binaryOr(Boolean.TRUE, Boolean.TRUE));
 		assertEquals(Boolean.TRUE, PredicateUtil.binaryOr(Boolean.TRUE, Boolean.FALSE));
 		assertEquals(Boolean.TRUE, PredicateUtil.binaryOr(Boolean.TRUE, null));
@@ -38,7 +37,7 @@ public class PredicateUtilTest {
 	}
 
 	@Test
-	public void binaryXor(){
+	public void binaryXor() {
 		assertEquals(Boolean.FALSE, PredicateUtil.binaryXor(Boolean.TRUE, Boolean.TRUE));
 		assertEquals(Boolean.TRUE, PredicateUtil.binaryXor(Boolean.TRUE, Boolean.FALSE));
 		assertEquals(null, PredicateUtil.binaryXor(Boolean.TRUE, null));

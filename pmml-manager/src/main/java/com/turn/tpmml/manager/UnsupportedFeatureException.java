@@ -3,25 +3,25 @@
  */
 package com.turn.tpmml.manager;
 
-import com.turn.tpmml.*;
+import com.turn.tpmml.PMMLObject;
 
 public class UnsupportedFeatureException extends ModelManagerException {
 
 
 	private static final long serialVersionUID = 1L;
 
-	public UnsupportedFeatureException(){
+	public UnsupportedFeatureException() {
 	}
 
-	public UnsupportedFeatureException(String message){
+	public UnsupportedFeatureException(String message) {
 		super(message);
 	}
 
-	public UnsupportedFeatureException(PMMLObject element){
+	public UnsupportedFeatureException(PMMLObject element) {
 		this((element.getClass()).getName());
 	}
 
-	public UnsupportedFeatureException(Enum<?> attribute){
+	public UnsupportedFeatureException(Enum<?> attribute) {
 		this((attribute.getClass()).getName() + "#" + attribute.name());
 	}
 }

@@ -3,30 +3,48 @@
  */
 package com.turn.tpmml.evaluator;
 
-import java.util.*;
+import com.turn.tpmml.ActivationFunctionType;
+import com.turn.tpmml.Connection;
+import com.turn.tpmml.DerivedField;
+import com.turn.tpmml.Expression;
+import com.turn.tpmml.FieldName;
+import com.turn.tpmml.FieldRef;
+import com.turn.tpmml.MiningFunctionType;
+import com.turn.tpmml.NeuralInput;
+import com.turn.tpmml.NeuralLayer;
+import com.turn.tpmml.NeuralNetwork;
+import com.turn.tpmml.NeuralOutput;
+import com.turn.tpmml.Neuron;
+import com.turn.tpmml.NnNormalizationMethodType;
+import com.turn.tpmml.NormContinuous;
+import com.turn.tpmml.NormDiscrete;
+import com.turn.tpmml.PMML;
+import com.turn.tpmml.manager.IPMMLResult;
+import com.turn.tpmml.manager.NeuralNetworkManager;
+import com.turn.tpmml.manager.PMMLResult;
+import com.turn.tpmml.manager.UnsupportedFeatureException;
 
-
-import com.turn.tpmml.*;
-
-import com.turn.tpmml.manager.*;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 public class NeuralNetworkEvaluator extends NeuralNetworkManager implements Evaluator {
 
 	private static final long serialVersionUID = 1L;
 
-	public NeuralNetworkEvaluator(PMML pmml){
+	public NeuralNetworkEvaluator(PMML pmml) {
 		super(pmml);
 	}
 
-	public NeuralNetworkEvaluator(PMML pmml, NeuralNetwork neuralNetwork){
+	public NeuralNetworkEvaluator(PMML pmml, NeuralNetwork neuralNetwork) {
 		super(pmml, neuralNetwork);
 	}
 
-	public NeuralNetworkEvaluator(NeuralNetworkManager parent){
+	public NeuralNetworkEvaluator(NeuralNetworkManager parent) {
 		this(parent.getPmml(), parent.getModel());
 	}
 
-	public Object prepare(FieldName name, Object value){
+	public Object prepare(FieldName name, Object value) {
 		return ParameterUtil.prepare(getDataField(name), getMiningField(name), value);
 	}
 
@@ -42,15 +60,15 @@ public class NeuralNetworkEvaluator extends NeuralNetworkManager implements Eval
 		ModelManagerEvaluationContext context = new ModelManagerEvaluationContext(this, parameters);
 
 		MiningFunctionType miningFunction = neuralNetwork.getFunctionName();
-		switch(miningFunction){
-			case REGRESSION:
-				predictions = evaluateRegression(context);
-				break;
-			case CLASSIFICATION:
-				predictions = evaluateClassification(context);
-				break;
-			default:
-				throw new UnsupportedFeatureException(miningFunction);
+		switch (miningFunction) {
+		case REGRESSION:
+			predictions = evaluateRegression(context);
+			break;
+		case CLASSIFICATION:
+			predictions = evaluateClassification(context);
+			break;
+		default:
+			throw new UnsupportedFeatureException(miningFunction);
 		}
 
 		PMMLResult result = new PMMLResult();
@@ -69,25 +87,23 @@ public class NeuralNetworkEvaluator extends NeuralNetworkManager implements Eval
 			String id = neuralOutput.getOutputNeuron();
 
 			Expression expression = getExpression(neuralOutput.getDerivedField());
-			if(expression instanceof FieldRef){
-				FieldRef fieldRef = (FieldRef)expression;
+			if (expression instanceof FieldRef) {
+				FieldRef fieldRef = (FieldRef) expression;
 
 				FieldName field = fieldRef.getField();
 
 				result.put(field, neuronOutputs.get(id));
 			} else
 
-			if(expression instanceof NormContinuous){
-				NormContinuous normContinuous = (NormContinuous)expression;
+			if (expression instanceof NormContinuous) {
+				NormContinuous normContinuous = (NormContinuous) expression;
 
 				FieldName field = normContinuous.getField();
 
 				Double value = NormalizationUtil.denormalize(normContinuous, neuronOutputs.get(id));
 
 				result.put(field, value);
-			} else
-
-			{
+			} else {
 				throw new UnsupportedFeatureException(expression);
 			}
 		}
@@ -96,7 +112,8 @@ public class NeuralNetworkEvaluator extends NeuralNetworkManager implements Eval
 	}
 
 	public Map<FieldName, ClassificationMap> evaluateClassification(EvaluationContext context) {
-		Map<FieldName, ClassificationMap> result = new LinkedHashMap<FieldName, ClassificationMap>();
+		Map<FieldName, ClassificationMap> result =
+				new LinkedHashMap<FieldName, ClassificationMap>();
 
 		Map<String, Double> neuronOutputs = evaluateRaw(context);
 
@@ -105,13 +122,13 @@ public class NeuralNetworkEvaluator extends NeuralNetworkManager implements Eval
 			String id = neuralOutput.getOutputNeuron();
 
 			Expression expression = getExpression(neuralOutput.getDerivedField());
-			if(expression instanceof NormDiscrete){
-				NormDiscrete normDiscrete = (NormDiscrete)expression;
+			if (expression instanceof NormDiscrete) {
+				NormDiscrete normDiscrete = (NormDiscrete) expression;
 
 				FieldName field = normDiscrete.getField();
 
 				ClassificationMap values = result.get(field);
-				if(values == null){
+				if (values == null) {
 					values = new ClassificationMap();
 
 					result.put(field, values);
@@ -120,9 +137,7 @@ public class NeuralNetworkEvaluator extends NeuralNetworkManager implements Eval
 				Double value = neuronOutputs.get(id);
 
 				values.put(normDiscrete.getValue(), value);
-			} else
-
-			{
+			} else {
 				throw new UnsupportedFeatureException(expression);
 			}
 		}
@@ -130,14 +145,14 @@ public class NeuralNetworkEvaluator extends NeuralNetworkManager implements Eval
 		return result;
 	}
 
-	private Expression getExpression(DerivedField derivedField){
+	private Expression getExpression(DerivedField derivedField) {
 		Expression expression = derivedField.getExpression();
 
-		if(expression instanceof FieldRef){
-			FieldRef fieldRef = (FieldRef)expression;
+		if (expression instanceof FieldRef) {
+			FieldRef fieldRef = (FieldRef) expression;
 
 			derivedField = resolve(fieldRef.getField());
-			if(derivedField != null){
+			if (derivedField != null) {
 				return getExpression(derivedField);
 			}
 
@@ -149,9 +164,9 @@ public class NeuralNetworkEvaluator extends NeuralNetworkManager implements Eval
 
 	/**
 	 * Evaluates neural network.
-	 *
+	 * 
 	 * @return Mapping between Neuron identifiers and their outputs
-	 *
+	 * 
 	 * @see NeuralInput#getId()
 	 * @see Neuron#getId()
 	 */
@@ -159,9 +174,9 @@ public class NeuralNetworkEvaluator extends NeuralNetworkManager implements Eval
 		Map<String, Double> result = new LinkedHashMap<String, Double>();
 
 		List<NeuralInput> neuralInputs = getNeuralInputs();
-		for (NeuralInput neuralInput: neuralInputs) {
-			Double value = (Double)ExpressionUtil.evaluate(neuralInput.getDerivedField(), context);
-			if(value == null){
+		for (NeuralInput neuralInput : neuralInputs) {
+			Double value = (Double) ExpressionUtil.evaluate(neuralInput.getDerivedField(), context);
+			if (value == null) {
 				throw new MissingParameterException(neuralInput.getDerivedField());
 			}
 
@@ -169,7 +184,7 @@ public class NeuralNetworkEvaluator extends NeuralNetworkManager implements Eval
 		}
 
 		List<NeuralLayer> neuralLayers = getNeuralLayers();
-		for (NeuralLayer neuralLayer: neuralLayers) {
+		for (NeuralLayer neuralLayer : neuralLayers) {
 			List<Neuron> neurons = neuralLayer.getNeurons();
 
 			for (Neuron neuron : neurons) {
@@ -193,7 +208,8 @@ public class NeuralNetworkEvaluator extends NeuralNetworkManager implements Eval
 		return result;
 	}
 
-	private void normalizeNeuronOutputs(NeuralLayer neuralLayer, Map<String, Double> neuronOutputs) {
+	private void normalizeNeuronOutputs(NeuralLayer neuralLayer,
+							Map<String, Double> neuronOutputs) {
 		NeuralNetwork model = getModel();
 
 		NnNormalizationMethodType normalizationMethod = neuralLayer.getNormalizationMethod();
@@ -221,9 +237,7 @@ public class NeuralNetworkEvaluator extends NeuralNetworkManager implements Eval
 
 				neuronOutputs.put(neuron.getId(), Math.exp(output) / sum);
 			}
-		} else
-
-		{
+		} else {
 			throw new UnsupportedFeatureException(normalizationMethod);
 		}
 	}
@@ -237,36 +251,36 @@ public class NeuralNetworkEvaluator extends NeuralNetworkManager implements Eval
 		}
 
 		switch (activationFunction) {
-			case THRESHOLD:
-				Double threshold = layer.getThreshold();
-				if (threshold == null) {
-					threshold = Double.valueOf(model.getThreshold());
-				}
-				return z > threshold.doubleValue() ? 1.0 : 0.0;
-			case LOGISTIC:
-				return 1.0 / (1.0 + Math.exp(-z));
-			case TANH:
-				return (1.0 - Math.exp(-2.0*z)) / (1.0 + Math.exp(-2.0*z));
-			case IDENTITY:
-				return z;
-			case EXPONENTIAL:
-				return Math.exp(z);
-			case RECIPROCAL:
-				return 1.0/z;
-			case SQUARE:
-				return z*z;
-			case GAUSS:
-				return Math.exp(-(z*z));
-			case SINE:
-				return Math.sin(z);
-			case COSINE:
-				return Math.cos(z);
-			case ELLIOTT:
-				return z/(1.0 + Math.abs(z));
-			case ARCTAN:
-				return Math.atan(z);
-			default:
-				throw new UnsupportedFeatureException(activationFunction);
+		case THRESHOLD:
+			Double threshold = layer.getThreshold();
+			if (threshold == null) {
+				threshold = Double.valueOf(model.getThreshold());
+			}
+			return z > threshold.doubleValue() ? 1.0 : 0.0;
+		case LOGISTIC:
+			return 1.0 / (1.0 + Math.exp(-z));
+		case TANH:
+			return (1.0 - Math.exp(-2.0 * z)) / (1.0 + Math.exp(-2.0 * z));
+		case IDENTITY:
+			return z;
+		case EXPONENTIAL:
+			return Math.exp(z);
+		case RECIPROCAL:
+			return 1.0 / z;
+		case SQUARE:
+			return z * z;
+		case GAUSS:
+			return Math.exp(-(z * z));
+		case SINE:
+			return Math.sin(z);
+		case COSINE:
+			return Math.cos(z);
+		case ELLIOTT:
+			return z / (1.0 + Math.abs(z));
+		case ARCTAN:
+			return Math.atan(z);
+		default:
+			throw new UnsupportedFeatureException(activationFunction);
 		}
 	}
 }

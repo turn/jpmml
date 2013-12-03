@@ -3,27 +3,31 @@
  */
 package com.turn.tpmml.evaluator;
 
-import java.util.*;
+import com.turn.tpmml.Discretize;
+import com.turn.tpmml.DiscretizeBin;
+import com.turn.tpmml.InlineTable;
+import com.turn.tpmml.Interval;
+import com.turn.tpmml.MapValues;
+import com.turn.tpmml.TableLocator;
+import com.turn.tpmml.manager.UnsupportedFeatureException;
 
+import java.util.List;
+import java.util.Map;
 
-import com.turn.tpmml.*;
-
-import com.turn.tpmml.manager.*;
 
 public class DiscretizationUtil {
 
-	private DiscretizationUtil(){
+	private DiscretizationUtil() {
 	}
 
-	static
-	public String discretize(Discretize discretize, Object value){
+	public static String discretize(Discretize discretize, Object value) {
 		Double doubleValue = ParameterUtil.toDouble(value);
 
 		List<DiscretizeBin> bins = discretize.getDiscretizeBins();
-		for(DiscretizeBin bin : bins){
+		for (DiscretizeBin bin : bins) {
 			Interval interval = bin.getInterval();
 
-			if(contains(interval, doubleValue)){
+			if (contains(interval, doubleValue)) {
 				return bin.getBinValue();
 			}
 		}
@@ -31,67 +35,59 @@ public class DiscretizationUtil {
 		return discretize.getDefaultValue();
 	}
 
-	static
-	public boolean contains(Interval interval, Double value){
+	public static boolean contains(Interval interval, Double value) {
 		Double left = interval.getLeftMargin();
 		Double right = interval.getRightMargin();
 
 		Interval.Closure closure = interval.getClosure();
-		switch(closure){
-			case OPEN_CLOSED:
-				return greaterThan(left, value) && lessOrEqual(right, value);
-			case OPEN_OPEN:
-				return greaterThan(left, value) && lessThan(right, value);
-			case CLOSED_OPEN:
-				return greaterOrEqual(left, value) && lessThan(right, value);
-			case CLOSED_CLOSED:
-				return greaterOrEqual(left, value) && lessOrEqual(right, value);
-			default:
-				throw new UnsupportedFeatureException(closure);
+		switch (closure) {
+		case OPEN_CLOSED:
+			return greaterThan(left, value) && lessOrEqual(right, value);
+		case OPEN_OPEN:
+			return greaterThan(left, value) && lessThan(right, value);
+		case CLOSED_OPEN:
+			return greaterOrEqual(left, value) && lessThan(right, value);
+		case CLOSED_CLOSED:
+			return greaterOrEqual(left, value) && lessOrEqual(right, value);
+		default:
+			throw new UnsupportedFeatureException(closure);
 		}
 	}
 
-	static
-	private boolean lessThan(Double reference, Double value){
+	private static boolean lessThan(Double reference, Double value) {
 		return (reference != null ? (value).compareTo(reference) < 0 : true);
 	}
 
-	static
-	private boolean lessOrEqual(Double reference, Double value){
+	private static boolean lessOrEqual(Double reference, Double value) {
 		return (reference != null ? (value).compareTo(reference) <= 0 : true);
 	}
 
-	static
-	private boolean greaterThan(Double reference, Double value){
+	private static boolean greaterThan(Double reference, Double value) {
 		return (reference != null ? (value).compareTo(reference) > 0 : true);
 	}
 
-	static
-	private boolean greaterOrEqual(Double reference, Double value){
+	private static boolean greaterOrEqual(Double reference, Double value) {
 		return (reference != null ? (value).compareTo(reference) >= 0 : true);
 	}
 
-	static
-	public String mapValue(MapValues mapValues, Map<String, Object> values){
+	public static String mapValue(MapValues mapValues, Map<String, Object> values) {
 		InlineTable table = mapValues.getInlineTable();
 
-		if(table != null){
+		if (table != null) {
 			List<Map<String, String>> rows = TableUtil.parse(table);
 
 			Map<String, String> row = TableUtil.match(rows, values);
-			if(row != null){
+			if (row != null) {
 				String result = row.get(mapValues.getOutputColumn());
-				if(result == null){
+				if (result == null) {
 					throw new EvaluationException();
 				}
 
 				return result;
 			}
-		} else
-
-		{
+		} else {
 			TableLocator tableLocator = mapValues.getTableLocator();
-			if(tableLocator != null){
+			if (tableLocator != null) {
 				throw new UnsupportedFeatureException(tableLocator);
 			}
 		}

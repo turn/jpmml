@@ -3,20 +3,18 @@
  */
 package com.turn.tpmml.evaluator;
 
-import org.junit.*;
+import org.junit.Test;
 
-import com.turn.tpmml.evaluator.Computable;
-import com.turn.tpmml.evaluator.EvaluatorUtil;
+import static org.junit.Assert.assertEquals;
 
-import static org.junit.Assert.*;
 
 public class EvaluatorUtilTest {
 
 	@Test
-	public void decode(){
-		Computable<String> value = new Computable<String>(){
+	public void decode() {
+		Computable<String> value = new Computable<String>() {
 
-			public String getResult(){
+			public String getResult() {
 				return "value";
 			}
 		};

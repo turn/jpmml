@@ -13,6 +13,7 @@ import com.turn.tpmml.manager.Consumer;
 public interface Translator extends Consumer {
 
 	public String translate(TranslationContext context) throws TranslationException;
-	public String translate(TranslationContext context, DataField outputField) throws TranslationException;
+	public String translate(TranslationContext context, DataField outputField)
+			throws TranslationException;
 
 }

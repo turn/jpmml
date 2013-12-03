@@ -3,19 +3,32 @@
  */
 package com.turn.tpmml.manager;
 
-import java.io.*;
-import java.util.*;
+import com.turn.tpmml.DataDictionary;
+import com.turn.tpmml.DataField;
+import com.turn.tpmml.DataType;
+import com.turn.tpmml.DerivedField;
+import com.turn.tpmml.FieldName;
+import com.turn.tpmml.HasName;
+import com.turn.tpmml.Header;
+import com.turn.tpmml.Model;
+import com.turn.tpmml.OpType;
+import com.turn.tpmml.PMML;
+import com.turn.tpmml.PMMLObject;
+import com.turn.tpmml.TransformationDictionary;
 
-import com.turn.tpmml.*;
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.List;
 
 /**
- * PMMLManager is the mother class of the project. It allows to work with the
- * PMML at the lowest level.
+ * PMMLManager is the mother class of the project. It allows to work with the PMML at the lowest
+ * level.
  * 
  * Naming conventions for getter methods:
  * <ul>
  * <li><code>getXXX()</code> - Required schema elements. For example {@link #getDataDictionary()}
- * <li><code>getOrCreateXXX()</code> - Optional schema elements. When <code>null</code> then a new element instance is created. For example {@link #getOrCreateTransformationDictionary()}
+ * <li><code>getOrCreateXXX()</code> - Optional schema elements. When <code>null</code> then a new
+ * element instance is created. For example {@link #getOrCreateTransformationDictionary()}
  * </ul>
  */
 public class PMMLManager implements Serializable {
@@ -29,15 +42,16 @@ public class PMMLManager implements Serializable {
 	/**
 	 * Create a manager for an empty PMML that belongs to the version 4.1.
 	 */
-	public PMMLManager(){
+	public PMMLManager() {
 		this(new PMML(new Header(), new DataDictionary(), "4.1"));
 	}
 
 	/**
 	 * Create a manager that works on the given PMML.
+	 * 
 	 * @param pmml The PMML to manage.
 	 */
-	public PMMLManager(PMML pmml){
+	public PMMLManager(PMML pmml) {
 		setPmml(pmml);
 	}
 
@@ -47,7 +61,7 @@ public class PMMLManager implements Serializable {
 	 * @param name The name to look for.
 	 * @return The DataField or null if it is not found.
 	 */
-	public DataField getDataField(FieldName name){
+	public DataField getDataField(FieldName name) {
 		List<DataField> dataFields = getDataDictionary().getDataFields();
 
 		return find(dataFields, name);
@@ -62,7 +76,8 @@ public class PMMLManager implements Serializable {
 	 * @param dataType Its type.
 	 * @return The dataField created.
 	 */
-	public DataField addDataField(FieldName name, String displayName, OpType opType, DataType dataType){
+	public DataField addDataField(FieldName name, String displayName, OpType opType,
+			DataType dataType) {
 		DataField dataField = new DataField(name, opType, dataType);
 		dataField.setDisplayName(displayName);
 
@@ -79,7 +94,7 @@ public class PMMLManager implements Serializable {
 	 * @return the DerivedField or null if not found.
 	 */
 	// FIXME: Check that this function handles the transformation as it looks like.
-	public DerivedField resolve(FieldName name){
+	public DerivedField resolve(FieldName name) {
 		TransformationDictionary transformationDictionary = getOrCreateTransformationDictionary();
 
 		List<DerivedField> derivedFields = transformationDictionary.getDerivedFields();
@@ -92,32 +107,32 @@ public class PMMLManager implements Serializable {
 	 * 
 	 * @return The PMML.
 	 */
-	public PMML getPmml(){
+	public PMML getPmml() {
 		return this.pmml;
 	}
 
-	private void setPmml(PMML pmml){
+	private void setPmml(PMML pmml) {
 		this.pmml = pmml;
 	}
 
-	public Header getHeader(){
+	public Header getHeader() {
 		return getPmml().getHeader();
 	}
 
-	public DataDictionary getDataDictionary(){
+	public DataDictionary getDataDictionary() {
 		return getPmml().getDataDictionary();
 	}
 
 	/**
 	 * Return the transformation dictionary. If none exists, an empty one is created.
 	 */
-	public TransformationDictionary getOrCreateTransformationDictionary(){
+	public TransformationDictionary getOrCreateTransformationDictionary() {
 
-		if(this.transformationDictionary == null){
+		if (this.transformationDictionary == null) {
 			PMML pmml = getPmml();
 
 			TransformationDictionary transformationDictionary = pmml.getTransformationDictionary();
-			if(transformationDictionary == null){
+			if (transformationDictionary == null) {
 				transformationDictionary = new TransformationDictionary();
 
 				pmml.setTransformationDictionary(transformationDictionary);
@@ -136,23 +151,23 @@ public class PMMLManager implements Serializable {
 	 * @return
 	 * @throws Exception
 	 */
-	static public DataField getOutputField(ModelManager<?> model) throws Exception {
+	public static DataField getOutputField(ModelManager<?> model) throws Exception {
 		String outputVariableName = null;
 		List<FieldName> predictedFields = model.getPredictedFields();
-		
+
 		// Get the predicted field. If there is none, it is an error.
 		if (predictedFields != null && predictedFields.size() > 0) {
 			outputVariableName = predictedFields.get(0).getValue();
 		}
-		
+
 		if (outputVariableName == null) {
 			throw new Exception("Predicted variable is not defined");
 		}
 
 		DataField outputField = model.getDataField(new FieldName(outputVariableName));
 		if (outputField == null || outputField.getDataType() == null) {
-			throw new Exception("Predicted variable [" +
-					outputVariableName + "] does not have type defined");
+			throw new Exception("Predicted variable [" + outputVariableName +
+					"] does not have type defined");
 		}
 
 		return outputField;
@@ -163,22 +178,22 @@ public class PMMLManager implements Serializable {
 	 * 
 	 * @return the list of the models in the PMML.
 	 */
-	public List<Model> getModels(){
+	public List<Model> getModels() {
 		return getPmml().getContent();
 	}
 
 	/**
-	 * @param modelName The name of the Model to be selected.
-	 * If <code>null</code>, the first model is selected.
-	 *
+	 * @param modelName The name of the Model to be selected. If <code>null</code>, the first model
+	 *            is selected.
+	 * 
 	 * @see Model#getModelName()
 	 */
-	public Model getModel(String modelName){
+	public Model getModel(String modelName) {
 		List<Model> models = getModels();
 
-		if(modelName != null) {
-			for(Model model : models) {
-				if(modelName.equals(model.getModelName())) {
+		if (modelName != null) {
+			for (Model model : models) {
+				if (modelName.equals(model.getModelName())) {
 					return model;
 				}
 			}
@@ -186,7 +201,7 @@ public class PMMLManager implements Serializable {
 			return null;
 		}
 
-		if(models.size() > 0) {
+		if (models.size() > 0) {
 			return models.get(0);
 		}
 
@@ -199,49 +214,42 @@ public class PMMLManager implements Serializable {
 	 * @param modelName The name to look for.
 	 * @return A valid manager for the model type.
 	 */
-	public ModelManager<? extends Model> getModelManager(String modelName){
+	public ModelManager<? extends Model> getModelManager(String modelName) {
 		return getModelManager(modelName, ModelManagerFactory.getInstance());
 	}
 
 	/**
-	 * Return a manager for the model type 'modelName' with the factory
-	 * 'modelManagerFactory'.
+	 * Return a manager for the model type 'modelName' with the factory 'modelManagerFactory'.
 	 * 
 	 * @param modelName The name to look for.
 	 * @param modelManagerFactory The factory that gives the manager.
 	 * @return
 	 */
-	public ModelManager<? extends Model>
-					getModelManager(String modelName,
-									ModelManagerFactory modelManagerFactory) {
+	public ModelManager<? extends Model> getModelManager(String modelName,
+			ModelManagerFactory modelManagerFactory) {
 		Model model = getModel(modelName);
 
 		return modelManagerFactory.getModelManager(getPmml(), model);
 	}
 
-	
 	/**
-	 * Return the first element of the list 'objects' that has a type of value
-	 * 'type'.
+	 * Return the first element of the list 'objects' that has a type of value 'type'.
 	 * 
 	 * @param objects The list of objects.
 	 * @param type The type to look for.
 	 */
-	@SuppressWarnings (value = {"unchecked"})
-	static
-	public <E extends PMMLObject> E
-		find(Collection<? extends PMMLObject> objects,
-          	 Class<? extends E> type) {
+	@SuppressWarnings({ "unchecked" })
+	public static  <E extends PMMLObject> E find(Collection<? extends PMMLObject> objects,
+			Class<? extends E> type) {
 
-		for(PMMLObject object : objects) {
-			if(object.getClass().equals(type)) {
-				return (E)object;
+		for (PMMLObject object : objects) {
+			if (object.getClass().equals(type)) {
+				return (E) object;
 			}
 		}
 
 		return null;
 	}
-
 
 	/**
 	 * Return the first element of the list 'objects' that has a name equal to 'name'.
@@ -249,7 +257,7 @@ public class PMMLManager implements Serializable {
 	 * @param objects The list to find an object from.
 	 * @param name The name to look for.
 	 */
-	static public <E extends PMMLObject & HasName> E find(Collection<E> objects, FieldName name) {
+	public static <E extends PMMLObject & HasName> E find(Collection<E> objects, FieldName name) {
 
 		for (E object : objects) {
 

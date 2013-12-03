@@ -3,18 +3,25 @@
  */
 package com.turn.tpmml.evaluator;
 
-import java.io.*;
-import java.util.*;
+import com.turn.tpmml.FieldName;
 
-import com.turn.tpmml.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 
 public class CsvUtil {
 
-	private CsvUtil(){
+	private CsvUtil() {
 	}
 
-	static
-	public List<Map<FieldName, String>> load(InputStream is) throws IOException {
+	public static List<Map<FieldName, String>> load(InputStream is) throws IOException {
 		List<Map<FieldName, String>> table = new ArrayList<Map<FieldName, String>>();
 
 		BufferedReader reader = new BufferedReader(new InputStreamReader(is, "US-ASCII"));
@@ -25,13 +32,13 @@ public class CsvUtil {
 			String headerLine = reader.readLine();
 
 			List<String> headerCells = parseLine(headerLine);
-			for(int i = 0; i < headerCells.size(); i++){
+			for (int i = 0; i < headerCells.size(); i++) {
 				keys.add(new FieldName(headerCells.get(i)));
 			}
 
-			while(true){
+			while (true) {
 				String bodyLine = reader.readLine();
-				if(bodyLine == null){
+				if (bodyLine == null) {
 					break;
 				}
 
@@ -40,11 +47,11 @@ public class CsvUtil {
 				List<String> bodyCells = parseLine(bodyLine);
 
 				// Must be of equal length
-				if(bodyCells.size() != headerCells.size()){
+				if (bodyCells.size() != headerCells.size()) {
 					throw new RuntimeException();
 				}
 
-				for(int i = 0; i < bodyCells.size(); i++){
+				for (int i = 0; i < bodyCells.size(); i++) {
 					row.put(keys.get(i), bodyCells.get(i));
 				}
 
@@ -57,8 +64,7 @@ public class CsvUtil {
 		return table;
 	}
 
-	static
-	private List<String> parseLine(String line){
+	private static List<String> parseLine(String line) {
 		return Arrays.asList(line.split(","));
 	}
 }

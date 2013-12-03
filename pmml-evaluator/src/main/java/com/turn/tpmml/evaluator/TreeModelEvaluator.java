@@ -3,30 +3,34 @@
  */
 package com.turn.tpmml.evaluator;
 
-import java.util.*;
+import com.turn.tpmml.FieldName;
+import com.turn.tpmml.Node;
+import com.turn.tpmml.PMML;
+import com.turn.tpmml.Predicate;
+import com.turn.tpmml.TreeModel;
+import com.turn.tpmml.manager.IPMMLResult;
+import com.turn.tpmml.manager.TreeModelManager;
+import com.turn.tpmml.manager.TreePMMLResult;
 
-
-import com.turn.tpmml.*;
-
-import com.turn.tpmml.manager.*;
+import java.util.Map;
 
 public class TreeModelEvaluator extends TreeModelManager implements Evaluator {
 
 	private static final long serialVersionUID = 1L;
 
-	public TreeModelEvaluator(PMML pmml){
+	public TreeModelEvaluator(PMML pmml) {
 		super(pmml);
 	}
 
-	public TreeModelEvaluator(PMML pmml, TreeModel treeModel){
+	public TreeModelEvaluator(PMML pmml, TreeModel treeModel) {
 		super(pmml, treeModel);
 	}
 
-	public TreeModelEvaluator(TreeModelManager parent){
+	public TreeModelEvaluator(TreeModelManager parent) {
 		this(parent.getPmml(), parent.getModel());
 	}
 
-	public Object prepare(FieldName name, Object value){
+	public Object prepare(FieldName name, Object value) {
 		return ParameterUtil.prepare(getDataField(name), getMiningField(name), value);
 	}
 
@@ -40,13 +44,12 @@ public class TreeModelEvaluator extends TreeModelManager implements Evaluator {
 		Predicate rootPredicate = rootNode.getPredicate();
 		Boolean predicateResult = PredicateUtil.evaluate(rootPredicate, context);
 
-		if (predicateResult!=null) {
+		if (predicateResult != null) {
 			if (predicateResult.booleanValue()) {
 				result = rootNode.getScore();
 				currentNode = rootNode;
 			}
-		}
-		else {
+		} else {
 			// if root evaluates to "UNKNOWN" - we are done for all missing value
 			// strategies, except default child
 
@@ -55,36 +58,36 @@ public class TreeModelEvaluator extends TreeModelManager implements Evaluator {
 			case LAST_PREDICTION:
 			case NULL_PREDICTION:
 				break;
-				/* use default node if available */
+			/* use default node if available */
 			case DEFAULT_CHILD:
 
 				String defaultChildId = rootNode.getDefaultChild();
-				if (defaultChildId==null) {
+				if (defaultChildId == null) {
 					throw new EvaluationException("Default child is undefined");
 				}
 				Node defauldChild = null;
-				for(Node child : rootNode.getNodes()){
-					if (child.getId()!=null && child.getId().equals(defaultChildId)) {
+				for (Node child : rootNode.getNodes()) {
+					if (child.getId() != null && child.getId().equals(defaultChildId)) {
 						defauldChild = child;
 						break;
 					}
 				}
 
-				if (defauldChild!=null) {
-					//result = defauldChild.getScore();
+				if (defauldChild != null) {
+					// result = defauldChild.getScore();
 					currentNode = defauldChild;
-				}
-				else {
+				} else {
 					throw new EvaluationException("No default child");
 				}
 				break;
 			default:
-				throw new EvaluationException("Unsupported missing value strategy: "
-						+ getModel().getMissingValueStrategy());
+				throw new EvaluationException("Unsupported missing value strategy: " +
+						getModel().getMissingValueStrategy());
 			}
 		}
 
-		while (currentNode!=null && currentNode.getNodes()!=null && !currentNode.getNodes().isEmpty()) {
+		while (currentNode != null && currentNode.getNodes() != null &&
+				!currentNode.getNodes().isEmpty()) {
 
 			boolean pickedNextNode = false;
 			for (Node node : currentNode.getNodes()) {
@@ -92,60 +95,60 @@ public class TreeModelEvaluator extends TreeModelManager implements Evaluator {
 				Predicate predicate = node.getPredicate();
 				predicateResult = PredicateUtil.evaluate(predicate, context);
 
-				if (predicateResult!=null) {
+				if (predicateResult != null) {
 					if (predicateResult.booleanValue()) {
 						result = node.getScore();
 						currentNode = node;
 						pickedNextNode = true;
 						break;
 					}
-				}
-				else {
+				} else {
 					// UNKNOWN value from predicate evaluation
 
 					switch (getModel().getMissingValueStrategy()) {
 					/* same as FALSE for current predicate */
-					case NONE: break;
+					case NONE:
+						break;
 					/* abort with current prediction */
 					case LAST_PREDICTION:
 						currentNode = null;
 						break;
-						/* abort with null prediction */
+					/* abort with null prediction */
 					case NULL_PREDICTION:
 						result = null;
-						currentNode = null; break;
-						/* use default node if available */
+						currentNode = null;
+						break;
+					/* use default node if available */
 					case DEFAULT_CHILD:
 
 						String defaultChildId = node.getDefaultChild();
-						if (defaultChildId==null) {
+						if (defaultChildId == null) {
 							throw new EvaluationException("Default child is undefined");
 						}
 						Node defauldChild = null;
-						for(Node child : currentNode.getNodes()){
-							if (child.getId()!=null && child.getId().equals(defaultChildId)) {
+						for (Node child : currentNode.getNodes()) {
+							if (child.getId() != null && child.getId().equals(defaultChildId)) {
 								defauldChild = child;
 								break;
 							}
 						}
 
-						if (defauldChild!=null) {
+						if (defauldChild != null) {
 							result = defauldChild.getScore();
 							currentNode = defauldChild;
-						}
-						else {
+						} else {
 							throw new EvaluationException("No default child");
 						}
 						break;
 					default:
-						throw new EvaluationException("Unsupported missing value strategy: "
-								+ getModel().getMissingValueStrategy());
+						throw new EvaluationException("Unsupported missing value strategy: " +
+								getModel().getMissingValueStrategy());
 					}
 				}
 			}
 
 			// no abort yet and no node evaluated to TRUE
-			if (currentNode!=null && !pickedNextNode) {
+			if (currentNode != null && !pickedNextNode) {
 				switch (getModel().getNoTrueChildStrategy()) {
 				case RETURN_LAST_PREDICTION:
 					currentNode = null;
@@ -171,120 +174,4 @@ public class TreeModelEvaluator extends TreeModelManager implements Evaluator {
 
 		return res;
 	}
-
-
-//	/**
-//	 * @see #evaluateTree(EvaluationContext)
-//	 */
-//	public IPMMLResult evaluate(Map<FieldName, ?> parameters){
-//		ModelManagerEvaluationContext context = new ModelManagerEvaluationContext(this, parameters);
-//
-//		Node node = evaluateTree(context);
-//
-//		NodeClassificationMap values = new NodeClassificationMap(node);
-//
-//		Map<FieldName, NodeClassificationMap> predictions = Collections.singletonMap(getTarget(), values);
-//
-//		TreePMMLResult res = new TreePMMLResult();
-//		res.merge(OutputUtil.evaluate(predictions, context));
-//
-//		// Sometimes we ends up with no currentNode.
-//		if (node != null) {
-//		    res.setNodeId(node.getId());
-//		}
-//
-//		return res;
-//	}
-//
-//	private String computeScore(Node node){
-//		ScoreDistribution result = null;
-//
-//		List<ScoreDistribution> scoreDistributions = node.getScoreDistributions();
-//
-//		for(ScoreDistribution scoreDistribution : scoreDistributions){
-//
-//			if(result == null || result.getRecordCount() < scoreDistribution.getRecordCount()){
-//				result = scoreDistribution;
-//			}
-//		}
-//
-//		return result != null ? result.getValue() : null;
-//	}
-//
-//	public Node evaluateTree(EvaluationContext context){
-//		Node root = getOrCreateRoot();
-//
-//		Prediction prediction = findTrueChild(root, root, context); // XXX
-//
-//		if(prediction.getLastTrueNode() != null && prediction.getTrueNode() != null && !(prediction.getLastTrueNode()).equals(prediction.getTrueNode())){
-//			return prediction.getTrueNode();
-//		} else
-//
-//		{
-//			NoTrueChildStrategyType noTrueChildStrategy = getModel().getNoTrueChildStrategy();
-//			switch(noTrueChildStrategy){
-//				case RETURN_NULL_PREDICTION:
-//					return null;
-//				case RETURN_LAST_PREDICTION:
-//					return prediction.getLastTrueNode();
-//				default:
-//					throw new UnsupportedFeatureException(noTrueChildStrategy);
-//			}
-//		}
-//	}
-//
-//	private Prediction findTrueChild(Node lastNode, Node node, EvaluationContext context){
-//		Boolean value = evaluateNode(node, context);
-//
-//		if(value == null){
-//			throw new EvaluationException();
-//		} // End if
-//
-//		if(value.booleanValue()){
-//			List<Node> children = node.getNodes();
-//
-//			for(Node child : children){
-//				Prediction childPrediction = findTrueChild(node, child, context);
-//
-//				if(childPrediction.getTrueNode() != null){
-//					return childPrediction;
-//				}
-//			}
-//
-//			return new Prediction(lastNode, node);
-//		} else
-//		{
-//			return new Prediction(lastNode, null);
-//		}
-//	}
-//
-//	private Boolean evaluateNode(Node node, EvaluationContext context){
-//		Predicate predicate = node.getPredicate();
-//		if(predicate == null){
-//			throw new EvaluationException();
-//		}
-//
-//		return PredicateUtil.evaluate(predicate, context);
-//	}
-//
-//	static
-//	private class Prediction {
-//
-//		private Node lastTrueNode = null;
-//
-//		private Node trueNode = null;
-//
-//		public Prediction(Node lastTrueNode, Node trueNode){
-//			this.lastTrueNode = lastTrueNode;
-//			this.trueNode = trueNode;
-//		}
-//
-//		public Node getLastTrueNode(){
-//			return this.lastTrueNode;
-//		}
-//
-//		public Node getTrueNode(){
-//			return this.trueNode;
-//		}
-//	}
 }

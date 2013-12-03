@@ -3,16 +3,16 @@
  */
 package com.turn.tpmml.evaluator;
 
-import org.junit.*;
+import org.junit.Test;
 
-import com.turn.tpmml.evaluator.VerificationUtil;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-import static org.junit.Assert.*;
 
 public class VerificationUtilTest {
 
 	@Test
-	public void acceptable(){
+	public void acceptable() {
 		double precision = 0.001;
 		double zeroThreshold = (precision * precision);
 
@@ -34,7 +34,7 @@ public class VerificationUtilTest {
 	}
 
 	@Test
-	public void isZero(){
+	public void isZero() {
 		double zeroThreshold = 0.001;
 
 		assertTrue(VerificationUtil.isZero(0.0005, zeroThreshold));

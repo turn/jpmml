@@ -3,20 +3,19 @@
  */
 package com.turn.tpmml.evaluator;
 
-import java.util.*;
+import com.turn.tpmml.Array;
+import com.turn.tpmml.DataType;
+import com.turn.tpmml.manager.UnsupportedFeatureException;
 
-
-import com.turn.tpmml.*;
-
-import com.turn.tpmml.manager.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ArrayUtil {
 
-	private ArrayUtil(){
+	private ArrayUtil() {
 	}
 
-	static
-	public Boolean isIn(Array array, Object value){
+	public static Boolean isIn(Array array, Object value) {
 		List<String> values = getContent(array);
 
 		validateDataType(value);
@@ -26,8 +25,7 @@ public class ArrayUtil {
 		return Boolean.valueOf(result);
 	}
 
-	static
-	public Boolean isNotIn(Array array, Object value){
+	public static Boolean isNotIn(Array array, Object value) {
 		List<String> values = getContent(array);
 
 		validateDataType(value);
@@ -37,11 +35,10 @@ public class ArrayUtil {
 		return Boolean.valueOf(result);
 	}
 
-	static
-	public List<String> getContent(Array array){
+	public static List<String> getContent(Array array) {
 		List<String> values = array.getContent();
 
-		if(values == null){
+		if (values == null) {
 			values = tokenize(array);
 
 			array.setContent(values);
@@ -50,74 +47,67 @@ public class ArrayUtil {
 		return values;
 	}
 
-	static
-	public List<String> tokenize(Array array){
+	public static List<String> tokenize(Array array) {
 		List<String> result;
 
 		Array.Type type = array.getType();
-		switch(type){
-			case INT:
-			case REAL:
-				result = tokenize(array.getValue(), false);
-				break;
-			case STRING:
-				result = tokenize(array.getValue(), true);
-				break;
-			default:
-				throw new UnsupportedFeatureException(type);
+		switch (type) {
+		case INT:
+		case REAL:
+			result = tokenize(array.getValue(), false);
+			break;
+		case STRING:
+			result = tokenize(array.getValue(), true);
+			break;
+		default:
+			throw new UnsupportedFeatureException(type);
 		}
 
 		Number n = array.getN();
-		if(n != null && n.intValue() != result.size()){
+		if (n != null && n.intValue() != result.size()) {
 			throw new EvaluationException();
 		}
 
 		return result;
 	}
 
-	static
-	public List<String> tokenize(String string, boolean enableQuotes){
+	public static List<String> tokenize(String string, boolean enableQuotes) {
 		List<String> result = new ArrayList<String>();
 
 		StringBuffer sb = new StringBuffer();
 
 		boolean quoted = false;
 
-		tokens:
-		for(int i = 0; i < string.length(); i++){
+		tokens: for (int i = 0; i < string.length(); i++) {
 			char c = string.charAt(i);
 
-			if(quoted){
+			if (quoted) {
 
-				if(c == '\\' && i < (string.length() - 1)){
+				if (c == '\\' && i < (string.length() - 1)) {
 					c = string.charAt(i + 1);
 
-					if(c == '\"'){
+					if (c == '\"') {
 						sb.append('\"');
 
 						i++;
-					} else
-
-					{
+					} else {
 						sb.append('\\');
 					}
 
 					continue tokens;
-				} // End if
+				}
 
 				sb.append(c);
 
-				if(c == '\"'){
+				if (c == '\"') {
 					result.add(createToken(sb, enableQuotes));
 
 					quoted = false;
 				}
-			} else
+			} else {
+				if (c == '\"' && enableQuotes) {
 
-			{
-				if(c == '\"' && enableQuotes){
-
-					if(sb.length() > 0){
+					if (sb.length() > 0) {
 						result.add(createToken(sb, enableQuotes));
 					}
 
@@ -126,35 +116,31 @@ public class ArrayUtil {
 					quoted = true;
 				} else
 
-				if(Character.isWhitespace(c)){
+				if (Character.isWhitespace(c)) {
 
-					if(sb.length() > 0){
+					if (sb.length() > 0) {
 						result.add(createToken(sb, enableQuotes));
 					}
-				} else
-
-				{
+				} else {
 					sb.append(c);
 				}
 			}
 		}
 
-		if(sb.length() > 0){
+		if (sb.length() > 0) {
 			result.add(createToken(sb, enableQuotes));
 		}
 
 		return result;
 	}
 
-	static
-	private String createToken(StringBuffer sb, boolean enableQuotes){
+	private static String createToken(StringBuffer sb, boolean enableQuotes) {
 		String result;
 
-		if(sb.length() > 1 && (sb.charAt(0) == '\"' && sb.charAt(sb.length() - 1) == '\"') && enableQuotes){
+		if (sb.length() > 1 && (sb.charAt(0) == '\"' && sb.charAt(sb.length() - 1) == '\"') &&
+				enableQuotes) {
 			result = sb.substring(1, sb.length() - 1);
-		} else
-
-		{
+		} else {
 			result = sb.substring(0, sb.length());
 		}
 
@@ -163,19 +149,18 @@ public class ArrayUtil {
 		return result;
 	}
 
-	static
-	private void validateDataType(Object value){
+	private static void validateDataType(Object value) {
 		DataType dataType = ParameterUtil.getDataType(value);
 
-		switch(dataType){
-			case STRING:
-			case INTEGER:
-				break;
-			case FLOAT:
-			case DOUBLE:
-				throw new UnsupportedFeatureException(dataType);
-			default:
-				throw new EvaluationException();
+		switch (dataType) {
+		case STRING:
+		case INTEGER:
+			break;
+		case FLOAT:
+		case DOUBLE:
+			throw new UnsupportedFeatureException(dataType);
+		default:
+			throw new EvaluationException();
 		}
 	}
 }

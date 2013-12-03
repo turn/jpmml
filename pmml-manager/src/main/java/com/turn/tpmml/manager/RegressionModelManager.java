@@ -3,8 +3,6 @@
  */
 package com.turn.tpmml.manager;
 
-import java.util.List;
-
 import com.turn.tpmml.CategoricalPredictor;
 import com.turn.tpmml.FieldName;
 import com.turn.tpmml.MiningFunctionType;
@@ -14,6 +12,9 @@ import com.turn.tpmml.PMML;
 import com.turn.tpmml.RegressionModel;
 import com.turn.tpmml.RegressionNormalizationMethodType;
 import com.turn.tpmml.RegressionTable;
+
+import java.util.List;
+
 
 /**
  * Provide an interface to the regressionModel class.
@@ -37,7 +38,7 @@ public class RegressionModelManager extends ModelManager<RegressionModel> {
 
 	private RegressionModel regressionModel = null;
 
-	public RegressionModelManager(){
+	public RegressionModelManager() {
 	}
 
 	public RegressionModelManager(PMML pmml) {
@@ -66,16 +67,14 @@ public class RegressionModelManager extends ModelManager<RegressionModel> {
 	}
 
 	/**
-	 * @throws ModelManagerException
-	 *             If the Model already exists
-	 *
+	 * @throws ModelManagerException If the Model already exists
+	 * 
 	 * @see #getModel()
 	 */
 	public RegressionModel createModel(MiningFunctionType miningFunction) {
 		ensureNull(this.regressionModel);
 
-		this.regressionModel = new RegressionModel(new MiningSchema(),
-				miningFunction);
+		this.regressionModel = new RegressionModel(new MiningSchema(), miningFunction);
 
 		getModels().add(this.regressionModel);
 
@@ -83,11 +82,11 @@ public class RegressionModelManager extends ModelManager<RegressionModel> {
 	}
 
 	@Override
-	public FieldName getTarget(){
+	public FieldName getTarget() {
 		RegressionModel regressionModel = getModel();
 
 		FieldName name = regressionModel.getTargetFieldName();
-		if(name != null){
+		if (name != null) {
 			return name;
 		}
 
@@ -101,18 +100,18 @@ public class RegressionModelManager extends ModelManager<RegressionModel> {
 		return regressionModel;
 	}
 
-	public List<RegressionTable> getRegressionTables(){
+	public List<RegressionTable> getRegressionTables() {
 		RegressionModel model = getModel();
 		return model.getRegressionTables();
 	}
 
-	static
-	public NumericPredictor getNumericPredictor(RegressionTable regressionTable, FieldName name){
+	public static NumericPredictor getNumericPredictor(RegressionTable regressionTable,
+			FieldName name) {
 		return find(regressionTable.getNumericPredictors(), name);
 	}
 
-	static
-	public NumericPredictor addNumericPredictor(RegressionTable regressionTable, FieldName name, Double coefficient){
+	public static NumericPredictor addNumericPredictor(RegressionTable regressionTable,
+			FieldName name, Double coefficient) {
 		NumericPredictor numericPredictor = new NumericPredictor(name, coefficient.doubleValue());
 		(regressionTable.getNumericPredictors()).add(numericPredictor);
 
@@ -121,35 +120,35 @@ public class RegressionModelManager extends ModelManager<RegressionModel> {
 
 	/**
 	 * Get a particular categoricalPredictor.
-	 *
+	 * 
 	 * @param rt The regressionTable used.
 	 * @param name The name of the categoricalPredictor wanted.
 	 * @return The categorical predictor wanted if found, null otherwise.
 	 */
-	static
-	public CategoricalPredictor getCategoricalPredictor(RegressionTable regressionTable, FieldName name){
+	public static CategoricalPredictor getCategoricalPredictor(RegressionTable regressionTable,
+			FieldName name) {
 		return find(regressionTable.getCategoricalPredictors(), name);
 	}
 
 	/**
 	 * Add a new categorical predictor to the first regressionTable.
-	 *
+	 * 
 	 * @param name The name of the variable.
 	 * @param coefficient The corresponding coefficient.
 	 * @return The categorical predictor.
 	 */
-	static
-	public CategoricalPredictor addCategoricalPredictor(RegressionTable regressionTable, FieldName name, String value, Double coefficient){
-		CategoricalPredictor categoricalPredictor = new CategoricalPredictor(name, value, coefficient.doubleValue());
+	public static CategoricalPredictor addCategoricalPredictor(RegressionTable regressionTable,
+			FieldName name, String value, Double coefficient) {
+		CategoricalPredictor categoricalPredictor = new CategoricalPredictor(name, value,
+				coefficient.doubleValue());
 		(regressionTable.getCategoricalPredictors()).add(categoricalPredictor);
 
 		return categoricalPredictor;
 	}
 
-
 	/**
 	 * Get the type of normalization of the model.
-	 *
+	 * 
 	 * @return The type of normalization.
 	 */
 	public RegressionNormalizationMethodType getNormalizationMethodType() {

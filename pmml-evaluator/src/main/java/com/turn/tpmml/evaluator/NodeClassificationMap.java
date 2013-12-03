@@ -3,9 +3,11 @@
  */
 package com.turn.tpmml.evaluator;
 
-import java.util.*;
+import com.turn.tpmml.Node;
+import com.turn.tpmml.ScoreDistribution;
 
-import com.turn.tpmml.*;
+import java.util.List;
+
 
 class NodeClassificationMap extends ClassificationMap {
 
@@ -15,28 +17,27 @@ class NodeClassificationMap extends ClassificationMap {
 
 	private String score = null;
 
-
-	NodeClassificationMap(Node node){
+	NodeClassificationMap(Node node) {
 		setNode(node);
 
 		List<ScoreDistribution> scoreDistributions = node.getScoreDistributions();
 
 		double sum = 0;
 
-		for(ScoreDistribution scoreDistribution : scoreDistributions){
+		for (ScoreDistribution scoreDistribution : scoreDistributions) {
 			sum += scoreDistribution.getRecordCount();
 		}
 
 		ScoreDistribution result = null;
 
-		for(ScoreDistribution scoreDistribution : scoreDistributions){
+		for (ScoreDistribution scoreDistribution : scoreDistributions) {
 
-			if(result == null || result.getRecordCount() < scoreDistribution.getRecordCount()){
+			if (result == null || result.getRecordCount() < scoreDistribution.getRecordCount()) {
 				result = scoreDistribution;
 			}
 
 			Double probability = scoreDistribution.getProbability();
-			if(probability == null){
+			if (probability == null) {
 				probability = (scoreDistribution.getRecordCount() / sum);
 			}
 
@@ -44,7 +45,7 @@ class NodeClassificationMap extends ClassificationMap {
 		}
 
 		String score = node.getScore();
-		if(score == null){
+		if (score == null) {
 			score = result.getValue();
 		}
 
@@ -52,23 +53,23 @@ class NodeClassificationMap extends ClassificationMap {
 	}
 
 	@Override
-	public String getResult(){
+	public String getResult() {
 		return getScore();
 	}
 
-	public Node getNode(){
+	public Node getNode() {
 		return this.node;
 	}
 
-	private void setNode(Node node){
+	private void setNode(Node node) {
 		this.node = node;
 	}
 
-	public String getScore(){
+	public String getScore() {
 		return this.score;
 	}
 
-	private void setScore(String score){
+	private void setScore(String score) {
 		this.score = score;
 	}
 }

@@ -3,121 +3,115 @@
  */
 package com.turn.tpmml.evaluator;
 
-import java.util.*;
+import com.turn.tpmml.DataType;
+import com.turn.tpmml.manager.UnsupportedFeatureException;
+
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.math3.stat.descriptive.StorelessUnivariateStatistic;
+import org.apache.commons.math3.stat.descriptive.moment.Mean;
+import org.apache.commons.math3.stat.descriptive.rank.Max;
+import org.apache.commons.math3.stat.descriptive.rank.Min;
+import org.apache.commons.math3.stat.descriptive.summary.Product;
+import org.apache.commons.math3.stat.descriptive.summary.Sum;
 
 
-import org.apache.commons.math3.stat.descriptive.*;
-import org.apache.commons.math3.stat.descriptive.moment.*;
-import org.apache.commons.math3.stat.descriptive.rank.*;
-import org.apache.commons.math3.stat.descriptive.summary.*;
-
-import com.turn.tpmml.*;
-
-import com.turn.tpmml.manager.*;
 
 public class FunctionUtil {
 
-	private FunctionUtil(){
+	private FunctionUtil() {
 	}
 
-	static
-	public Object evaluate(String name, List<?> values){
+	public static Object evaluate(String name, List<?> values) {
 		Function function = getFunction(name);
-		if(function == null){
+		if (function == null) {
 			throw new UnsupportedFeatureException(name);
 		}
 
 		return function.evaluate(values);
 	}
 
-	static
-	public Function getFunction(String name){
-		return FunctionUtil.functions.get(name);
+	public static Function getFunction(String name) {
+		return FunctionUtil.FUNCTIONS.get(name);
 	}
 
-	static
-	public void putFunction(String name, Function function){
-		FunctionUtil.functions.put(name, function);
+	public static void putFunction(String name, Function function) {
+		FunctionUtil.FUNCTIONS.put(name, function);
 	}
 
-	static
-	private Boolean asBoolean(Object value){
+	private static Boolean asBoolean(Object value) {
 
-		if(value instanceof Boolean){
-			return (Boolean)value;
+		if (value instanceof Boolean) {
+			return (Boolean) value;
 		}
 
 		throw new EvaluationException();
 	}
 
-	static
-	private Number asNumber(Object value){
+	private static Number asNumber(Object value) {
 
-		if(value instanceof Number){
-			return (Number)value;
+		if (value instanceof Number) {
+			return (Number) value;
 		}
 
 		throw new EvaluationException();
 	}
 
-	static
-	private Integer asInteger(Object value){
+	private static Integer asInteger(Object value) {
 
-		if(value instanceof Integer){
-			return (Integer)value;
+		if (value instanceof Integer) {
+			return (Integer) value;
 		}
 
 		throw new EvaluationException();
 	}
 
-	static
-	private String asString(Object value){
+	private static String asString(Object value) {
 
-		if(value instanceof String){
-			return (String)value;
+		if (value instanceof String) {
+			return (String) value;
 		}
 
 		throw new EvaluationException();
 	}
 
-	static
-	private DataType integerToDouble(DataType dataType){
+	private static DataType integerToDouble(DataType dataType) {
 
-		if((DataType.INTEGER).equals(dataType)){
+		if ((DataType.INTEGER).equals(dataType)) {
 			return DataType.DOUBLE;
 		}
 
 		return dataType;
 	}
 
-	private static final Map<String, Function> functions = new LinkedHashMap<String, Function>();
+	private static final Map<String, Function> FUNCTIONS =
+						new LinkedHashMap<String, Function>();
 
 	public interface Function {
 
 		Object evaluate(List<?> values);
 	}
 
-	static
-	abstract
-	public class ArithmeticFunction implements Function {
+	public abstract static class ArithmeticFunction implements Function {
 
-		abstract
-		public Double evaluate(Number left, Number right);
+		public abstract Double evaluate(Number left, Number right);
 
-		public Number cast(DataType dataType, Double result){
+		public Number cast(DataType dataType, Double result) {
 			return asNumber(ParameterUtil.cast(dataType, result));
 		}
 
-		public Number evaluate(List<?> values){
+		public Number evaluate(List<?> values) {
 
-			if(values.size() != 2){
+			if (values.size() != 2) {
 				throw new EvaluationException();
 			}
 
 			Object left = values.get(0);
 			Object right = values.get(1);
 
-			if(left == null || right == null){
+			if (left == null || right == null) {
 				return null;
 			}
 
@@ -128,78 +122,74 @@ public class FunctionUtil {
 	}
 
 	static {
-		putFunction("+", new ArithmeticFunction(){
+		putFunction("+", new ArithmeticFunction() {
 
 			@Override
-			public Double evaluate(Number left, Number right){
+			public Double evaluate(Number left, Number right) {
 				return Double.valueOf(left.doubleValue() + right.doubleValue());
 			}
 		});
 
-		putFunction("-", new ArithmeticFunction(){
+		putFunction("-", new ArithmeticFunction() {
 
 			@Override
-			public Double evaluate(Number left, Number right){
+			public Double evaluate(Number left, Number right) {
 				return Double.valueOf(left.doubleValue() - right.doubleValue());
 			}
 		});
 
-		putFunction("*", new ArithmeticFunction(){
+		putFunction("*", new ArithmeticFunction() {
 
 			@Override
-			public Double evaluate(Number left, Number right){
+			public Double evaluate(Number left, Number right) {
 				return Double.valueOf(left.doubleValue() * right.doubleValue());
 			}
 		});
 
-		putFunction("/", new ArithmeticFunction(){
+		putFunction("/", new ArithmeticFunction() {
 
 			@Override
-			public Number cast(DataType dataType, Double result){
+			public Number cast(DataType dataType, Double result) {
 				return super.cast(integerToDouble(dataType), result);
 			}
 
 			@Override
-			public Double evaluate(Number left, Number right){
+			public Double evaluate(Number left, Number right) {
 				return Double.valueOf(left.doubleValue() / right.doubleValue());
 			}
 		});
 	}
 
-	static
-	abstract
-	public class AggregateFunction implements Function {
+	public abstract static class AggregateFunction implements Function {
 
-		abstract
-		public StorelessUnivariateStatistic createStatistic();
+		public abstract StorelessUnivariateStatistic createStatistic();
 
-		public Number cast(DataType dataType, Double result){
+		public Number cast(DataType dataType, Double result) {
 			return asNumber(ParameterUtil.cast(dataType, result));
 		}
 
-		public Number evaluate(List<?> values){
+		public Number evaluate(List<?> values) {
 			StorelessUnivariateStatistic statistic = createStatistic();
 
 			DataType dataType = null;
 
-			for(Object value : values){
+			for (Object value : values) {
 
-				if(value == null){
+				if (value == null) {
 					continue;
 				}
 
 				statistic.increment(asNumber(value).doubleValue());
 
-				if(dataType != null){
-					dataType = ParameterUtil.getResultDataType(dataType, ParameterUtil.getDataType(value));
-				} else
-
-				{
+				if (dataType != null) {
+					dataType = ParameterUtil.getResultDataType(dataType,
+							ParameterUtil.getDataType(value));
+				} else {
 					dataType = ParameterUtil.getDataType(value);
 				}
 			}
 
-			if(statistic.getN() == 0){
+			if (statistic.getN() == 0) {
 				throw new EvaluationException();
 			}
 
@@ -208,66 +198,63 @@ public class FunctionUtil {
 	}
 
 	static {
-		putFunction("min", new AggregateFunction(){
+		putFunction("min", new AggregateFunction() {
 
 			@Override
-			public Min createStatistic(){
+			public Min createStatistic() {
 				return new Min();
 			}
 		});
 
-		putFunction("max", new AggregateFunction(){
+		putFunction("max", new AggregateFunction() {
 
 			@Override
-			public Max createStatistic(){
+			public Max createStatistic() {
 				return new Max();
 			}
 		});
 
-		putFunction("avg", new AggregateFunction(){
+		putFunction("avg", new AggregateFunction() {
 
 			@Override
-			public Mean createStatistic(){
+			public Mean createStatistic() {
 				return new Mean();
 			}
 
 			@Override
-			public Number cast(DataType dataType, Double result){
+			public Number cast(DataType dataType, Double result) {
 				return super.cast(integerToDouble(dataType), result);
 			}
 		});
 
-		putFunction("sum", new AggregateFunction(){
+		putFunction("sum", new AggregateFunction() {
 
 			@Override
-			public Sum createStatistic(){
+			public Sum createStatistic() {
 				return new Sum();
 			}
 		});
 
-		putFunction("product", new AggregateFunction(){
+		putFunction("product", new AggregateFunction() {
 
 			@Override
-			public Product createStatistic(){
+			public Product createStatistic() {
 				return new Product();
 			}
 		});
 	}
 
-	static
-	abstract
-	public class MathFunction implements Function {
+	public abstract static class MathFunction implements Function {
 
-		abstract
-		public Double evaluate(Number value);
+		public abstract Double evaluate(Number value);
 
-		public Number cast(DataType dataType, Number result){
+		public Number cast(DataType dataType, Number result) {
 			return asNumber(ParameterUtil.cast(dataType, result));
 		}
 
-		public Number evaluate(List<?> values){
+		public Number evaluate(List<?> values) {
 
-			if(values.size() != 1){
+			if (values.size() != 1) {
 				throw new EvaluationException();
 			}
 
@@ -279,62 +266,60 @@ public class FunctionUtil {
 		}
 	}
 
-	static
-	abstract
-	public class FpMathFunction extends MathFunction {
+	public abstract static class FpMathFunction extends MathFunction {
 
 		@Override
-		public Number cast(DataType dataType, Number result){
+		public Number cast(DataType dataType, Number result) {
 			return super.cast(integerToDouble(dataType), result);
 		}
 	}
 
 	static {
-		putFunction("log10", new FpMathFunction(){
+		putFunction("log10", new FpMathFunction() {
 
 			@Override
-			public Double evaluate(Number value){
+			public Double evaluate(Number value) {
 				return Math.log10(value.doubleValue());
 			}
 		});
 
-		putFunction("ln", new FpMathFunction(){
+		putFunction("ln", new FpMathFunction() {
 
 			@Override
-			public Double evaluate(Number value){
+			public Double evaluate(Number value) {
 				return Math.log(value.doubleValue());
 			}
 		});
 
-		putFunction("exp", new FpMathFunction(){
+		putFunction("exp", new FpMathFunction() {
 
 			@Override
-			public Double evaluate(Number value){
+			public Double evaluate(Number value) {
 				return Math.exp(value.doubleValue());
 			}
 		});
 
-		putFunction("sqrt", new FpMathFunction(){
+		putFunction("sqrt", new FpMathFunction() {
 
 			@Override
-			public Double evaluate(Number value){
+			public Double evaluate(Number value) {
 				return Math.sqrt(value.doubleValue());
 			}
 		});
 
-		putFunction("abs", new MathFunction(){
+		putFunction("abs", new MathFunction() {
 
 			@Override
-			public Double evaluate(Number value){
+			public Double evaluate(Number value) {
 				return Math.abs(value.doubleValue());
 			}
 		});
 
-		putFunction("pow", new Function(){
+		putFunction("pow", new Function() {
 
-			public Number evaluate(List<?> values){
+			public Number evaluate(List<?> values) {
 
-				if(values.size() != 2){
+				if (values.size() != 2) {
 					throw new EvaluationException();
 				}
 
@@ -349,11 +334,11 @@ public class FunctionUtil {
 			}
 		});
 
-		putFunction("threshold", new Function(){
+		putFunction("threshold", new Function() {
 
-			public Number evaluate(List<?> values){
+			public Number evaluate(List<?> values) {
 
-				if(values.size() != 2){
+				if (values.size() != 2) {
 					throw new EvaluationException();
 				}
 
@@ -368,41 +353,38 @@ public class FunctionUtil {
 			}
 		});
 
-		putFunction("floor", new MathFunction(){
+		putFunction("floor", new MathFunction() {
 
 			@Override
-			public Double evaluate(Number number){
+			public Double evaluate(Number number) {
 				return Math.floor(number.doubleValue());
 			}
 		});
 
-		putFunction("ceil", new MathFunction(){
+		putFunction("ceil", new MathFunction() {
 
 			@Override
-			public Double evaluate(Number number){
+			public Double evaluate(Number number) {
 				return Math.ceil(number.doubleValue());
 			}
 		});
 
-		putFunction("round", new MathFunction(){
+		putFunction("round", new MathFunction() {
 
 			@Override
-			public Double evaluate(Number number){
-				return (double)Math.round(number.doubleValue());
+			public Double evaluate(Number number) {
+				return (double) Math.round(number.doubleValue());
 			}
 		});
 	}
 
-	static
-	abstract
-	public class ValueFunction implements Function {
+	public abstract static class ValueFunction implements Function {
 
-		abstract
-		public Boolean evaluate(Object value);
+		public abstract Boolean evaluate(Object value);
 
-		public Boolean evaluate(List<?> values){
+		public Boolean evaluate(List<?> values) {
 
-			if(values.size() != 1){
+			if (values.size() != 1) {
 				throw new EvaluationException();
 			}
 
@@ -411,128 +393,120 @@ public class FunctionUtil {
 	}
 
 	static {
-		putFunction("isMissing", new ValueFunction(){
+		putFunction("isMissing", new ValueFunction() {
 
 			@Override
-			public Boolean evaluate(Object value){
+			public Boolean evaluate(Object value) {
 				return Boolean.valueOf(value == null);
 			}
 		});
 
-		putFunction("isNotMissing", new ValueFunction(){
+		putFunction("isNotMissing", new ValueFunction() {
 
 			@Override
-			public Boolean evaluate(Object value){
+			public Boolean evaluate(Object value) {
 				return Boolean.valueOf(value != null);
 			}
 		});
 	}
 
-	static
-	abstract
-	public class ComparisonFunction implements Function {
+	public abstract static class ComparisonFunction implements Function {
 
-		abstract
-		public Boolean evaluate(int diff);
+		public abstract Boolean evaluate(int diff);
 
-		public <C extends Comparable<C>> Boolean evaluate(C left, C right){
+		public <C extends Comparable<C>> Boolean evaluate(C left, C right) {
 			return evaluate((left).compareTo(right));
 		}
 
-		@SuppressWarnings (
-			value = {"rawtypes", "unchecked"}
-		)
-		public Boolean evaluate(List<?> values){
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		public Boolean evaluate(List<?> values) {
 
-			if(values.size() != 2){
+			if (values.size() != 2) {
 				throw new EvaluationException();
 			}
 
 			Object left = values.get(0);
 			Object right = values.get(1);
 
-			if(left == null || right == null){
+			if (left == null || right == null) {
 				throw new EvaluationException();
 			} // End if
 
 			// Cast operands to common data type before comparison
-			if(!(left.getClass()).equals(right.getClass())){
+			if (!(left.getClass()).equals(right.getClass())) {
 				DataType dataType = ParameterUtil.getResultDataType(left, right);
 
 				left = ParameterUtil.cast(dataType, left);
 				right = ParameterUtil.cast(dataType, right);
 			}
 
-			return evaluate((Comparable)left, (Comparable)right);
+			return evaluate((Comparable) left, (Comparable) right);
 		}
 	}
 
 	static {
-		putFunction("equal", new ComparisonFunction(){
+		putFunction("equal", new ComparisonFunction() {
 
 			@Override
-			public Boolean evaluate(int diff){
+			public Boolean evaluate(int diff) {
 				return Boolean.valueOf(diff == 0);
 			}
 		});
 
-		putFunction("notEqual", new ComparisonFunction(){
+		putFunction("notEqual", new ComparisonFunction() {
 
 			@Override
-			public Boolean evaluate(int diff){
+			public Boolean evaluate(int diff) {
 				return Boolean.valueOf(diff != 0);
 			}
 		});
 
-		putFunction("lessThan", new ComparisonFunction(){
+		putFunction("lessThan", new ComparisonFunction() {
 
 			@Override
-			public Boolean evaluate(int diff){
+			public Boolean evaluate(int diff) {
 				return Boolean.valueOf(diff < 0);
 			}
 		});
 
-		putFunction("lessOrEqual", new ComparisonFunction(){
+		putFunction("lessOrEqual", new ComparisonFunction() {
 
 			@Override
-			public Boolean evaluate(int diff){
+			public Boolean evaluate(int diff) {
 				return Boolean.valueOf(diff <= 0);
 			}
 		});
 
-		putFunction("greaterThan", new ComparisonFunction(){
+		putFunction("greaterThan", new ComparisonFunction() {
 
 			@Override
-			public Boolean evaluate(int diff){
+			public Boolean evaluate(int diff) {
 				return Boolean.valueOf(diff > 0);
 			}
 		});
 
-		putFunction("greaterOrEqual", new ComparisonFunction(){
+		putFunction("greaterOrEqual", new ComparisonFunction() {
 
 			@Override
-			public Boolean evaluate(int diff){
+			public Boolean evaluate(int diff) {
 				return Boolean.valueOf(diff >= 0);
 			}
 		});
 	}
 
-	static
-	abstract
-	public class BinaryBooleanFunction implements Function {
+	public abstract static class BinaryBooleanFunction implements Function {
 
-		abstract
-		public Boolean evaluate(Boolean left, Boolean right);
+		public abstract Boolean evaluate(Boolean left, Boolean right);
 
-		public Boolean evaluate(List<?> values){
+		public Boolean evaluate(List<?> values) {
 
-			if(values.size() < 2){
+			if (values.size() < 2) {
 				throw new EvaluationException();
 			}
 
 			Boolean result = asBoolean(values.get(0));
 
-			for(int i = 1; i < values.size(); i++){
+			for (int i = 1; i < values.size(); i++) {
 				result = evaluate(result, asBoolean(values.get(i)));
 			}
 
@@ -541,33 +515,30 @@ public class FunctionUtil {
 	}
 
 	static {
-		putFunction("and", new BinaryBooleanFunction(){
+		putFunction("and", new BinaryBooleanFunction() {
 
 			@Override
-			public Boolean evaluate(Boolean left, Boolean right){
+			public Boolean evaluate(Boolean left, Boolean right) {
 				return Boolean.valueOf(left.booleanValue() & right.booleanValue());
 			}
 		});
 
-		putFunction("or", new BinaryBooleanFunction(){
+		putFunction("or", new BinaryBooleanFunction() {
 
 			@Override
-			public Boolean evaluate(Boolean left, Boolean right){
+			public Boolean evaluate(Boolean left, Boolean right) {
 				return Boolean.valueOf(left.booleanValue() | right.booleanValue());
 			}
 		});
 	}
 
-	static
-	abstract
-	public class UnaryBooleanFunction implements Function {
+	public abstract static class UnaryBooleanFunction implements Function {
 
-		abstract
-		public Boolean evaluate(Boolean value);
+		public abstract Boolean evaluate(Boolean value);
 
-		public Boolean evaluate(List<?> values){
+		public Boolean evaluate(List<?> values) {
 
-			if(values.size() != 1){
+			if (values.size() != 1) {
 				throw new EvaluationException();
 			}
 
@@ -576,25 +547,22 @@ public class FunctionUtil {
 	}
 
 	static {
-		putFunction("not", new UnaryBooleanFunction(){
+		putFunction("not", new UnaryBooleanFunction() {
 
 			@Override
-			public Boolean evaluate(Boolean value){
+			public Boolean evaluate(Boolean value) {
 				return Boolean.valueOf(!value.booleanValue());
 			}
 		});
 	}
 
-	static
-	abstract
-	public class ValueListFunction implements Function {
+	public abstract static class ValueListFunction implements Function {
 
-		abstract
-		public Boolean evaluate(Object value, List<?> values);
+		public abstract Boolean evaluate(Object value, List<?> values);
 
-		public Boolean evaluate(List<?> values){
+		public Boolean evaluate(List<?> values) {
 
-			if(values.size() < 2){
+			if (values.size() < 2) {
 				throw new EvaluationException();
 			}
 
@@ -603,40 +571,38 @@ public class FunctionUtil {
 	}
 
 	static {
-		putFunction("isIn", new ValueListFunction(){
+		putFunction("isIn", new ValueListFunction() {
 
 			@Override
-			public Boolean evaluate(Object value, List<?> values){
+			public Boolean evaluate(Object value, List<?> values) {
 				return Boolean.valueOf(values.contains(value));
 			}
 		});
 
-		putFunction("isNotIn", new ValueListFunction(){
+		putFunction("isNotIn", new ValueListFunction() {
 
 			@Override
-			public Boolean evaluate(Object value, List<?> values){
+			public Boolean evaluate(Object value, List<?> values) {
 				return Boolean.valueOf(!values.contains(value));
 			}
 		});
 	}
 
 	static {
-		putFunction("if", new Function(){
+		putFunction("if", new Function() {
 
-			public Object evaluate(List<?> values){
+			public Object evaluate(List<?> values) {
 
-				if(values.size() < 2 || values.size() > 3){
+				if (values.size() < 2 || values.size() > 3) {
 					throw new EvaluationException();
 				}
 
 				Boolean flag = asBoolean(values.get(0));
 
-				if(flag.booleanValue()){
+				if (flag.booleanValue()) {
 					return values.get(1);
-				} else
-
-				{
-					if(values.size() > 2){
+				} else {
+					if (values.size() > 2) {
 						return values.get(2);
 					}
 
@@ -647,16 +613,13 @@ public class FunctionUtil {
 		});
 	}
 
-	static
-	abstract
-	public class StringFunction implements Function {
+	public abstract static class StringFunction implements Function {
 
-		abstract
-		public String evaluate(String value);
+		public abstract String evaluate(String value);
 
-		public String evaluate(List<?> values){
+		public String evaluate(List<?> values) {
 
-			if(values.size() != 1){
+			if (values.size() != 1) {
 				throw new EvaluationException();
 			}
 
@@ -665,27 +628,27 @@ public class FunctionUtil {
 	}
 
 	static {
-		putFunction("uppercase", new StringFunction(){
+		putFunction("uppercase", new StringFunction() {
 
 			@Override
-			public String evaluate(String value){
+			public String evaluate(String value) {
 				return value.toUpperCase();
 			}
 		});
 
-		putFunction("lowercase", new StringFunction(){
+		putFunction("lowercase", new StringFunction() {
 
 			@Override
-			public String evaluate(String value){
+			public String evaluate(String value) {
 				return value.toLowerCase();
 			}
 		});
 
-		putFunction("substring", new Function(){
+		putFunction("substring", new Function() {
 
-			public String evaluate(List<?> values){
+			public String evaluate(List<?> values) {
 
-				if(values.size() != 3){
+				if (values.size() != 3) {
 					throw new EvaluationException();
 				}
 
@@ -694,7 +657,7 @@ public class FunctionUtil {
 				int position = asInteger(values.get(1));
 				int length = asInteger(values.get(2));
 
-				if(position <= 0 || length < 0){
+				if (position <= 0 || length < 0) {
 					throw new EvaluationException();
 				}
 
@@ -702,10 +665,10 @@ public class FunctionUtil {
 			}
 		});
 
-		putFunction("trimBlanks", new StringFunction(){
+		putFunction("trimBlanks", new StringFunction() {
 
 			@Override
-			public String evaluate(String value){
+			public String evaluate(String value) {
 				return value.trim();
 			}
 		});

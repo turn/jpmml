@@ -3,49 +3,46 @@
  */
 package com.turn.tpmml.evaluator;
 
-import java.io.*;
+import java.io.InputStream;
 
-abstract
-public class LocalBatch implements Batch {
+public abstract class LocalBatch implements Batch {
 
 	private String name = null;
 
 	private String dataset = null;
 
-
-	public LocalBatch(String name, String dataset){
+	public LocalBatch(String name, String dataset) {
 		setName(name);
 		setDataset(dataset);
 	}
 
-	abstract
-	public InputStream open(String path);
+	public abstract InputStream open(String path);
 
-	public InputStream getModel(){
+	public InputStream getModel() {
 		return open("/pmml/" + (getName() + getDataset()) + ".pmml");
 	}
 
-	public InputStream getInput(){
+	public InputStream getInput() {
 		return open("/csv/" + getDataset() + ".csv");
 	}
 
-	public InputStream getOutput(){
+	public InputStream getOutput() {
 		return open("/csv/" + (getName() + getDataset()) + ".csv");
 	}
 
-	public String getName(){
+	public String getName() {
 		return this.name;
 	}
 
-	private void setName(String name){
+	private void setName(String name) {
 		this.name = name;
 	}
 
-	public String getDataset(){
+	public String getDataset() {
 		return this.dataset;
 	}
 
-	private void setDataset(String dataset){
+	private void setDataset(String dataset) {
 		this.dataset = dataset;
 	}
 }

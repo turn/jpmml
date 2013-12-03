@@ -22,8 +22,7 @@ public class Variable {
 	    STRING("String"),
 
 	    // OBJECT is for handling any type.
-		OBJECT("FIXME"),
-		;
+		OBJECT("FIXME");
 
 		private final String value;
 
@@ -75,8 +74,7 @@ public class Variable {
 
 	public Variable(VariableType type,
 					String typeName,
-					String name)
-	{
+					String name) {
 		if (type != VariableType.OBJECT) {
 			// Name given to the type which  is allowed only for Object type.
 			assert false;

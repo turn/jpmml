@@ -3,110 +3,119 @@
  */
 package com.turn.tpmml.evaluator;
 
-import java.util.*;
+import com.turn.tpmml.Apply;
+import com.turn.tpmml.Constant;
+import com.turn.tpmml.DataType;
+import com.turn.tpmml.DerivedField;
+import com.turn.tpmml.Discretize;
+import com.turn.tpmml.Expression;
+import com.turn.tpmml.FieldColumnPair;
+import com.turn.tpmml.FieldName;
+import com.turn.tpmml.FieldRef;
+import com.turn.tpmml.MapValues;
+import com.turn.tpmml.NormContinuous;
+import com.turn.tpmml.NormDiscrete;
+import com.turn.tpmml.manager.UnsupportedFeatureException;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 
-import com.turn.tpmml.*;
-
-import com.turn.tpmml.manager.*;
 
 public class ExpressionUtil {
 
-	private ExpressionUtil(){
+	private ExpressionUtil() {
 	}
 
-	static
-	public Object evaluate(FieldName name, EvaluationContext context){
+	public static Object evaluate(FieldName name, EvaluationContext context) {
 		DerivedField derivedField = context.resolve(name);
-		if(derivedField != null){
+		if (derivedField != null) {
 			return evaluate(derivedField, context);
 		}
 
 		return context.getParameter(name);
 	}
 
-	static
-	public Object evaluate(DerivedField derivedField, EvaluationContext context){
+	public static Object evaluate(DerivedField derivedField, EvaluationContext context) {
 		Object value = evaluate(derivedField.getExpression(), context);
 
 		DataType dataType = derivedField.getDataType();
-		if(dataType != null){
+		if (dataType != null) {
 			value = ParameterUtil.cast(dataType, value);
 		}
 
 		return value;
 	}
 
-	static
-	public Object evaluate(Expression expression, EvaluationContext context){
+	public static Object evaluate(Expression expression, EvaluationContext context) {
 
-		if(expression instanceof Constant){
-			return evaluateConstant((Constant)expression, context);
+		if (expression instanceof Constant) {
+			return evaluateConstant((Constant) expression, context);
 		} else
 
-		if(expression instanceof FieldRef){
-			return evaluateFieldRef((FieldRef)expression, context);
+		if (expression instanceof FieldRef) {
+			return evaluateFieldRef((FieldRef) expression, context);
 		} else
 
-		if(expression instanceof NormContinuous){
-			return evaluateNormContinuous((NormContinuous)expression, context);
+		if (expression instanceof NormContinuous) {
+			return evaluateNormContinuous((NormContinuous) expression, context);
 		} else
 
-		if(expression instanceof NormDiscrete){
-			return evaluateNormDiscrete((NormDiscrete)expression, context);
+		if (expression instanceof NormDiscrete) {
+			return evaluateNormDiscrete((NormDiscrete) expression, context);
 		} else
 
-		if(expression instanceof Discretize){
-			return evaluateDiscretize((Discretize)expression, context);
+		if (expression instanceof Discretize) {
+			return evaluateDiscretize((Discretize) expression, context);
 		} else
 
-		if(expression instanceof MapValues){
-			return evaluateMapValues((MapValues)expression, context);
+		if (expression instanceof MapValues) {
+			return evaluateMapValues((MapValues) expression, context);
 		} else
 
-		if(expression instanceof Apply){
-			return evaluateApply((Apply)expression, context);
+		if (expression instanceof Apply) {
+			return evaluateApply((Apply) expression, context);
 		}
 
 		throw new UnsupportedFeatureException(expression);
 	}
 
-	static
-	public Object evaluateConstant(Constant constant, EvaluationContext context){
+	public static Object evaluateConstant(Constant constant, EvaluationContext context) {
 		String value = constant.getValue();
 
 		DataType dataType = constant.getDataType();
-		if(dataType == null){
+		if (dataType == null) {
 			dataType = ParameterUtil.getConstantDataType(value);
 		}
 
 		return ParameterUtil.parse(dataType, value);
 	}
 
-	static
-	public Object evaluateFieldRef(FieldRef fieldRef, EvaluationContext context){
+	public static Object evaluateFieldRef(FieldRef fieldRef, EvaluationContext context) {
 		Object value = evaluate(fieldRef.getField(), context);
-		if(value == null){
+		if (value == null) {
 			return fieldRef.getMapMissingTo();
 		}
 
 		return value;
 	}
 
-	static
-	public Object evaluateNormContinuous(NormContinuous normContinuous, EvaluationContext context){
-		Number value = (Number)evaluate(normContinuous.getField(), context);
-		if(value == null){
+	public static Object evaluateNormContinuous(NormContinuous normContinuous,
+			EvaluationContext context) {
+		Number value = (Number) evaluate(normContinuous.getField(), context);
+		if (value == null) {
 			return normContinuous.getMapMissingTo();
 		}
 
 		return NormalizationUtil.normalize(normContinuous, value.doubleValue());
 	}
 
-	static
-	public Object evaluateNormDiscrete(NormDiscrete normDiscrete, EvaluationContext context){
+	public static Object evaluateNormDiscrete(NormDiscrete normDiscrete,
+											EvaluationContext context) {
 		Object value = evaluate(normDiscrete.getField(), context);
-		if(value == null){
+		if (value == null) {
 			return normDiscrete.getMapMissingTo();
 		}
 
@@ -115,12 +124,11 @@ public class ExpressionUtil {
 		return Double.valueOf(equals ? 1.0 : 0.0);
 	}
 
-	static
-	public Object evaluateDiscretize(Discretize discretize, EvaluationContext context){
+	public static Object evaluateDiscretize(Discretize discretize, EvaluationContext context) {
 		DataType dataType = discretize.getDataType();
 
 		Object value = evaluate(discretize.getField(), context);
-		if(value == null){
+		if (value == null) {
 			return parseSafely(dataType, discretize.getMapMissingTo());
 		}
 
@@ -129,16 +137,15 @@ public class ExpressionUtil {
 		return parseSafely(dataType, result);
 	}
 
-	static
-	public Object evaluateMapValues(MapValues mapValues, EvaluationContext context){
+	public static Object evaluateMapValues(MapValues mapValues, EvaluationContext context) {
 		DataType dataType = mapValues.getDataType();
 
 		Map<String, Object> values = new LinkedHashMap<String, Object>();
 
 		List<FieldColumnPair> fieldColumnPairs = mapValues.getFieldColumnPairs();
-		for(FieldColumnPair fieldColumnPair : fieldColumnPairs){
+		for (FieldColumnPair fieldColumnPair : fieldColumnPairs) {
 			Object value = evaluate(fieldColumnPair.getField(), context);
-			if(value == null){
+			if (value == null) {
 				return parseSafely(dataType, mapValues.getMapMissingTo());
 			}
 
@@ -150,31 +157,29 @@ public class ExpressionUtil {
 		return parseSafely(dataType, result);
 	}
 
-	static
-	public Object evaluateApply(Apply apply, EvaluationContext context){
+	public static Object evaluateApply(Apply apply, EvaluationContext context) {
 		List<Object> values = new ArrayList<Object>();
 
 		List<Expression> arguments = apply.getExpressions();
-		for(Expression argument : arguments){
+		for (Expression argument : arguments) {
 			Object value = evaluate(argument, context);
 
 			values.add(value);
 		}
 
 		Object result = FunctionUtil.evaluate(apply.getFunction(), values);
-		if(result == null){
+		if (result == null) {
 			return apply.getMapMissingTo();
 		}
 
 		return result;
 	}
 
-	static
-	private Object parseSafely(DataType dataType, String value){
+	private static Object parseSafely(DataType dataType, String value) {
 
-		if(value != null){
+		if (value != null) {
 
-			if(dataType != null){
+			if (dataType != null) {
 				return ParameterUtil.parse(dataType, value);
 			}
 		}

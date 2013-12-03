@@ -4,30 +4,42 @@
  */
 package com.turn.tpmml.evaluator;
 
-import java.util.*;
+import com.turn.tpmml.FieldName;
+import com.turn.tpmml.MiningFunctionType;
+import com.turn.tpmml.MiningModel;
+import com.turn.tpmml.Model;
+import com.turn.tpmml.MultipleModelMethodType;
+import com.turn.tpmml.PMML;
+import com.turn.tpmml.Predicate;
+import com.turn.tpmml.Segment;
+import com.turn.tpmml.Segmentation;
+import com.turn.tpmml.manager.IPMMLResult;
+import com.turn.tpmml.manager.MiningModelManager;
+import com.turn.tpmml.manager.PMMLResult;
+import com.turn.tpmml.manager.UnsupportedFeatureException;
 
-
-import com.turn.tpmml.*;
-
-import com.turn.tpmml.manager.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 public class MiningModelEvaluator2 extends MiningModelManager implements Evaluator {
 
 	private static final long serialVersionUID = 1L;
 
-	public MiningModelEvaluator2(PMML pmml){
+	public MiningModelEvaluator2(PMML pmml) {
 		super(pmml);
 	}
 
-	public MiningModelEvaluator2(PMML pmml, MiningModel miningModel){
+	public MiningModelEvaluator2(PMML pmml, MiningModel miningModel) {
 		super(pmml, miningModel);
 	}
 
-	public MiningModelEvaluator2(MiningModelManager parent){
+	public MiningModelEvaluator2(MiningModelManager parent) {
 		this(parent.getPmml(), parent.getModel());
 	}
 
-	public Object prepare(FieldName name, Object value){
+	public Object prepare(FieldName name, Object value) {
 		return ParameterUtil.prepare(getDataField(name), getMiningField(name), value);
 	}
 
@@ -35,7 +47,7 @@ public class MiningModelEvaluator2 extends MiningModelManager implements Evaluat
 	 * @see #evaluateRegression(EvaluationContext)
 	 * @see #evaluateClassification(EvaluationContext)
 	 */
-	public IPMMLResult evaluate(Map<FieldName, ?> parameters){
+	public IPMMLResult evaluate(Map<FieldName, ?> parameters) {
 		MiningModel model = getModel();
 
 		IPMMLResult predictions;
@@ -43,36 +55,36 @@ public class MiningModelEvaluator2 extends MiningModelManager implements Evaluat
 		ModelManagerEvaluationContext context = new ModelManagerEvaluationContext(this, parameters);
 
 		MiningFunctionType miningFunction = model.getFunctionName();
-		switch(miningFunction){
-			case REGRESSION:
-				predictions = evaluateRegression(context);
-				break;
-			case CLASSIFICATION:
-				predictions = evaluateClassification(context);
-				break;
-			default:
-				throw new UnsupportedFeatureException(miningFunction);
+		switch (miningFunction) {
+		case REGRESSION:
+			predictions = evaluateRegression(context);
+			break;
+		case CLASSIFICATION:
+			predictions = evaluateClassification(context);
+			break;
+		default:
+			throw new UnsupportedFeatureException(miningFunction);
 		}
 
 		PMMLResult res = new PMMLResult();
-		res = OutputUtil.evaluate((PMMLResult)predictions, context);
+		res = OutputUtil.evaluate((PMMLResult) predictions, context);
 		return res;
 	}
 
-	public IPMMLResult evaluateRegression(EvaluationContext context){
+	public IPMMLResult evaluateRegression(EvaluationContext context) {
 		List<SegmentResult> segmentResults = evaluate(context);
 
 		Segmentation segmentation = getSegmentation();
 
 		MultipleModelMethodType multipleModelMethod = segmentation.getMultipleModelMethod();
-		switch(multipleModelMethod){
-			case SELECT_FIRST:
-			case MODEL_CHAIN:
-				return dispatchSingleResult(segmentResults);
-			case SELECT_ALL:
-				throw new UnsupportedFeatureException(multipleModelMethod);
-			default:
-				break;
+		switch (multipleModelMethod) {
+		case SELECT_FIRST:
+		case MODEL_CHAIN:
+			return dispatchSingleResult(segmentResults);
+		case SELECT_ALL:
+			throw new UnsupportedFeatureException(multipleModelMethod);
+		default:
+			break;
 		}
 
 		Double result;
@@ -80,7 +92,7 @@ public class MiningModelEvaluator2 extends MiningModelManager implements Evaluat
 		double sum = 0d;
 		double weightedSum = 0d;
 
-		for(SegmentResult segmentResult : segmentResults){
+		for (SegmentResult segmentResult : segmentResults) {
 			Object predictedValue = EvaluatorUtil.decode(segmentResult.getPrediction());
 
 			Double value = ParameterUtil.toDouble(predictedValue);
@@ -91,18 +103,18 @@ public class MiningModelEvaluator2 extends MiningModelManager implements Evaluat
 
 		int count = segmentResults.size();
 
-		switch(multipleModelMethod){
-			case SUM:
-				result = sum;
-				break;
-			case AVERAGE:
-				result = (sum / count);
-				break;
-			case WEIGHTED_AVERAGE:
-				result = (weightedSum / count);
-				break;
-			default:
-				throw new UnsupportedFeatureException(multipleModelMethod);
+		switch (multipleModelMethod) {
+		case SUM:
+			result = sum;
+			break;
+		case AVERAGE:
+			result = (sum / count);
+			break;
+		case WEIGHTED_AVERAGE:
+			result = (weightedSum / count);
+			break;
+		default:
+			throw new UnsupportedFeatureException(multipleModelMethod);
 		}
 
 		PMMLResult res = new PMMLResult();
@@ -111,43 +123,43 @@ public class MiningModelEvaluator2 extends MiningModelManager implements Evaluat
 		return res;
 	}
 
-	public IPMMLResult evaluateClassification(EvaluationContext context){
+	public IPMMLResult evaluateClassification(EvaluationContext context) {
 		List<SegmentResult> segmentResults = evaluate(context);
 
 		Segmentation segmentation = getSegmentation();
 
 		MultipleModelMethodType multipleModelMethod = segmentation.getMultipleModelMethod();
-		switch(multipleModelMethod){
-			case SELECT_FIRST:
-			case MODEL_CHAIN:
-				return dispatchSingleResult(segmentResults);
-			case SELECT_ALL:
-				throw new UnsupportedFeatureException(multipleModelMethod);
-			default:
-				break;
+		switch (multipleModelMethod) {
+		case SELECT_FIRST:
+		case MODEL_CHAIN:
+			return dispatchSingleResult(segmentResults);
+		case SELECT_ALL:
+			throw new UnsupportedFeatureException(multipleModelMethod);
+		default:
+			break;
 		}
 
 		ClassificationMap result = new ClassificationMap();
 
-		for(SegmentResult segmentResult : segmentResults){
+		for (SegmentResult segmentResult : segmentResults) {
 			Object predictedValue = EvaluatorUtil.decode(segmentResult.getPrediction());
 
 			String value = ParameterUtil.toString(predictedValue);
 
 			Double vote = result.get(value);
-			if(vote == null){
+			if (vote == null) {
 				vote = 0d;
 			}
 
-			switch(multipleModelMethod){
-				case MAJORITY_VOTE:
-					vote += 1d;
-					break;
-				case WEIGHTED_MAJORITY_VOTE:
-					vote += ((segmentResult.getSegment()).getWeight() * 1d);
-					break;
-				default:
-					throw new UnsupportedFeatureException(multipleModelMethod);
+			switch (multipleModelMethod) {
+			case MAJORITY_VOTE:
+				vote += 1d;
+				break;
+			case WEIGHTED_MAJORITY_VOTE:
+				vote += ((segmentResult.getSegment()).getWeight() * 1d);
+				break;
+			default:
+				throw new UnsupportedFeatureException(multipleModelMethod);
 			}
 
 			result.put(value, vote);
@@ -160,12 +172,12 @@ public class MiningModelEvaluator2 extends MiningModelManager implements Evaluat
 
 		return res;
 
-		//return Collections.singletonMap(getTarget(), result);
+		// return Collections.singletonMap(getTarget(), result);
 	}
 
-	private IPMMLResult dispatchSingleResult(List<SegmentResult> results){
+	private IPMMLResult dispatchSingleResult(List<SegmentResult> results) {
 
-		if(results.size() < 1 || results.size() > 1){
+		if (results.size() < 1 || results.size() > 1) {
 			throw new EvaluationException();
 		}
 
@@ -174,10 +186,8 @@ public class MiningModelEvaluator2 extends MiningModelManager implements Evaluat
 		return result.getResult();
 	}
 
-	@SuppressWarnings (
-		value = "fallthrough"
-	)
-	private List<SegmentResult> evaluate(EvaluationContext context){
+	@SuppressWarnings("fallthrough")
+	private List<SegmentResult> evaluate(EvaluationContext context) {
 		List<SegmentResult> results = new ArrayList<SegmentResult>();
 
 		Segmentation segmentation = getSegmentation();
@@ -185,60 +195,58 @@ public class MiningModelEvaluator2 extends MiningModelManager implements Evaluat
 		MultipleModelMethodType multipleModelMethod = segmentation.getMultipleModelMethod();
 
 		List<Segment> segments = segmentation.getSegments();
-		for(Segment segment : segments){
+		for (Segment segment : segments) {
 			Predicate predicate = segment.getPredicate();
 
 			Boolean selectable = PredicateUtil.evaluate(predicate, context);
-			if(selectable == null){
+			if (selectable == null) {
 				throw new EvaluationException();
 			} // End if
 
-			if(!selectable.booleanValue()){
+			if (!selectable.booleanValue()) {
 				continue;
 			}
 
 			Model model = segment.getModel();
 
-			Evaluator evaluator = (Evaluator)evaluatorFactory.getModelManager(getPmml(), model);
+			Evaluator evaluator = (Evaluator) EVALUATOR_FACTORY.getModelManager(getPmml(), model);
 
 			FieldName target = evaluator.getTarget();
 
 			IPMMLResult result = evaluator.evaluate(context.getParameters());
 
-			switch(multipleModelMethod){
-				case SELECT_FIRST:
-					return Collections.singletonList(new SegmentResult(segment, target, result));
-				case MODEL_CHAIN:
-					{
-						List<FieldName> outputFields = evaluator.getOutputFields();
+			switch (multipleModelMethod) {
+			case SELECT_FIRST:
+				return Collections.singletonList(new SegmentResult(segment, target, result));
+			case MODEL_CHAIN:
+				List<FieldName> outputFields = evaluator.getOutputFields();
 
-						for(FieldName outputField : outputFields){
-							Object outputValue = result.getValue(outputField);
-							if(outputValue == null){
-								throw new EvaluationException();
-							}
-
-							outputValue = EvaluatorUtil.decode(outputValue);
-
-							context.putParameter(outputField, outputValue);
-						}
-
-						results.clear();
+				for (FieldName outputField : outputFields) {
+					Object outputValue = result.getValue(outputField);
+					if (outputValue == null) {
+						throw new EvaluationException();
 					}
-					// Falls through
-				default:
-					results.add(new SegmentResult(segment, target, result));
-					break;
+
+					outputValue = EvaluatorUtil.decode(outputValue);
+
+					context.putParameter(outputField, outputValue);
+				}
+
+				results.clear();
+			// Falls through
+			default:
+				results.add(new SegmentResult(segment, target, result));
+				break;
 			}
 		}
 
 		return results;
 	}
 
-	private static final ModelEvaluatorFactory evaluatorFactory = ModelEvaluatorFactory.getInstance();
+	private static final ModelEvaluatorFactory EVALUATOR_FACTORY = ModelEvaluatorFactory
+			.getInstance();
 
-	static
-	private class SegmentResult {
+	private static class SegmentResult {
 
 		private Segment segment = null;
 
@@ -246,30 +254,29 @@ public class MiningModelEvaluator2 extends MiningModelManager implements Evaluat
 
 		private IPMMLResult result = null;
 
-
-		public SegmentResult(Segment segment, FieldName predictedField, IPMMLResult result){
+		public SegmentResult(Segment segment, FieldName predictedField, IPMMLResult result) {
 			setSegment(segment);
 			setPredictedField(predictedField);
 			setResult(result);
 		}
 
-		public Object getPrediction(){
+		public Object getPrediction() {
 			return getResult().getValue(getPredictedField());
 		}
 
-		public Segment getSegment(){
+		public Segment getSegment() {
 			return this.segment;
 		}
 
-		private void setSegment(Segment segment){
+		private void setSegment(Segment segment) {
 			this.segment = segment;
 		}
 
-		public FieldName getPredictedField(){
+		public FieldName getPredictedField() {
 			return this.predictedField;
 		}
 
-		private void setPredictedField(FieldName predictedField){
+		private void setPredictedField(FieldName predictedField) {
 			this.predictedField = predictedField;
 		}
 
@@ -281,7 +288,5 @@ public class MiningModelEvaluator2 extends MiningModelManager implements Evaluat
 			this.result = result;
 		}
 
-
 	}
 }
-

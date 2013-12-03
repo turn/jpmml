@@ -17,40 +17,28 @@ public class ModelTranslatorFactory extends ModelManagerFactory {
 	}
 
 	@Override
-	public ModelManager<? extends Model> getModelManager(PMML pmml, Model model){
+	public ModelManager<? extends Model> getModelManager(PMML pmml, Model model) {
 
-		if(model instanceof TreeModel){
-			return new TreeModelTranslator(pmml, (TreeModel)model);
+		if (model instanceof TreeModel) {
+			return new TreeModelTranslator(pmml, (TreeModel) model);
 		} else
 
 		if (model instanceof Scorecard) {
-			return new ScorecardTranslator(pmml, (Scorecard)model);
+			return new ScorecardTranslator(pmml, (Scorecard) model);
 		} else
 
-		if(model instanceof RegressionModel){
-			return new RegressionModelTranslator(pmml, (RegressionModel)model);
+		if (model instanceof RegressionModel) {
+			return new RegressionModelTranslator(pmml, (RegressionModel) model);
 		} else
 
 		if (model instanceof MiningModel) {
 			return new MiningModelTranslator(pmml, (MiningModel) model);
-		} else
-//
-//		if(model instanceof NeuralNetwork){
-//			return new NeuralNetworkEvaluator(pmml, (NeuralNetwork)model);
-//		} else
-//
-//		if(model instanceof MiningModel){
-//
-//			if(RandomForestManager.isRandomForest((MiningModel)model)){
-//				return new RandomForestEvaluator(pmml, (MiningModel)model);
-//			}
-//		}
-
-		throw new UnsupportedFeatureException(model);
+		} else {
+			throw new UnsupportedFeatureException(model);
+		}
 	}
 
-	static
-	public ModelTranslatorFactory getInstance(){
+	public static ModelTranslatorFactory getInstance() {
 		return new ModelTranslatorFactory();
 	}
 }

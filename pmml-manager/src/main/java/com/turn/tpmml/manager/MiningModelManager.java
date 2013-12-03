@@ -3,31 +3,39 @@
  */
 package com.turn.tpmml.manager;
 
-import java.util.*;
+import com.turn.tpmml.MiningFunctionType;
+import com.turn.tpmml.MiningModel;
+import com.turn.tpmml.MiningSchema;
+import com.turn.tpmml.Model;
+import com.turn.tpmml.MultipleModelMethodType;
+import com.turn.tpmml.PMML;
+import com.turn.tpmml.Predicate;
+import com.turn.tpmml.Segment;
+import com.turn.tpmml.Segmentation;
+import com.turn.tpmml.True;
 
-import com.turn.tpmml.*;
+import java.util.List;
 
 public class MiningModelManager extends ModelManager<MiningModel> {
 
 	private static final long serialVersionUID = 1L;
 	private MiningModel miningModel = null;
 
-
-	public MiningModelManager(){
+	public MiningModelManager() {
 	}
 
-	public MiningModelManager(PMML pmml){
+	public MiningModelManager(PMML pmml) {
 		this(pmml, find(pmml.getContent(), MiningModel.class));
 	}
 
-	public MiningModelManager(PMML pmml, MiningModel miningModel){
+	public MiningModelManager(PMML pmml, MiningModel miningModel) {
 		super(pmml);
 
 		this.miningModel = miningModel;
 	}
 
 	@Override
-	public MiningModel getModel(){
+	public MiningModel getModel() {
 		ensureNotNull(this.miningModel);
 
 		return this.miningModel;
@@ -39,10 +47,10 @@ public class MiningModelManager extends ModelManager<MiningModel> {
 
 	/**
 	 * @throws ModelManagerException If the Model already exists
-	 *
+	 * 
 	 * @see #getModel()
 	 */
-	public MiningModel createModel(MiningFunctionType miningFunction){
+	public MiningModel createModel(MiningFunctionType miningFunction) {
 		ensureNull(this.miningModel);
 
 		this.miningModel = new MiningModel(new MiningSchema(), miningFunction);
@@ -55,7 +63,7 @@ public class MiningModelManager extends ModelManager<MiningModel> {
 	/**
 	 * @throws ModelManagerException If the Segmentation does not exist
 	 */
-	public Segmentation getSegmentation(){
+	public Segmentation getSegmentation() {
 		MiningModel miningModel = getModel();
 
 		Segmentation segmentation = miningModel.getSegmentation();
@@ -67,7 +75,7 @@ public class MiningModelManager extends ModelManager<MiningModel> {
 	/**
 	 * @throws ModelManagerException If the Segmentation already exists
 	 */
-	public Segmentation createSegmentation(MultipleModelMethodType multipleModelMethod){
+	public Segmentation createSegmentation(MultipleModelMethodType multipleModelMethod) {
 		MiningModel miningModel = getModel();
 
 		Segmentation segmentation = miningModel.getSegmentation();
@@ -79,11 +87,11 @@ public class MiningModelManager extends ModelManager<MiningModel> {
 		return segmentation;
 	}
 
-	public Segment addSegment(Model model){
+	public Segment addSegment(Model model) {
 		return addSegment(new True(), model);
 	}
 
-	public Segment addSegment(Predicate predicate, Model model){
+	public Segment addSegment(Predicate predicate, Model model) {
 		Segment segment = new Segment();
 		segment.setPredicate(predicate);
 		segment.setModel(model);
@@ -93,7 +101,7 @@ public class MiningModelManager extends ModelManager<MiningModel> {
 		return segment;
 	}
 
-	public List<Segment> getSegments(){
+	public List<Segment> getSegments() {
 		return getSegmentation().getSegments();
 	}
 
@@ -101,8 +109,7 @@ public class MiningModelManager extends ModelManager<MiningModel> {
 		return miningModel.getFunctionName();
 	}
 
-
-	public MultipleModelMethodType  getMultipleMethodModel() {
+	public MultipleModelMethodType getMultipleMethodModel() {
 		return miningModel.getSegmentation().getMultipleModelMethod();
 	}
 }

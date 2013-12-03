@@ -3,10 +3,13 @@
  */
 package com.turn.tpmml.manager;
 
-import java.io.*;
-import java.util.*;
+import com.turn.tpmml.DataField;
+import com.turn.tpmml.FieldName;
+import com.turn.tpmml.MiningField;
+import com.turn.tpmml.OutputField;
 
-import com.turn.tpmml.*;
+import java.io.Serializable;
+import java.util.List;
 
 public interface Consumer extends Serializable {
 

@@ -3,53 +3,55 @@
  */
 package com.turn.tpmml.evaluator;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 class ClassificationMap extends LinkedHashMap<String, Double> implements Classification {
 
 	private static final long serialVersionUID = 1L;
 
-	ClassificationMap(){
+	ClassificationMap() {
 	}
 
-	public String getResult(){
+	public String getResult() {
 		Map.Entry<String, Double> result = null;
 
 		Collection<Map.Entry<String, Double>> entries = entrySet();
-		for(Map.Entry<String, Double> entry : entries){
-			if(result == null || (entry.getValue()).compareTo(result.getValue()) >= 0){
+		for (Map.Entry<String, Double> entry : entries) {
+			if (result == null || (entry.getValue()).compareTo(result.getValue()) >= 0) {
 				result = entry;
 			}
 		}
 
-		if(result == null){
+		if (result == null) {
 			throw new EvaluationException();
 		}
 
 		return result.getKey();
 	}
 
-	public Double getProbability(String value){
+	public Double getProbability(String value) {
 		Double result = get(value);
 
 		// The specified value was not encountered during scoring
-		if(result == null){
+		if (result == null) {
 			result = 0d;
 		}
 
 		return result;
 	}
 
-	void normalizeProbabilities(){
+	void normalizeProbabilities() {
 		double sum = 0;
 
 		Collection<Double> values = values();
-		for(Double value : values){
+		for (Double value : values) {
 			sum += value.doubleValue();
 		}
 
 		Collection<Map.Entry<String, Double>> entries = entrySet();
-		for(Map.Entry<String, Double> entry : entries){
+		for (Map.Entry<String, Double> entry : entries) {
 			entry.setValue(entry.getValue() / sum);
 		}
 	}

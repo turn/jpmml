@@ -3,18 +3,17 @@
  */
 package com.turn.tpmml.evaluator;
 
-import com.turn.tpmml.*;
+import com.turn.tpmml.Interval;
 
-import org.junit.*;
+import org.junit.Test;
 
-import com.turn.tpmml.evaluator.DiscretizationUtil;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class DiscretizationUtilTest {
 
 	@Test
-	public void contains(){
+	public void contains() {
 		Double min = Double.valueOf(Integer.MIN_VALUE);
 		Double max = Double.valueOf(Integer.MAX_VALUE);
 
@@ -43,8 +42,7 @@ public class DiscretizationUtilTest {
 		assertTrue(DiscretizationUtil.contains(zeroAndPositive, 1.0));
 	}
 
-	static
-	private Interval createInterval(Interval.Closure closure, Double left, Double right){
+	private static Interval createInterval(Interval.Closure closure, Double left, Double right) {
 		Interval interval = new Interval(closure);
 		interval.setLeftMargin(left);
 		interval.setRightMargin(right);

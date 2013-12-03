@@ -7,10 +7,10 @@ public class EvaluationException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
 
-	public EvaluationException(){
+	public EvaluationException() {
 	}
 
-	public EvaluationException(String message){
+	public EvaluationException(String message) {
 		super(message);
 	}
 }

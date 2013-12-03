@@ -78,8 +78,7 @@ public class StandardCodeFormatter implements CodeFormatter {
 		code.append(context.getIndentation()).append(keyword);
 		if (!(conditionnalExpression == null && keyword.equals("else"))) {
 			code.append(" (").append(conditionnalExpression).append(") {\n");
-		}
-		else {
+		} else {
 			code.append(" {\n");
 		}
 
@@ -124,7 +123,8 @@ public class StandardCodeFormatter implements CodeFormatter {
 
 	public void printVariable(StringBuilder code, TranslationContext context,
 			String variableName) {
-		addLine(code, context, "System.out.println(\"" + variableName + ": \" + " + variableName + ");");
+		addLine(code, context, "System.out.println(\"" +
+			variableName + ": \" + " + variableName + ");");
 	}
 
 }

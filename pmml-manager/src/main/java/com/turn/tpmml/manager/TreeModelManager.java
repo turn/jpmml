@@ -3,12 +3,20 @@
  */
 package com.turn.tpmml.manager;
 
-import java.util.*;
+import com.turn.tpmml.MiningFunctionType;
+import com.turn.tpmml.MiningSchema;
+import com.turn.tpmml.Node;
+import com.turn.tpmml.PMML;
+import com.turn.tpmml.Predicate;
+import com.turn.tpmml.ScoreDistribution;
+import com.turn.tpmml.TreeModel;
+import com.turn.tpmml.True;
 
-import com.turn.tpmml.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class TreeModelManager extends ModelManager<TreeModel> {
-
 
 	private static final long serialVersionUID = 1L;
 
@@ -18,41 +26,40 @@ public class TreeModelManager extends ModelManager<TreeModel> {
 
 	private Set<String> ids = null;
 
-
-	public TreeModelManager(){
+	public TreeModelManager() {
 	}
 
-	public TreeModelManager(PMML pmml){
+	public TreeModelManager(PMML pmml) {
 		this(pmml, find(pmml.getContent(), TreeModel.class));
 	}
 
-	public TreeModelManager(PMML pmml, TreeModel treeModel){
+	public TreeModelManager(PMML pmml, TreeModel treeModel) {
 		super(pmml);
 
 		this.treeModel = treeModel;
 	}
 
-	public String getSummary(){
+	public String getSummary() {
 		return "Tree";
 	}
 
 	@Override
-	public TreeModel getModel(){
+	public TreeModel getModel() {
 		ensureNotNull(this.treeModel);
 
 		return this.treeModel;
 	}
 
-	public TreeModel createClassificationModel(){
+	public TreeModel createClassificationModel() {
 		return createModel(MiningFunctionType.CLASSIFICATION);
 	}
 
 	/**
 	 * @throws ModelManagerException If the Model already exists
-	 *
+	 * 
 	 * @see #getModel()
 	 */
-	public TreeModel createModel(MiningFunctionType miningFunction){
+	public TreeModel createModel(MiningFunctionType miningFunction) {
 		ensureNull(this.treeModel);
 
 		this.treeModel = new TreeModel(new MiningSchema(), new Node(), miningFunction);
@@ -65,20 +72,20 @@ public class TreeModelManager extends ModelManager<TreeModel> {
 	/**
 	 * @return The root Node
 	 */
-	public Node getOrCreateRoot(){
+	public Node getOrCreateRoot() {
 
-		if(this.root == null){
+		if (this.root == null) {
 			TreeModel treeModel = getModel();
 
 			this.root = treeModel.getNode();
-			if(this.root == null){
+			if (this.root == null) {
 				this.root = new Node();
 
 				treeModel.setNode(this.root);
 			}
 
 			Predicate predicate = this.root.getPredicate();
-			if(predicate == null){
+			if (predicate == null) {
 				this.root.setPredicate(new True());
 			}
 		}
@@ -88,21 +95,21 @@ public class TreeModelManager extends ModelManager<TreeModel> {
 
 	/**
 	 * Adds a new Node to the root Node.
-	 *
+	 * 
 	 * @return The newly added Node
-	 *
+	 * 
 	 * @see #getOrCreateRoot()
 	 */
-	public Node addNode(Predicate predicate){
+	public Node addNode(Predicate predicate) {
 		return addNode(getOrCreateRoot(), predicate);
 	}
 
 	/**
 	 * Adds a new Node to the specified Node.
-	 *
+	 * 
 	 * @return The newly added Node
 	 */
-	public Node addNode(Node parentNode, Predicate predicate){
+	public Node addNode(Node parentNode, Predicate predicate) {
 		Node node = new Node();
 		node.setPredicate(predicate);
 
@@ -111,12 +118,12 @@ public class TreeModelManager extends ModelManager<TreeModel> {
 		return node;
 	}
 
-	public ScoreDistribution getOrAddScoreDistribution(Node node, String value){
+	public ScoreDistribution getOrAddScoreDistribution(Node node, String value) {
 		List<ScoreDistribution> scoreDistributions = node.getScoreDistributions();
 
-		for(ScoreDistribution scoreDistribution : scoreDistributions){
+		for (ScoreDistribution scoreDistribution : scoreDistributions) {
 
-			if((scoreDistribution.getValue()).equals(value)){
+			if ((scoreDistribution.getValue()).equals(value)) {
 				return scoreDistribution;
 			}
 		}
@@ -135,7 +142,6 @@ public class TreeModelManager extends ModelManager<TreeModel> {
 			// This function fills ids.
 			getAllNodesIdFrom(root);
 		}
-
 
 		return ids;
 	}

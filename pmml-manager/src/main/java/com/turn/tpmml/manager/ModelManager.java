@@ -3,12 +3,23 @@
  */
 package com.turn.tpmml.manager;
 
-import java.util.*;
+import com.turn.tpmml.DataType;
+import com.turn.tpmml.DerivedField;
+import com.turn.tpmml.FieldName;
+import com.turn.tpmml.FieldUsageType;
+import com.turn.tpmml.LocalTransformations;
+import com.turn.tpmml.MiningField;
+import com.turn.tpmml.MiningSchema;
+import com.turn.tpmml.Model;
+import com.turn.tpmml.OpType;
+import com.turn.tpmml.Output;
+import com.turn.tpmml.OutputField;
+import com.turn.tpmml.PMML;
 
-import com.turn.tpmml.*;
+import java.util.ArrayList;
+import java.util.List;
 
-abstract
-public class ModelManager<M extends Model> extends PMMLManager implements Consumer {
+public abstract class ModelManager<M extends Model> extends PMMLManager implements Consumer {
 
 	private static final long serialVersionUID = 1L;
 
@@ -16,60 +27,60 @@ public class ModelManager<M extends Model> extends PMMLManager implements Consum
 
 	private Output output = null;
 
-
-	public ModelManager(){
+	public ModelManager() {
 	}
 
-	public ModelManager(PMML pmml){
+	public ModelManager(PMML pmml) {
 		super(pmml);
 	}
 
 	/**
 	 * @throws ModelManagerException If the Model does not exist
 	 */
-	abstract
-	public M getModel();
+	public abstract M getModel();
 
 	/**
-	 * Convenience method for adding a field declaration to {@link DataDictionary} and {@link MiningSchema}.
-	 *
+	 * Convenience method for adding a field declaration to {@link DataDictionary} and
+	 * {@link MiningSchema}.
+	 * 
 	 * @see #addDataField(FieldName, String, OpType, DataType)
 	 * @see #addMiningField(FieldName, FieldUsageType)
 	 */
-	public void addField(FieldName name, String displayName, OpType opType, DataType dataType, FieldUsageType fieldUsageType){
+	public void addField(FieldName name, String displayName, OpType opType, DataType dataType,
+			FieldUsageType fieldUsageType) {
 		addDataField(name, displayName, opType, dataType);
 		addMiningField(name, fieldUsageType);
 	}
 
-	public List<FieldName> getActiveFields(){
+	public List<FieldName> getActiveFields() {
 		return getMiningFields(FieldUsageType.ACTIVE);
 	}
 
-	public FieldName getTarget(){
+	public FieldName getTarget() {
 		List<FieldName> fields = getPredictedFields();
 
-		if(fields.size() < 1){
+		if (fields.size() < 1) {
 			throw new ModelManagerException("No predicted fields");
 		} else
 
-		if(fields.size() > 1){
+		if (fields.size() > 1) {
 			throw new ModelManagerException("Too many predicted fields");
 		}
 
 		return fields.get(0);
 	}
 
-	public List<FieldName> getPredictedFields(){
+	public List<FieldName> getPredictedFields() {
 		return getMiningFields(FieldUsageType.PREDICTED);
 	}
 
-	public List<FieldName> getMiningFields(FieldUsageType fieldUsageType){
+	public List<FieldName> getMiningFields(FieldUsageType fieldUsageType) {
 		List<FieldName> result = new ArrayList<FieldName>();
 
 		List<MiningField> miningFields = getMiningSchema().getMiningFields();
-		for(MiningField miningField : miningFields){
+		for (MiningField miningField : miningFields) {
 
-			if((miningField.getUsageType()).equals(fieldUsageType)){
+			if ((miningField.getUsageType()).equals(fieldUsageType)) {
 				result.add(miningField.getName());
 			}
 		}
@@ -77,13 +88,13 @@ public class ModelManager<M extends Model> extends PMMLManager implements Consum
 		return result;
 	}
 
-	public MiningField getMiningField(FieldName name){
+	public MiningField getMiningField(FieldName name) {
 		List<MiningField> miningFields = getMiningSchema().getMiningFields();
 
 		return find(miningFields, name);
 	}
 
-	public MiningField addMiningField(FieldName name, FieldUsageType usageType){
+	public MiningField addMiningField(FieldName name, FieldUsageType usageType) {
 		MiningField miningField = new MiningField(name);
 		miningField.setUsageType(usageType);
 
@@ -93,20 +104,20 @@ public class ModelManager<M extends Model> extends PMMLManager implements Consum
 		return miningField;
 	}
 
-	public List<FieldName> getOutputFields(){
+	public List<FieldName> getOutputFields() {
 		List<FieldName> result = new ArrayList<FieldName>();
 
 		Output output = getOrCreateOutput();
 
 		List<OutputField> outputFields = output.getOutputFields();
-		for(OutputField outputField : outputFields){
+		for (OutputField outputField : outputFields) {
 			result.add(outputField.getName());
 		}
 
 		return result;
 	}
 
-	public OutputField getOutputField(FieldName name){
+	public OutputField getOutputField(FieldName name) {
 		Output output = getOrCreateOutput();
 
 		List<OutputField> outputFields = output.getOutputFields();
@@ -115,30 +126,30 @@ public class ModelManager<M extends Model> extends PMMLManager implements Consum
 	}
 
 	@Override
-	public DerivedField resolve(FieldName name){
+	public DerivedField resolve(FieldName name) {
 		LocalTransformations localTransformations = getOrCreateLocalTransformations();
 
 		List<DerivedField> derivedFields = localTransformations.getDerivedFields();
 
 		DerivedField derivedField = find(derivedFields, name);
-		if(derivedField == null){
+		if (derivedField == null) {
 			derivedField = super.resolve(name);
 		}
 
 		return derivedField;
 	}
 
-	public MiningSchema getMiningSchema(){
+	public MiningSchema getMiningSchema() {
 		return getModel().getMiningSchema();
 	}
 
-	public LocalTransformations getOrCreateLocalTransformations(){
+	public LocalTransformations getOrCreateLocalTransformations() {
 
-		if(this.localTransformations == null){
+		if (this.localTransformations == null) {
 			M model = getModel();
 
 			LocalTransformations localTransformations = model.getLocalTransformations();
-			if(localTransformations == null){
+			if (localTransformations == null) {
 				localTransformations = new LocalTransformations();
 
 				model.setLocalTransformations(localTransformations);
@@ -150,13 +161,13 @@ public class ModelManager<M extends Model> extends PMMLManager implements Consum
 		return this.localTransformations;
 	}
 
-	public Output getOrCreateOutput(){
+	public Output getOrCreateOutput() {
 
-		if(this.output == null){
+		if (this.output == null) {
 			M model = getModel();
 
 			Output output = model.getOutput();
-			if(output == null){
+			if (output == null) {
 				output = new Output();
 
 				model.setOutput(output);
@@ -168,18 +179,16 @@ public class ModelManager<M extends Model> extends PMMLManager implements Consum
 		return this.output;
 	}
 
-	static
-	protected void ensureNull(Object object) throws ModelManagerException {
+	protected static void ensureNull(Object object) throws ModelManagerException {
 
-		if(object != null){
+		if (object != null) {
 			throw new ModelManagerException();
 		}
 	}
 
-	static
-	protected void ensureNotNull(Object object) throws ModelManagerException {
+	protected static void ensureNotNull(Object object) throws ModelManagerException {
 
-		if(object == null){
+		if (object == null) {
 			throw new ModelManagerException();
 		}
 	}

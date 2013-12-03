@@ -3,23 +3,25 @@
  */
 package com.turn.tpmml.evaluator;
 
-import java.util.*;
+import com.turn.tpmml.FieldName;
 
-import com.turn.tpmml.*;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 
 public class EvaluatorUtil {
 
-	private EvaluatorUtil(){
+	private EvaluatorUtil() {
 	}
 
 	/**
 	 * @see Computable
 	 */
-	static
-	public Object decode(Object object){
+	public static Object decode(Object object) {
 
-		if(object instanceof Computable){
-			Computable<?> computable = (Computable<?>)object;
+		if (object instanceof Computable) {
+			Computable<?> computable = (Computable<?>) object;
 
 			return computable.getResult();
 		}
@@ -28,25 +30,24 @@ public class EvaluatorUtil {
 	}
 
 	/**
-	 * Decouples a {@link Map} instance from the current runtime environment by decoding both its keys and values.
-	 *
+	 * Decouples a {@link Map} instance from the current runtime environment by decoding both its
+	 * keys and values.
+	 * 
 	 * @see #decodeKeys(Map)
 	 * @see #decodeValues(Map)
 	 */
-	static
-	public Map<String, ?> decode(Map<FieldName, ?> map){
+	public static Map<String, ?> decode(Map<FieldName, ?> map) {
 		return decodeKeys(decodeValues(map));
 	}
 
 	/**
 	 * Replaces String keys with {@link FieldName} keys.
 	 */
-	static
-	public <V> Map<FieldName, V> encodeKeys(Map<String, V> map){
+	public static <V> Map<FieldName, V> encodeKeys(Map<String, V> map) {
 		Map<FieldName, V> result = new LinkedHashMap<FieldName, V>();
 
 		Collection<Map.Entry<String, V>> entries = map.entrySet();
-		for(Map.Entry<String, V> entry : entries){
+		for (Map.Entry<String, V> entry : entries) {
 			result.put(new FieldName(entry.getKey()), entry.getValue());
 		}
 
@@ -55,15 +56,14 @@ public class EvaluatorUtil {
 
 	/**
 	 * Replaces {@link FieldName} keys with String keys.
-	 *
+	 * 
 	 * @see FieldName#getValue()
 	 */
-	static
-	public <V> Map<String, V> decodeKeys(Map<FieldName, V> map){
+	public static <V> Map<String, V> decodeKeys(Map<FieldName, V> map) {
 		Map<String, V> result = new LinkedHashMap<String, V>();
 
 		Collection<Map.Entry<FieldName, V>> entries = map.entrySet();
-		for(Map.Entry<FieldName, V> entry : entries){
+		for (Map.Entry<FieldName, V> entry : entries) {
 			result.put((entry.getKey()).getValue(), entry.getValue());
 		}
 
@@ -72,15 +72,14 @@ public class EvaluatorUtil {
 
 	/**
 	 * Replaces {@link Computable} complex values with simple values.
-	 *
+	 * 
 	 * @see Computable
 	 */
-	static
-	public <K> Map<K, ?> decodeValues(Map<K, ?> map){
+	public static <K> Map<K, ?> decodeValues(Map<K, ?> map) {
 		Map<K, Object> result = new LinkedHashMap<K, Object>();
 
 		Collection<? extends Map.Entry<K, ?>> entries = map.entrySet();
-		for(Map.Entry<K, ?> entry : entries){
+		for (Map.Entry<K, ?> entry : entries) {
 			result.put(entry.getKey(), decode(entry.getValue()));
 		}
 

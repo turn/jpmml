@@ -3,7 +3,14 @@
  */
 package com.turn.tpmml.manager;
 
-import com.turn.tpmml.*;
+import com.turn.tpmml.MiningModel;
+import com.turn.tpmml.Model;
+import com.turn.tpmml.NeuralNetwork;
+import com.turn.tpmml.PMML;
+import com.turn.tpmml.RegressionModel;
+import com.turn.tpmml.Scorecard;
+import com.turn.tpmml.TreeModel;
+
 
 /**
  * Allow to get a manager for a model.
@@ -40,8 +47,7 @@ public class ModelManagerFactory {
 		throw new UnsupportedFeatureException(model);
 	}
 
-	static
-	public ModelManagerFactory getInstance(){
+	public static ModelManagerFactory getInstance() {
 		return new ModelManagerFactory();
 	}
 

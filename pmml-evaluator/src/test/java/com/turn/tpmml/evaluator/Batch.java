@@ -3,9 +3,7 @@
  */
 package com.turn.tpmml.evaluator;
 
-import java.io.*;
-
-import com.turn.tpmml.evaluator.Evaluator;
+import java.io.InputStream;
 
 public interface Batch {
 

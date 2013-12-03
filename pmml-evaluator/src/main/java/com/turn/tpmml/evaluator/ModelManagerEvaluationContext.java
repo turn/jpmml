@@ -3,41 +3,40 @@
  */
 package com.turn.tpmml.evaluator;
 
-import java.util.*;
+import com.turn.tpmml.DerivedField;
+import com.turn.tpmml.FieldName;
+import com.turn.tpmml.manager.ModelManager;
 
-
-import com.turn.tpmml.*;
-
-import com.turn.tpmml.manager.*;
+import java.util.Map;
 
 public class ModelManagerEvaluationContext extends EvaluationContext {
 
 	private ModelManager<?> modelManager = null;
 
-
-	public ModelManagerEvaluationContext(ModelManager<?> modelManager, Map<FieldName, ?> parameters){
+	public ModelManagerEvaluationContext(ModelManager<?> modelManager,
+										Map<FieldName, ?> parameters) {
 		super(parameters);
 
 		setModelManager(modelManager);
 	}
 
 	@Override
-	public DerivedField resolve(FieldName name){
+	public DerivedField resolve(FieldName name) {
 		ModelManager<?> modelManager = getModelManager();
 
 		return modelManager.resolve(name);
 	}
 
 	@Override
-	public ModelManagerEvaluationContext clone(){
-		return (ModelManagerEvaluationContext)super.clone();
+	public ModelManagerEvaluationContext clone() {
+		return (ModelManagerEvaluationContext) super.clone();
 	}
 
-	public ModelManager<?> getModelManager(){
+	public ModelManager<?> getModelManager() {
 		return this.modelManager;
 	}
 
-	private void setModelManager(ModelManager<?> modelManager){
+	private void setModelManager(ModelManager<?> modelManager) {
 		this.modelManager = modelManager;
 	}
 }

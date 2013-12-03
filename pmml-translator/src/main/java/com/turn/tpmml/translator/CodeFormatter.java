@@ -8,8 +8,8 @@ public interface CodeFormatter {
 		MINUS_EQUAL("-="),
 		MULT_EQUAL("*="),
 		DIV_EQUAL("/="),
-		XOR_EQUAL("^="),
-		;
+		XOR_EQUAL("^=");
+
 
 	    private final String value;
 
@@ -141,8 +141,10 @@ public interface CodeFormatter {
 			String keyword, String conditionnalExpression);
 
 	/**
-	 * End the control flow.
-	 * See {@link CodeFormatter#beginControlFlowStructure(StringBuilder, TranslationContext, String, String)}
+	 * End the control flow. See
+	 * {@link CodeFormatter#beginControlFlowStructure(StringBuilder,
+	 *  TranslationContext, String, String)}
+	 * 
 	 * @param code ...
 	 * @param context ...
 	 */
@@ -150,30 +152,32 @@ public interface CodeFormatter {
 
 	/**
 	 * Append and prepend double quotes around the string given in argument.
-	 *
-	 *
+	 * 
+	 * 
 	 */
-	 public String stringify(String str);
+	public String stringify(String str);
 
-	 /**
-	  * Allow the user to print something with System.out.println.
-	  *
-	  * @param code ...
-	  * @param context ...
-	  * @param statement The string that will be printed. We add it as-is. The user has to
-	  * think about escaping when he want to print the value of a variable. For example, to print
-	  * the value of 'var', one should have: statement = "var is equal to \" + var + \".". But if you only
-	  * want to print the name of a variable, see
-	  * {@link CodeFormatter#printVariable(StringBuilder, TranslationContext, String)}.
-	  */
-	 public void printStatement(StringBuilder code, TranslationContext context, String statement);
+	/**
+	 * Allow the user to print something with System.out.println.
+	 * 
+	 * @param code ...
+	 * @param context ...
+	 * @param statement The string that will be printed. We add it as-is. The user has to think
+	 *            about escaping when he want to print the value of a variable. For example, to
+	 *            print the value of 'var', one should have: statement =
+	 *            "var is equal to \" + var + \".". But if you only want to print the name of a
+	 *            variable, see
+	 *            {@link CodeFormatter#printVariable(StringBuilder, TranslationContext, String)}.
+	 */
+	public void printStatement(StringBuilder code, TranslationContext context, String statement);
 
-	 /**
-	  * Print the value of a variable on standard output in the following format: "var: valueOfVar\n".
-	  *
-	  * @param code ...
-	  * @param context ...
-	  * @param variableName The name of the variable to print.
-	  */
-	 public void printVariable(StringBuilder code, TranslationContext context, String variableName);
+	/**
+	 * Print the value of a variable on standard output in the following format:
+	 * "var: valueOfVar\n".
+	 * 
+	 * @param code ...
+	 * @param context ...
+	 * @param variableName The name of the variable to print.
+	 */
+	public void printVariable(StringBuilder code, TranslationContext context, String variableName);
 }

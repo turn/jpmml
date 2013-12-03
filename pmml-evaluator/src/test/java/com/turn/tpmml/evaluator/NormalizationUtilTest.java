@@ -3,13 +3,15 @@
  */
 package com.turn.tpmml.evaluator;
 
-import com.turn.tpmml.*;
+import com.turn.tpmml.FieldName;
+import com.turn.tpmml.LinearNorm;
+import com.turn.tpmml.NormContinuous;
+import com.turn.tpmml.OutlierTreatmentMethodType;
 
-import org.junit.*;
+import org.junit.Before;
+import org.junit.Test;
 
-import com.turn.tpmml.evaluator.NormalizationUtil;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class NormalizationUtilTest {
 
@@ -36,7 +38,7 @@ public class NormalizationUtilTest {
 	public void testNormalizeOutliers() {
 		// as is method
 		assertEquals(-0.16455, NormalizationUtil.normalize(norm, -1.0), 1e-5);
-		assertEquals( 1.04544, NormalizationUtil.normalize(norm, 12.2), 1e-5);
+		assertEquals(1.04544, NormalizationUtil.normalize(norm, 12.2), 1e-5);
 
 		// as missing values method
 		norm.setOutliers(OutlierTreatmentMethodType.AS_MISSING_VALUES);

@@ -1,8 +1,8 @@
 package com.turn.tpmml.manager;
 
-import java.util.NoSuchElementException;
-
 import com.turn.tpmml.FieldName;
+
+import java.util.NoSuchElementException;
 
 /**
  * This Interface handles the results of an evaluation.

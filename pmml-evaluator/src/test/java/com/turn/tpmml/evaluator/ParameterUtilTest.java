@@ -3,22 +3,31 @@
  */
 package com.turn.tpmml.evaluator;
 
-import java.util.*;
-
-import com.turn.tpmml.*;
+import com.turn.tpmml.DataField;
+import com.turn.tpmml.DataType;
+import com.turn.tpmml.FieldName;
+import com.turn.tpmml.Interval;
 import com.turn.tpmml.Interval.Closure;
-import com.turn.tpmml.Value.*;
+import com.turn.tpmml.InvalidValueTreatmentMethodType;
+import com.turn.tpmml.MiningField;
+import com.turn.tpmml.OpType;
+import com.turn.tpmml.OutlierTreatmentMethodType;
+import com.turn.tpmml.Value;
+import com.turn.tpmml.Value.Property;
 
-import org.junit.*;
+import java.util.ArrayList;
+import java.util.List;
 
-import com.turn.tpmml.evaluator.ParameterUtil;
+import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 
 public class ParameterUtilTest {
 
 	@Test
-	public void prepare(){
+	public void prepare() {
 		FieldName name = new FieldName("x");
 
 		DataField dataField = new DataField(name, OpType.CONTINUOUS, DataType.DOUBLE);
@@ -121,7 +130,7 @@ public class ParameterUtilTest {
 	}
 
 	@Test
-	public void equals(){
+	public void equals() {
 		assertTrue(ParameterUtil.equals("1", "1"));
 
 		assertTrue(ParameterUtil.equals(1, "1"));
@@ -136,7 +145,7 @@ public class ParameterUtilTest {
 	}
 
 	@Test
-	public void compare(){
+	public void compare() {
 		assertTrue(ParameterUtil.compare("1", "1") == 0);
 
 		assertTrue(ParameterUtil.compare(1, "1") == 0);
@@ -151,7 +160,7 @@ public class ParameterUtilTest {
 	}
 
 	@Test
-	public void getDataType(){
+	public void getDataType() {
 		assertEquals(DataType.STRING, ParameterUtil.getDataType("value"));
 
 		assertEquals(DataType.INTEGER, ParameterUtil.getDataType(1));
@@ -160,7 +169,7 @@ public class ParameterUtilTest {
 	}
 
 	@Test
-	public void getResultDataType(){
+	public void getResultDataType() {
 		assertEquals(DataType.DOUBLE, ParameterUtil.getResultDataType(1d, 1f));
 		assertEquals(DataType.DOUBLE, ParameterUtil.getResultDataType(1d, 1));
 
@@ -172,7 +181,7 @@ public class ParameterUtilTest {
 	}
 
 	@Test
-	public void getConstantDataType(){
+	public void getConstantDataType() {
 		assertEquals(DataType.FLOAT, ParameterUtil.getConstantDataType("1.0"));
 		assertEquals(DataType.FLOAT, ParameterUtil.getConstantDataType("1.0E0"));
 		assertEquals(DataType.STRING, ParameterUtil.getConstantDataType("1.0X"));
@@ -182,8 +191,7 @@ public class ParameterUtilTest {
 		assertEquals(DataType.STRING, ParameterUtil.getConstantDataType("1X"));
 	}
 
-	static
-	private Value createValue(String value, Value.Property property){
+	private static Value createValue(String value, Value.Property property) {
 		Value result = new Value(value);
 		result.setProperty(property);
 

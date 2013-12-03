@@ -1,10 +1,11 @@
 package com.turn.tpmml.manager;
 
+import com.turn.tpmml.FieldName;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
-import com.turn.tpmml.FieldName;
 
 /**
  * This is the mother class of the Result hierarchy.
@@ -29,7 +30,8 @@ public class PMMLResult implements IPMMLResult {
 
 	public Object getValue(FieldName key) throws NoSuchElementException {
 		if (!results.containsKey(key)) {
-			throw new NoSuchElementException("There is no field " + key.getValue() + " in the result.");
+			throw new NoSuchElementException("There is no field " + key.getValue() +
+					" in the result.");
 		}
 
 		return results.get(key);
@@ -39,22 +41,19 @@ public class PMMLResult implements IPMMLResult {
 		return results.containsKey(key);
 	}
 
-    /**
-     * Associate key with value. If key already exists, the old value is
-     * overridden.
-     *
-     * @param key The key.
-     * @param value The value.
-     */
+	/**
+	 * Associate key with value. If key already exists, the old value is overridden.
+	 * 
+	 * @param key The key.
+	 * @param value The value.
+	 */
 	public void put(FieldName key, Object value) {
 		results.put(key, value);
 	}
 
-
-
 	/**
 	 * Take a map and add all the content of the result to this map.
-	 *
+	 * 
 	 * @param m The map to fill.
 	 * @return
 	 */
@@ -66,7 +65,7 @@ public class PMMLResult implements IPMMLResult {
 
 	public void absorb(Map<FieldName, Object> m) {
 		for (Map.Entry<FieldName, Object> e : m.entrySet()) {
-				results.put(e.getKey(), e.getValue());
+			results.put(e.getKey(), e.getValue());
 		}
 	}
 
@@ -79,12 +78,12 @@ public class PMMLResult implements IPMMLResult {
 			for (Map.Entry<FieldName, Object> e : results.entrySet()) {
 				return e.getValue();
 			}
-		}
-		else {
-			if (!isEmpty())
+		} else {
+			if (!isEmpty()) {				
 				throw new NoSuchElementException("There is more than one result.");
-			else
+			} else {
 				throw new NoSuchElementException("There is no result.");
+			}
 		}
 		return null;
 	}

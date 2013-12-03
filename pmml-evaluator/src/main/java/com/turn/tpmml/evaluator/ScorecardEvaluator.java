@@ -1,9 +1,5 @@
 package com.turn.tpmml.evaluator;
 
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-
 import com.turn.tpmml.Attribute;
 import com.turn.tpmml.Characteristic;
 import com.turn.tpmml.FieldName;
@@ -13,6 +9,10 @@ import com.turn.tpmml.Scorecard;
 import com.turn.tpmml.manager.IPMMLResult;
 import com.turn.tpmml.manager.ScoreCardModelManager;
 import com.turn.tpmml.manager.ScoreCardPMMLResult;
+
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class ScorecardEvaluator extends ScoreCardModelManager implements Evaluator {
 
@@ -27,11 +27,11 @@ public class ScorecardEvaluator extends ScoreCardModelManager implements Evaluat
 		super(pmml, scorecard);
 	}
 
-	public Object prepare(FieldName name, Object value){
+	public Object prepare(FieldName name, Object value) {
 		return ParameterUtil.prepare(getDataField(name), getMiningField(name), value);
 	}
 
-	public ScorecardEvaluator(ScoreCardModelManager parent){
+	public ScorecardEvaluator(ScoreCardModelManager parent) {
 		this(parent.getPmml(), parent.getModel());
 	}
 
@@ -40,41 +40,37 @@ public class ScorecardEvaluator extends ScoreCardModelManager implements Evaluat
 		Double score = 0.0;
 		EvaluationContext context = new ModelManagerEvaluationContext(this, parameters);
 		TreeMap<Double, String> diffToReasonCode = new TreeMap<Double, String>();
-		List<Characteristic> cl
-			= scorecard.getCharacteristics().getCharacteristics();
+		List<Characteristic> cl = scorecard.getCharacteristics().getCharacteristics();
 		for (Characteristic c : cl) {
 			List<Attribute> al = c.getAttributes();
 			for (Attribute a : al) {
 				// Evaluate the predicate.
-				Boolean predicateValue = PredicateUtil
-										.evaluate(a.getPredicate(),
-														   context);
+				Boolean predicateValue = PredicateUtil.evaluate(a.getPredicate(), context);
 				// If it is valid, and the value is true, update the score.
 				if (predicateValue != null && predicateValue.booleanValue()) {
 					score += a.getPartialScore();
 
 					double diff = 0;
 					switch (reasonCodeAlgorithm) {
-						case POINTS_BELOW:
-							diff = c.getBaselineScore() - a.getPartialScore();
-							break;
-						case POINTS_ABOVE:
-							diff = a.getPartialScore() - c.getBaselineScore();
-							break;
-						default:
-							// We should never be there.
-							assert false;
-							break;
+					case POINTS_BELOW:
+						diff = c.getBaselineScore() - a.getPartialScore();
+						break;
+					case POINTS_ABOVE:
+						diff = a.getPartialScore() - c.getBaselineScore();
+						break;
+					default:
+						// We should never be there.
+						assert false;
+						break;
 					}
 
-					if (a.getReasonCode()!=null && !a.getReasonCode().isEmpty()) {
+					if (a.getReasonCode() != null && !a.getReasonCode().isEmpty()) {
 						diffToReasonCode.put(diff, a.getReasonCode());
-					}
-					else {
+					} else {
 						diffToReasonCode.put(diff, c.getReasonCode());
 					}
 					break;
-				// FIXME: Add a missing value strategy.
+					// FIXME: Add a missing value strategy.
 				}
 			}
 		}

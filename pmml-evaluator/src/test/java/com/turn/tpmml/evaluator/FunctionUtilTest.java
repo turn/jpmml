@@ -3,21 +3,20 @@
  */
 package com.turn.tpmml.evaluator;
 
-import java.util.*;
+import com.turn.tpmml.DataType;
 
-import com.turn.tpmml.*;
+import java.util.Arrays;
+import java.util.List;
 
-import org.junit.*;
+import org.junit.Test;
 
-import com.turn.tpmml.evaluator.FunctionUtil;
-import com.turn.tpmml.evaluator.ParameterUtil;
+import static org.junit.Assert.assertEquals;
 
-import static org.junit.Assert.*;
 
 public class FunctionUtilTest {
 
 	@Test
-	public void evaluateArithmeticFunctions(){
+	public void evaluateArithmeticFunctions() {
 		assertEquals(4d, evaluate("+", 1d, 3d));
 		assertEquals(-2d, evaluate("-", 1d, 3d));
 		assertEquals(3d, evaluate("*", 1d, 3d));
@@ -36,7 +35,7 @@ public class FunctionUtilTest {
 	}
 
 	@Test
-	public void evaluateAggregateFunctions(){
+	public void evaluateAggregateFunctions() {
 		List<Integer> values = Arrays.asList(1, 2, 3);
 
 		Object min = evaluate("min", values);
@@ -61,7 +60,7 @@ public class FunctionUtilTest {
 	}
 
 	@Test
-	public void evaluateMathFunctions(){
+	public void evaluateMathFunctions() {
 		assertEquals(DataType.DOUBLE, ParameterUtil.getDataType(evaluate("log10", 1)));
 		assertEquals(DataType.FLOAT, ParameterUtil.getDataType(evaluate("log10", 1f)));
 
@@ -100,16 +99,16 @@ public class FunctionUtilTest {
 	}
 
 	@Test
-	public void evaluateValueFunctions(){
-		assertEquals(Boolean.TRUE, evaluate("isMissing", (String)null));
+	public void evaluateValueFunctions() {
+		assertEquals(Boolean.TRUE, evaluate("isMissing", (String) null));
 		assertEquals(Boolean.FALSE, evaluate("isMissing", "value"));
 
 		assertEquals(Boolean.TRUE, evaluate("isNotMissing", "value"));
-		assertEquals(Boolean.FALSE, evaluate("isNotMissing", (String)null));
+		assertEquals(Boolean.FALSE, evaluate("isNotMissing", (String) null));
 	}
 
 	@Test
-	public void evaluateComparisonFunctions(){
+	public void evaluateComparisonFunctions() {
 		assertEquals(Boolean.TRUE, evaluate("equal", 1, 1d));
 		assertEquals(Boolean.TRUE, evaluate("equal", 1d, 1d));
 
@@ -130,7 +129,7 @@ public class FunctionUtilTest {
 	}
 
 	@Test
-	public void evaluateBinaryFunctions(){
+	public void evaluateBinaryFunctions() {
 		assertEquals(Boolean.TRUE, evaluate("and", Boolean.TRUE, Boolean.TRUE));
 		assertEquals(Boolean.TRUE, evaluate("and", Boolean.TRUE, Boolean.TRUE, Boolean.TRUE));
 
@@ -144,13 +143,13 @@ public class FunctionUtilTest {
 	}
 
 	@Test
-	public void evaluateUnaryFunction(){
+	public void evaluateUnaryFunction() {
 		assertEquals(Boolean.TRUE, evaluate("not", Boolean.FALSE));
 		assertEquals(Boolean.FALSE, evaluate("not", Boolean.TRUE));
 	}
 
 	@Test
-	public void evaluateValueListFunctions(){
+	public void evaluateValueListFunctions() {
 		assertEquals(Boolean.TRUE, evaluate("isIn", "3", "1", "2", "3"));
 		assertEquals(Boolean.TRUE, evaluate("isNotIn", "0", "1", "2", "3"));
 
@@ -162,7 +161,7 @@ public class FunctionUtilTest {
 	}
 
 	@Test
-	public void evaluateIfFunction(){
+	public void evaluateIfFunction() {
 		assertEquals("left", evaluate("if", Boolean.TRUE, "left"));
 		assertEquals("left", evaluate("if", Boolean.TRUE, "left", "right"));
 
@@ -171,7 +170,7 @@ public class FunctionUtilTest {
 	}
 
 	@Test
-	public void evaluateStringFunctions(){
+	public void evaluateStringFunctions() {
 		assertEquals("VALUE", evaluate("uppercase", "Value"));
 		assertEquals("value", evaluate("lowercase", "Value"));
 
@@ -184,13 +183,11 @@ public class FunctionUtilTest {
 		assertEquals("value", evaluate("trimBlanks", "\tvalue\t"));
 	}
 
-	static
-	private Object evaluate(String name, Object... values){
+	private static Object evaluate(String name, Object... values) {
 		return evaluate(name, Arrays.asList(values));
 	}
 
-	static
-	private Object evaluate(String name, List<?> values){
+	private static Object evaluate(String name, List<?> values) {
 		return FunctionUtil.evaluate(name, values);
 	}
 }

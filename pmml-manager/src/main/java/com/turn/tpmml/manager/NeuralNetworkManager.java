@@ -3,9 +3,24 @@
  */
 package com.turn.tpmml.manager;
 
-import java.util.*;
+import com.turn.tpmml.ActivationFunctionType;
+import com.turn.tpmml.Connection;
+import com.turn.tpmml.DataType;
+import com.turn.tpmml.DerivedField;
+import com.turn.tpmml.MiningFunctionType;
+import com.turn.tpmml.MiningSchema;
+import com.turn.tpmml.NeuralInput;
+import com.turn.tpmml.NeuralInputs;
+import com.turn.tpmml.NeuralLayer;
+import com.turn.tpmml.NeuralNetwork;
+import com.turn.tpmml.NeuralOutput;
+import com.turn.tpmml.NeuralOutputs;
+import com.turn.tpmml.Neuron;
+import com.turn.tpmml.NormContinuous;
+import com.turn.tpmml.OpType;
+import com.turn.tpmml.PMML;
 
-import com.turn.tpmml.*;
+import java.util.List;
 
 public class NeuralNetworkManager extends ModelManager<NeuralNetwork> {
 
@@ -14,7 +29,6 @@ public class NeuralNetworkManager extends ModelManager<NeuralNetwork> {
 	private NeuralNetwork neuralNetwork = null;
 
 	private int neuronCount = 0;
-
 
 	public NeuralNetworkManager() {
 	}
@@ -28,12 +42,12 @@ public class NeuralNetworkManager extends ModelManager<NeuralNetwork> {
 
 		this.neuralNetwork = neuralNetwork;
 
-		if(this.neuralNetwork != null){
+		if (this.neuralNetwork != null) {
 			this.neuronCount = getNeuronCount();
 		}
 	}
 
-	public String getSummary(){
+	public String getSummary() {
 		return "Neural network";
 	}
 
@@ -46,13 +60,15 @@ public class NeuralNetworkManager extends ModelManager<NeuralNetwork> {
 
 	/**
 	 * @throws ModelManagerException If the Model already exists
-	 *
+	 * 
 	 * @see #getModel()
 	 */
-	public NeuralNetwork createModel(MiningFunctionType miningFunction, ActivationFunctionType activationFunction) {
+	public NeuralNetwork createModel(MiningFunctionType miningFunction,
+			ActivationFunctionType activationFunction) {
 		ensureNull(this.neuralNetwork);
 
-		this.neuralNetwork = new NeuralNetwork(new MiningSchema(), new NeuralInputs(), miningFunction, activationFunction);
+		this.neuralNetwork = new NeuralNetwork(new MiningSchema(), new NeuralInputs(),
+				miningFunction, activationFunction);
 
 		getModels().add(this.neuralNetwork);
 
@@ -76,7 +92,7 @@ public class NeuralNetworkManager extends ModelManager<NeuralNetwork> {
 		return neuralInput;
 	}
 
-	public List<NeuralLayer> getNeuralLayers(){
+	public List<NeuralLayer> getNeuralLayers() {
 		NeuralNetwork neuralNetwork = getModel();
 
 		return neuralNetwork.getNeuralLayers();
@@ -90,13 +106,13 @@ public class NeuralNetworkManager extends ModelManager<NeuralNetwork> {
 		return neuralLayer;
 	}
 
-	public int getNeuronCount(){
+	public int getNeuronCount() {
 		int count = 0;
 
 		count += (getNeuralInputs()).size();
 
 		List<NeuralLayer> neuralLayers = getNeuralLayers();
-		for(NeuralLayer neuralLayer : neuralLayers){
+		for (NeuralLayer neuralLayer : neuralLayers) {
 			count += (neuralLayer.getNeurons()).size();
 		}
 
@@ -112,15 +128,13 @@ public class NeuralNetworkManager extends ModelManager<NeuralNetwork> {
 		return neuron;
 	}
 
-	static
-	public void addConnection(NeuralInput from, Neuron to, double weight) {
+	public static void addConnection(NeuralInput from, Neuron to, double weight) {
 		Connection connection = new Connection(from.getId(), weight);
 
 		(to.getConnections()).add(connection);
 	}
 
-	static
-	public void addConnection(Neuron from, Neuron to, double weight) {
+	public static void addConnection(Neuron from, Neuron to, double weight) {
 		Connection connection = new Connection(from.getId(), weight);
 
 		(to.getConnections()).add(connection);
@@ -130,7 +144,7 @@ public class NeuralNetworkManager extends ModelManager<NeuralNetwork> {
 		NeuralNetwork neuralNetwork = getModel();
 
 		NeuralOutputs neuralOutputs = neuralNetwork.getNeuralOutputs();
-		if(neuralOutputs == null){
+		if (neuralOutputs == null) {
 			neuralOutputs = new NeuralOutputs();
 
 			neuralNetwork.setNeuralOutputs(neuralOutputs);
@@ -150,7 +164,7 @@ public class NeuralNetworkManager extends ModelManager<NeuralNetwork> {
 		return output;
 	}
 
-	private String nextId(){
+	private String nextId() {
 		return String.valueOf(this.neuronCount++);
 	}
 }
