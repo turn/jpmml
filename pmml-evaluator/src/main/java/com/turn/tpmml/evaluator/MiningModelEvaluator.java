@@ -77,6 +77,8 @@ public class MiningModelEvaluator extends MiningModelManager implements Evaluato
 	// We can convert anything to an Object type. So the cast is legitimate.
 	@SuppressWarnings({ "unchecked" })
 	public IPMMLResult evaluate(Map<FieldName, ?> parameters) {
+		// FIXME: Add another way to handle exception than returning null
+		// and turn off the error.
 		try {
 			switch (getFunctionType()) {
 			case CLASSIFICATION:

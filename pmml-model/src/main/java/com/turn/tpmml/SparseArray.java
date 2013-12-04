@@ -3,23 +3,20 @@
  */
 package com.turn.tpmml;
 
-import java.util.*;
+import java.util.List;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlTransient;
+
 
 @SuppressWarnings("restriction")
 @XmlTransient
-abstract
-public class SparseArray extends PMMLObject {
- 
+abstract public class SparseArray extends PMMLObject {
+
 	private static final long serialVersionUID = 1L;
 
-	abstract
-	public List<Integer> getIndices();
+	public abstract List<Integer> getIndices();
 
-	abstract
-	public Integer getN();
+	public abstract Integer getN();
 
-	abstract
-	public void setN(Integer n);
+	public abstract void setN(Integer n);
 }
