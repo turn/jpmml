@@ -9,8 +9,10 @@ import com.turn.tpmml.evaluator.MiningModelEvaluator;
 import com.turn.tpmml.evaluator.ModelEvaluatorFactory;
 import com.turn.tpmml.evaluator.RegressionModelEvaluator;
 import com.turn.tpmml.manager.IPMMLResult;
+import com.turn.tpmml.manager.ManagerException;
 import com.turn.tpmml.manager.ModelManager;
 import com.turn.tpmml.manager.PMMLManager;
+import com.turn.tpmml.manager.UnsupportedFeatureException;
 import com.turn.tpmml.translator.PmmlToJavaTranslator;
 import com.turn.tpmml.translator.TranslationContext;
 
@@ -78,9 +80,9 @@ public class BaseModelTest {
 				try {
 					executeAndCompareOutput(i, compiledModel, evaluator, manual, nameToValue);
 				} catch (EvaluationException ee) {
-					if (ee.getMessage().startsWith("Missing parameter ") &&
+					if ((ee.getMessage().startsWith("Missing parameter ")) &&
 							(evaluator instanceof RegressionModelEvaluator ||
-							evaluator instanceof MiningModelEvaluator)) {
+									evaluator instanceof MiningModelEvaluator)) {
 						// This is fine, the way we generate our test
 						// doesn't fit with the input for the regression model.
 						// So in order to keep this way of thinking, we just
@@ -90,6 +92,8 @@ public class BaseModelTest {
 						// to the user.
 						throw ee;
 					}
+				} catch (UnsupportedFeatureException ee) {
+					// Target is currently missing.
 				}
 			}
 		}
@@ -147,15 +151,19 @@ public class BaseModelTest {
 
 		// if we get here then value1==value2
 		// now evaluate value3 and compare against value1
+		IPMMLResult resEval = null;
 		Object value3 = null;
-
 		try {
-			value3 =
-					evaluateModel(evaluator, nameToValue).getValue(
-							(PMMLManager.getOutputField((ModelManager<?>) evaluator).getName()));
+			resEval = evaluateModel(evaluator, nameToValue);
+			if (resEval != null) {
+				value3 =
+						resEval.getValue((PMMLManager.getOutputField((ModelManager<?>) evaluator)
+								.getName()));
+			}
+
 		} catch (NoSuchElementException e) {
 			value3 = null;
-		} catch (Exception e) {
+		} catch (ManagerException e) {
 			value3 = null;
 		}
 
@@ -182,7 +190,7 @@ public class BaseModelTest {
 				!explanation1.equals(explanation2))) {
 			if (!(value1 != null && value2 != null && value1 instanceof Double &&
 					(((((Double) value1) + 1E-6) > ((Double) value2)) &&
-					(((Double) value1 - 1E-6) < ((Double) value2))))) {
+							(((Double) value1 - 1E-6) < ((Double) value2))))) {
 				logger.info((secondTest ? "Second " : "First ") + "test failed. Value1 = " +
 						value1 + "; value2 = " + value2 + "; explanation1 = " + explanation1 +
 						"; explanation2 = " + explanation2);

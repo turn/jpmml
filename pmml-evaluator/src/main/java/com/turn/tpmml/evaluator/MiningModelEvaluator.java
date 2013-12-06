@@ -6,8 +6,8 @@ import com.turn.tpmml.MiningModel;
 import com.turn.tpmml.MultipleModelMethodType;
 import com.turn.tpmml.PMML;
 import com.turn.tpmml.Segment;
-
 import com.turn.tpmml.manager.IPMMLResult;
+import com.turn.tpmml.manager.ManagerException;
 import com.turn.tpmml.manager.MiningModelManager;
 import com.turn.tpmml.manager.ModelManager;
 import com.turn.tpmml.manager.PMMLResult;
@@ -62,7 +62,8 @@ public class MiningModelEvaluator extends MiningModelManager implements Evaluato
 	 * Allow to get a unique id for each segment. It is useful because we can't rely on the id from
 	 * the pmml that might contain a dot, or that can be anything.
 	 * 
-	 * @param s The segment we want to identify.
+	 * @param s
+	 *            The segment we want to identify.
 	 * @return His id.
 	 */
 	private String getId(Segment s) {
@@ -76,9 +77,9 @@ public class MiningModelEvaluator extends MiningModelManager implements Evaluato
 
 	// We can convert anything to an Object type. So the cast is legitimate.
 	@SuppressWarnings({ "unchecked" })
-	public IPMMLResult evaluate(Map<FieldName, ?> parameters) {
+	public IPMMLResult evaluate(Map<FieldName, ?> parameters) throws EvaluationException {
 		// FIXME: Add another way to handle exception than returning null
-		// and turn off the error.
+		// and turning off the error.
 		try {
 			switch (getFunctionType()) {
 			case CLASSIFICATION:
@@ -86,11 +87,11 @@ public class MiningModelEvaluator extends MiningModelManager implements Evaluato
 						getOutputField(this));
 			case REGRESSION:
 				return evaluateRegression((Map<FieldName, Object>) parameters,
-										getOutputField(this));
+						getOutputField(this));
 			default:
 				throw new UnsupportedOperationException();
 			}
-		} catch (Exception e) {
+		} catch (ManagerException e) {
 			return null;
 		}
 	}
@@ -98,10 +99,12 @@ public class MiningModelEvaluator extends MiningModelManager implements Evaluato
 	/**
 	 * Get a double value from the object.
 	 * 
-	 * @param obj An object representing a double. Must be a Double, or a String representing a
+	 * @param obj
+	 *            An object representing a double. Must be a Double, or a String representing a
 	 *            double.
 	 * @return The value of the object in Double.
-	 * @throws EvaluationException If the value is not a double nor a string.
+	 * @throws EvaluationException
+	 *             If the value is not a double nor a string.
 	 */
 	private Double getDouble(Object obj) throws EvaluationException {
 		Double tmpRes = null;
@@ -120,15 +123,21 @@ public class MiningModelEvaluator extends MiningModelManager implements Evaluato
 	 * Run all the models, and store the results in results, the weight in idToWeight if we are
 	 * interested in them, it augments parameters in case of modelChain, and return the main result.
 	 * 
-	 * @param parameters The set of parameters for the evaluation.
-	 * @param outputField The outputField where we will store the final result.
-	 * @param results The set of results.
-	 * @param idToWeight The weights. Useful for regression and weighted average for example.
+	 * @param parameters
+	 *            The set of parameters for the evaluation.
+	 * @param outputField
+	 *            The outputField where we will store the final result.
+	 * @param results
+	 *            The set of results.
+	 * @param idToWeight
+	 *            The weights. Useful for regression and weighted average for example.
 	 * @return The main result if any (for example in select first).
-	 * @throws Exception If there is a trouble with getting the name of the outputField of a model.
+	 * @throws Exception
+	 *             If there is a trouble with getting the name of the outputField of a model.
 	 */
 	private Object runModels(Map<FieldName, Object> parameters, DataField outputField,
-			TreeMap<String, Object> results, TreeMap<String, Double> idToWeight) throws Exception {
+			TreeMap<String, Object> results, TreeMap<String, Double> idToWeight)
+			throws EvaluationException {
 
 		Object result = null;
 
@@ -137,10 +146,16 @@ public class MiningModelEvaluator extends MiningModelManager implements Evaluato
 		for (Segment s : getSegments()) {
 			EvaluationContext context = new ModelManagerEvaluationContext(this, parameters);
 
-			if (PredicateUtil.evaluate(s.getPredicate(), context)) {
+			Boolean test = PredicateUtil.evaluate(s.getPredicate(), context);
+			
+			if (test != null ? test : false) {
 				Evaluator m = (Evaluator) factory.getModelManager(getPmml(), s.getModel());
 				PMMLResult tmpObj = (PMMLResult) m.evaluate(parameters);
 
+				if (tmpObj == null) {
+					return null;
+				}
+				
 				if (getMultipleMethodModel() == MultipleModelMethodType.MODEL_CHAIN) {
 					FieldName output = getOutputField((ModelManager<?>) m).getName();
 					tmpObj.merge(parameters);
@@ -180,13 +195,16 @@ public class MiningModelEvaluator extends MiningModelManager implements Evaluato
 	/**
 	 * Evaluate the regression.
 	 * 
-	 * @param parameters The set of parameters.
-	 * @param outputField The output field.
+	 * @param parameters
+	 *            The set of parameters.
+	 * @param outputField
+	 *            The output field.
 	 * @return The result of the evaluation.
-	 * @throws Exception If there is a trouble with getting the name of the outputField of a model.
+	 * @throws Exception
+	 *             If there is a trouble with getting the name of the outputField of a model.
 	 */
 	private IPMMLResult evaluateRegression(Map<FieldName, Object> parameters, DataField outputField)
-			throws Exception {
+			throws EvaluationException {
 		assert parameters != null;
 
 		TreeMap<String, Object> results = new TreeMap<String, Object>();
@@ -239,7 +257,9 @@ public class MiningModelEvaluator extends MiningModelManager implements Evaluato
 		PMMLResult res = new PMMLResult();
 		try {
 			res.put(getOutputField(this).getName(), result);
-		} catch (Exception e) {
+		} catch (ManagerException e) {
+			System.out.println(this.getClass().getCanonicalName() + " ~ " +
+					e.getClass().getCanonicalName() + " " + e.getCause());
 			throw new EvaluationException(e.getMessage());
 		}
 
@@ -249,13 +269,16 @@ public class MiningModelEvaluator extends MiningModelManager implements Evaluato
 	/**
 	 * Evaluate the classification.
 	 * 
-	 * @param parameters The set of parameters.
-	 * @param outputField The output field.
+	 * @param parameters
+	 *            The set of parameters.
+	 * @param outputField
+	 *            The output field.
 	 * @return The result of the evaluation.
-	 * @throws Exception If there is a trouble with getting the name of the outputField of a model.
+	 * @throws Exception
+	 *             If there is a trouble with getting the name of the outputField of a model.
 	 */
 	private IPMMLResult evaluateClassification(Map<FieldName, Object> parameters,
-			DataField outputField) throws Exception {
+			DataField outputField) throws EvaluationException {
 		assert parameters != null;
 
 		TreeMap<String, Object> results = new TreeMap<String, Object>();
@@ -307,7 +330,7 @@ public class MiningModelEvaluator extends MiningModelManager implements Evaluato
 		PMMLResult res = new PMMLResult();
 		try {
 			res.put(getOutputField(this).getName(), result);
-		} catch (Exception e) {
+		} catch (ManagerException e) {
 			throw new EvaluationException(e.getMessage());
 		}
 

@@ -151,7 +151,7 @@ public class PMMLManager implements Serializable {
 	 * @return
 	 * @throws Exception
 	 */
-	public static DataField getOutputField(ModelManager<?> model) throws Exception {
+	public static DataField getOutputField(ModelManager<?> model) throws ManagerException {
 		String outputVariableName = null;
 		List<FieldName> predictedFields = model.getPredictedFields();
 
@@ -161,12 +161,12 @@ public class PMMLManager implements Serializable {
 		}
 
 		if (outputVariableName == null) {
-			throw new Exception("Predicted variable is not defined");
+			throw new ManagerException("Predicted variable is not defined");
 		}
 
 		DataField outputField = model.getDataField(new FieldName(outputVariableName));
 		if (outputField == null || outputField.getDataType() == null) {
-			throw new Exception("Predicted variable [" + outputVariableName +
+			throw new ManagerException("Predicted variable [" + outputVariableName +
 					"] does not have type defined");
 		}
 

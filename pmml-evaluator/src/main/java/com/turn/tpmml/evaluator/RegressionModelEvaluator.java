@@ -73,7 +73,10 @@ public class RegressionModelEvaluator extends RegressionModelManager implements 
 		default:
 			throw new UnsupportedFeatureException(miningFunction);
 		}
-
+		
+		if (predictions == null) {
+			return null;
+		}
 		PMMLResult res = new PMMLResult();
 		res = OutputUtil.evaluate(predictions, context);
 		// FIXME: Dirty hack: Remove all the content of the result, and keep only the real result.
@@ -89,13 +92,17 @@ public class RegressionModelEvaluator extends RegressionModelManager implements 
 
 		List<RegressionTable> regressionTables = getRegressionTables();
 		if (regressionTables.size() != 1) {
-			throw new EvaluationException();
+			throw new EvaluationException("There are too many tables for a regression.");
 		}
 
 		RegressionTable regressionTable = regressionTables.get(0);
 
 		Double value = evaluateRegressionTable(regressionTable, context);
 
+		if (value == null) {
+			return null;
+		}
+		
 		FieldName name = getTarget();
 
 		RegressionNormalizationMethodType regressionNormalizationMethod = regressionModel
@@ -121,8 +128,11 @@ public class RegressionModelEvaluator extends RegressionModelManager implements 
 		for (RegressionTable regressionTable : regressionTables) {
 			Double value = evaluateRegressionTable(regressionTable, context);
 
+			if (value == null) {
+				throw new UnsupportedFeatureException("Target are not supported yet.");
+			}
+			
 			sumExp += Math.exp(value.doubleValue());
-
 			values.put(regressionTable.getTargetCategory(), value);
 		}
 
@@ -143,8 +153,12 @@ public class RegressionModelEvaluator extends RegressionModelManager implements 
 
 		Collection<Map.Entry<String, Double>> entries = values.entrySet();
 		for (Map.Entry<String, Double> entry : entries) {
+			if (entry.getValue() != null) {
 			entry.setValue(normalizeClassificationResult(regressionNormalizationMethod,
 					entry.getValue(), sumExp));
+			} else {
+				entry.setValue(null);
+			}
 		}
 
 		return Collections.singletonMap(name, values);

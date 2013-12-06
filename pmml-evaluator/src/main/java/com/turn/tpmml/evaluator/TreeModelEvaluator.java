@@ -9,6 +9,7 @@ import com.turn.tpmml.PMML;
 import com.turn.tpmml.Predicate;
 import com.turn.tpmml.TreeModel;
 import com.turn.tpmml.manager.IPMMLResult;
+import com.turn.tpmml.manager.ManagerException;
 import com.turn.tpmml.manager.TreeModelManager;
 import com.turn.tpmml.manager.TreePMMLResult;
 
@@ -168,7 +169,7 @@ public class TreeModelEvaluator extends TreeModelManager implements Evaluator {
 			if (currentNode != null) {
 				res.setNodeId(currentNode.getId());
 			}
-		} catch (Exception e) {
+		} catch (ManagerException e) {
 			throw new EvaluationException(e.getMessage());
 		}
 

@@ -8,7 +8,7 @@ import com.turn.tpmml.MultipleModelMethodType;
 import com.turn.tpmml.OpType;
 import com.turn.tpmml.PMML;
 import com.turn.tpmml.Segment;
-
+import com.turn.tpmml.manager.ManagerException;
 import com.turn.tpmml.manager.MiningModelManager;
 import com.turn.tpmml.manager.ModelManager;
 import com.turn.tpmml.manager.UnsupportedFeatureException;
@@ -48,7 +48,7 @@ public class MiningModelTranslator extends MiningModelManager implements Transla
 	public String translate(TranslationContext context) throws TranslationException {
 		try {
 			return translate(context, getOutputField(this));
-		} catch (Exception e) {
+		} catch (ManagerException e) {
 			throw new TranslationException(e.getMessage());
 		}
 	}
@@ -69,7 +69,7 @@ public class MiningModelTranslator extends MiningModelManager implements Transla
 			}
 
 			return sb.toString();
-		} catch (Exception e) {
+		} catch (ManagerException e) {
 			throw new TranslationException(e.getMessage());
 		}
 	}
@@ -84,7 +84,7 @@ public class MiningModelTranslator extends MiningModelManager implements Transla
 	}
 
 	private void runModels(TranslationContext context, StringBuilder code, DataField outputField,
-			CodeFormatter cf) throws Exception {
+			CodeFormatter cf) throws TranslationException {
 
 		ModelTranslatorFactory factory = new ModelTranslatorFactory();
 
@@ -133,7 +133,7 @@ public class MiningModelTranslator extends MiningModelManager implements Transla
 	}
 
 	private void translateRegression(TranslationContext context, StringBuilder code,
-			DataField outputField) throws Exception {
+			DataField outputField) throws TranslationException {
 		CodeFormatter cf = context.getFormatter();
 		runModels(context, code, outputField, cf);
 
@@ -210,7 +210,7 @@ public class MiningModelTranslator extends MiningModelManager implements Transla
 	}
 
 	private void translateClassification(TranslationContext context, StringBuilder code,
-			DataField outputField) throws Exception {
+			DataField outputField) throws TranslationException {
 		CodeFormatter cf = context.getFormatter();
 		runModels(context, code, outputField, cf);
 

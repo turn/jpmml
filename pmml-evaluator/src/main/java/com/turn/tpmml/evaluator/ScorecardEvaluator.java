@@ -5,8 +5,8 @@ import com.turn.tpmml.Characteristic;
 import com.turn.tpmml.FieldName;
 import com.turn.tpmml.PMML;
 import com.turn.tpmml.Scorecard;
-
 import com.turn.tpmml.manager.IPMMLResult;
+import com.turn.tpmml.manager.ManagerException;
 import com.turn.tpmml.manager.ScoreCardModelManager;
 import com.turn.tpmml.manager.ScoreCardPMMLResult;
 
@@ -81,7 +81,7 @@ public class ScorecardEvaluator extends ScoreCardModelManager implements Evaluat
 		try {
 			res.put(getOutputField(this).getName(), score);
 			res.setLastReasonCode(lastReasonCode);
-		} catch (Exception e) {
+		} catch (ManagerException e) {
 			throw new EvaluationException(e.getMessage());
 		}
 
