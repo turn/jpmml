@@ -3,7 +3,7 @@
  */
 package com.turn.tpmml.evaluator;
 
-public class EvaluationException extends RuntimeException {
+public class EvaluationException extends Exception {
 
 	private static final long serialVersionUID = 1L;
 
@@ -12,5 +12,9 @@ public class EvaluationException extends RuntimeException {
 
 	public EvaluationException(String message) {
 		super(message);
+	}
+	
+	public EvaluationException(Exception e) {
+		super(e);
 	}
 }

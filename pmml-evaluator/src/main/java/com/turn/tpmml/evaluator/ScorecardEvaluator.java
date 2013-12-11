@@ -6,7 +6,7 @@ import com.turn.tpmml.FieldName;
 import com.turn.tpmml.PMML;
 import com.turn.tpmml.Scorecard;
 import com.turn.tpmml.manager.IPMMLResult;
-import com.turn.tpmml.manager.ManagerException;
+import com.turn.tpmml.manager.ModelManagerException;
 import com.turn.tpmml.manager.ScoreCardModelManager;
 import com.turn.tpmml.manager.ScoreCardPMMLResult;
 
@@ -27,16 +27,20 @@ public class ScorecardEvaluator extends ScoreCardModelManager implements Evaluat
 		super(pmml, scorecard);
 	}
 
-	public Object prepare(FieldName name, Object value) {
-		return ParameterUtil.prepare(getDataField(name), getMiningField(name), value);
+	public Object prepare(FieldName name, Object value) throws EvaluationException {
+		try {
+			return ParameterUtil.prepare(getDataField(name), getMiningField(name), value);
+		} catch (ModelManagerException e) {
+			throw new EvaluationException(e);
+		}
 	}
 
-	public ScorecardEvaluator(ScoreCardModelManager parent) {
+	public ScorecardEvaluator(ScoreCardModelManager parent) throws ModelManagerException {
 		this(parent.getPmml(), parent.getModel());
 	}
 
 	// Evaluate the parameters on the score card.
-	public IPMMLResult evaluate(Map<FieldName, ?> parameters) {
+	public IPMMLResult evaluate(Map<FieldName, ?> parameters) throws EvaluationException {
 		Double score = 0.0;
 		EvaluationContext context = new ModelManagerEvaluationContext(this, parameters);
 		TreeMap<Double, String> diffToReasonCode = new TreeMap<Double, String>();
@@ -81,8 +85,8 @@ public class ScorecardEvaluator extends ScoreCardModelManager implements Evaluat
 		try {
 			res.put(getOutputField(this).getName(), score);
 			res.setLastReasonCode(lastReasonCode);
-		} catch (ManagerException e) {
-			throw new EvaluationException(e.getMessage());
+		} catch (ModelManagerException e) {
+			throw new EvaluationException(e);
 		}
 
 		return res;

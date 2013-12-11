@@ -20,7 +20,7 @@ import static org.junit.Assert.assertEquals;
 public class ExpressionUtilTest {
 
 	@Test
-	public void evaluateConstant() {
+	public void evaluateConstant() throws EvaluationException {
 		Constant stringThree = new Constant("3");
 		stringThree.setDataType(DataType.STRING);
 		assertEquals("3", ExpressionUtil.evaluate(stringThree, null));
@@ -35,7 +35,7 @@ public class ExpressionUtilTest {
 	}
 
 	@Test
-	public void evaluateFieldRef() {
+	public void evaluateFieldRef() throws EvaluationException {
 		FieldName name = new FieldName("x");
 
 		FieldRef expression = new FieldRef(name);
@@ -50,7 +50,7 @@ public class ExpressionUtilTest {
 	}
 
 	@Test
-	public void evaluateNormContinuous() {
+	public void evaluateNormContinuous() throws EvaluationException {
 		FieldName name = new FieldName("x");
 
 		NormContinuous expression = new NormContinuous(name);
@@ -62,7 +62,7 @@ public class ExpressionUtilTest {
 	}
 
 	@Test
-	public void evaluateNormDiscrete() {
+	public void evaluateNormDiscrete() throws EvaluationException {
 		FieldName name = new FieldName("x");
 
 		Double equals = 1d;
@@ -93,7 +93,7 @@ public class ExpressionUtilTest {
 	}
 
 	@Test
-	public void evaluateDiscretize() {
+	public void evaluateDiscretize() throws EvaluationException {
 		FieldName name = new FieldName("x");
 
 		Discretize expression = new Discretize(name);
@@ -110,7 +110,7 @@ public class ExpressionUtilTest {
 	}
 
 	@Test
-	public void evaluateMapValues() {
+	public void evaluateMapValues() throws EvaluationException {
 		FieldName name = new FieldName("x");
 
 		MapValues expression = new MapValues(null);

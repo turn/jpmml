@@ -10,6 +10,7 @@ import com.turn.tpmml.PMML;
 import com.turn.tpmml.Predicate;
 import com.turn.tpmml.TreeModel;
 import com.turn.tpmml.manager.IPMMLResult;
+import com.turn.tpmml.manager.ModelManagerException;
 import com.turn.tpmml.manager.PMMLResult;
 import com.turn.tpmml.manager.TreeModelManager;
 import com.turn.tpmml.manager.TreePMMLResult;
@@ -30,18 +31,24 @@ public class TreeModelEvaluator2 extends TreeModelManager implements Evaluator {
 		super(pmml, treeModel);
 	}
 
-	public TreeModelEvaluator2(TreeModelManager parent) {
+	public TreeModelEvaluator2(TreeModelManager parent) throws ModelManagerException {
 		this(parent.getPmml(), parent.getModel());
 	}
 
-	public Object prepare(FieldName name, Object value) {
-		return ParameterUtil.prepare(getDataField(name), getMiningField(name), value);
+	public Object prepare(FieldName name, Object value) throws EvaluationException {
+		try {
+			return ParameterUtil.prepare(getDataField(name), getMiningField(name), value);
+		} catch (ModelManagerException e) {
+			throw new EvaluationException(e);
+		}
 	}
 
 	/**
+	 * @throws EvaluationException 
 	 * @see #evaluateTree(EvaluationContext)
 	 */
-	public IPMMLResult evaluate(Map<FieldName, ?> parameters) {
+	@Override
+	public IPMMLResult evaluate(Map<FieldName, ?> parameters) throws EvaluationException {
 		ModelManagerEvaluationContext context = new ModelManagerEvaluationContext(this, parameters);
 
 		Node node = evaluateTree(context);
@@ -52,7 +59,11 @@ public class TreeModelEvaluator2 extends TreeModelManager implements Evaluator {
 		// Collections.singletonMap(getTarget(), values);
 
 		TreePMMLResult res = new TreePMMLResult();
-		res.put(getTarget(), values);
+		try {
+			res.put(getTarget(), values);
+		} catch (ModelManagerException e) {
+			throw new EvaluationException(e);
+		}
 		PMMLResult tmpRes = OutputUtil.evaluate(res, context);
 		res.absorb(tmpRes);
 		// Sometimes we ends up with no currentNode.
@@ -63,8 +74,13 @@ public class TreeModelEvaluator2 extends TreeModelManager implements Evaluator {
 		return res;
 	}
 
-	public Node evaluateTree(EvaluationContext context) {
-		Node root = getOrCreateRoot();
+	public Node evaluateTree(EvaluationContext context) throws EvaluationException {
+		Node root;
+		try {
+			root = getOrCreateRoot();
+		} catch (ModelManagerException e) {
+			throw new EvaluationException(e);
+		}
 
 		Prediction prediction = findTrueChild(root, root, context); // XXX
 
@@ -72,23 +88,29 @@ public class TreeModelEvaluator2 extends TreeModelManager implements Evaluator {
 				!(prediction.getLastTrueNode()).equals(prediction.getTrueNode())) {
 			return prediction.getTrueNode();
 		} else {
-			NoTrueChildStrategyType noTrueChildStrategy = getModel().getNoTrueChildStrategy();
+			NoTrueChildStrategyType noTrueChildStrategy;
+			try {
+				noTrueChildStrategy = getModel().getNoTrueChildStrategy();
+			} catch (ModelManagerException e) {
+				throw new EvaluationException(e);
+			}
 			switch (noTrueChildStrategy) {
 			case RETURN_NULL_PREDICTION:
 				return null;
 			case RETURN_LAST_PREDICTION:
 				return prediction.getLastTrueNode();
 			default:
-				throw new UnsupportedFeatureException(noTrueChildStrategy);
+				throw new EvaluationException(new UnsupportedFeatureException(noTrueChildStrategy));
 			}
 		}
 	}
 
-	private Prediction findTrueChild(Node lastNode, Node node, EvaluationContext context) {
+	private Prediction findTrueChild(Node lastNode, Node node, EvaluationContext context)
+			throws EvaluationException {
 		Boolean value = evaluateNode(node, context);
 
 		if (value == null) {
-			throw new EvaluationException();
+			throw new EvaluationException("A node has been evaluated to null.");
 		} // End if
 
 		if (value.booleanValue()) {
@@ -108,10 +130,10 @@ public class TreeModelEvaluator2 extends TreeModelManager implements Evaluator {
 		}
 	}
 
-	private Boolean evaluateNode(Node node, EvaluationContext context) {
+	private Boolean evaluateNode(Node node, EvaluationContext context) throws EvaluationException {
 		Predicate predicate = node.getPredicate();
 		if (predicate == null) {
-			throw new EvaluationException();
+			throw new EvaluationException("No predicqte found for a node.");
 		}
 
 		return PredicateUtil.evaluate(predicate, context);

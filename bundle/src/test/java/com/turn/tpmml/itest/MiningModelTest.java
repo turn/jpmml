@@ -40,7 +40,7 @@ public class MiningModelTest extends BaseModelTest {
 		variableToValues.put("sepal_width", Arrays.asList(1.1, 1.4, 1.6, 2.85, 3.33, 2.89));
 		variableToValues.put("continent",
 				Arrays.asList("asia", "africa", "europe", "america", "antartica", "oceania"));
-
+		
 		testModelEvaluation(pmmlDoc, SAMPLE_REGRESSION_MODEL_TEMPLATE,
 				new SampleRegressionMiningModel(), variableToValues, 20);
 	}

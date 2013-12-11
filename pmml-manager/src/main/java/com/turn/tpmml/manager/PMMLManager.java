@@ -92,9 +92,10 @@ public class PMMLManager implements Serializable {
 	 * 
 	 * @param name The name to look for.
 	 * @return the DerivedField or null if not found.
+	 * @throws ModelManagerException
 	 */
 	// FIXME: Check that this function handles the transformation as it looks like.
-	public DerivedField resolve(FieldName name) {
+	public DerivedField resolve(FieldName name) throws ModelManagerException {
 		TransformationDictionary transformationDictionary = getOrCreateTransformationDictionary();
 
 		List<DerivedField> derivedFields = transformationDictionary.getDerivedFields();
@@ -151,7 +152,7 @@ public class PMMLManager implements Serializable {
 	 * @return
 	 * @throws Exception
 	 */
-	public static DataField getOutputField(ModelManager<?> model) throws ManagerException {
+	public static DataField getOutputField(ModelManager<?> model) throws ModelManagerException {
 		String outputVariableName = null;
 		List<FieldName> predictedFields = model.getPredictedFields();
 
@@ -161,12 +162,12 @@ public class PMMLManager implements Serializable {
 		}
 
 		if (outputVariableName == null) {
-			throw new ManagerException("Predicted variable is not defined");
+			throw new ModelManagerException("Predicted variable is not defined");
 		}
 
 		DataField outputField = model.getDataField(new FieldName(outputVariableName));
 		if (outputField == null || outputField.getDataType() == null) {
-			throw new ManagerException("Predicted variable [" + outputVariableName +
+			throw new ModelManagerException("Predicted variable [" + outputVariableName +
 					"] does not have type defined");
 		}
 
@@ -213,8 +214,10 @@ public class PMMLManager implements Serializable {
 	 * 
 	 * @param modelName The name to look for.
 	 * @return A valid manager for the model type.
+	 * @throws ModelManagerException
 	 */
-	public ModelManager<? extends Model> getModelManager(String modelName) {
+	public ModelManager<? extends Model> getModelManager(String modelName)
+			throws ModelManagerException {
 		return getModelManager(modelName, ModelManagerFactory.getInstance());
 	}
 
@@ -224,9 +227,10 @@ public class PMMLManager implements Serializable {
 	 * @param modelName The name to look for.
 	 * @param modelManagerFactory The factory that gives the manager.
 	 * @return
+	 * @throws ModelManagerException
 	 */
 	public ModelManager<? extends Model> getModelManager(String modelName,
-			ModelManagerFactory modelManagerFactory) {
+			ModelManagerFactory modelManagerFactory) throws ModelManagerException {
 		Model model = getModel(modelName);
 
 		return modelManagerFactory.getModelManager(getPmml(), model);
@@ -239,7 +243,7 @@ public class PMMLManager implements Serializable {
 	 * @param type The type to look for.
 	 */
 	@SuppressWarnings({ "unchecked" })
-	public static  <E extends PMMLObject> E find(Collection<? extends PMMLObject> objects,
+	public static <E extends PMMLObject> E find(Collection<? extends PMMLObject> objects,
 			Class<? extends E> type) {
 
 		for (PMMLObject object : objects) {

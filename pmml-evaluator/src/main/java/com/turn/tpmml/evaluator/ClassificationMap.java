@@ -14,7 +14,7 @@ class ClassificationMap extends LinkedHashMap<String, Double> implements Classif
 	ClassificationMap() {
 	}
 
-	public String getResult() {
+	public String getResult() throws EvaluationException {
 		Map.Entry<String, Double> result = null;
 
 		Collection<Map.Entry<String, Double>> entries = entrySet();
@@ -25,7 +25,7 @@ class ClassificationMap extends LinkedHashMap<String, Double> implements Classif
 		}
 
 		if (result == null) {
-			throw new EvaluationException();
+			throw new EvaluationException("There are no results for this instance");
 		}
 
 		return result.getKey();

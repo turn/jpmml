@@ -46,13 +46,13 @@ public class ScoreCardModelManager extends ModelManager<Scorecard> {
 	}
 
 	@Override
-	public Scorecard getModel() {
+	public Scorecard getModel() throws ModelManagerException {
 		ensureNotNull(this.scorecard);
 
 		return this.scorecard;
 	}
 
-	public Scorecard createClassificationModel() {
+	public Scorecard createClassificationModel() throws ModelManagerException {
 		return createModel(MiningFunctionType.CLASSIFICATION);
 	}
 
@@ -61,7 +61,7 @@ public class ScoreCardModelManager extends ModelManager<Scorecard> {
 	 * 
 	 * @see #getModel()
 	 */
-	public Scorecard createModel(MiningFunctionType miningFunction) {
+	public Scorecard createModel(MiningFunctionType miningFunction) throws ModelManagerException {
 		ensureNull(scorecard);
 
 		scorecard = new Scorecard(new MiningSchema(), new Characteristics(), miningFunction);
@@ -77,8 +77,9 @@ public class ScoreCardModelManager extends ModelManager<Scorecard> {
 	 * list of attributes, the baseline score.
 	 * 
 	 * @return The characteristics.
+	 * @throws ModelManagerException 
 	 */
-	public Characteristics getCharacteristics() {
+	public Characteristics getCharacteristics() throws ModelManagerException {
 		ensureNotNull(scorecard);
 
 		return scorecard.getCharacteristics();
@@ -89,8 +90,9 @@ public class ScoreCardModelManager extends ModelManager<Scorecard> {
 	 * 
 	 * @param name The characteristic we want to get.
 	 * @return The wanted characteristic, or null if there is no such characteristic.
+	 * @throws ModelManagerException 
 	 */
-	public Characteristic getCharacteristic(String name) {
+	public Characteristic getCharacteristic(String name) throws ModelManagerException {
 		ensureNotNull(scorecard);
 
 		List<Characteristic> l = scorecard.getCharacteristics().getCharacteristics();

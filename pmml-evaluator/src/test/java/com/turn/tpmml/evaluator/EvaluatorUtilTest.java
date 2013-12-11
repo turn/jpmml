@@ -11,7 +11,7 @@ import static org.junit.Assert.assertEquals;
 public class EvaluatorUtilTest {
 
 	@Test
-	public void decode() {
+	public void decode() throws EvaluationException {
 		Computable<String> value = new Computable<String>() {
 
 			public String getResult() {

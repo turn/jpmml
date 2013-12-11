@@ -14,13 +14,13 @@ import com.turn.tpmml.manager.UnsupportedFeatureException;
 import java.util.List;
 import java.util.Map;
 
-
 public class DiscretizationUtil {
 
 	private DiscretizationUtil() {
 	}
 
-	public static String discretize(Discretize discretize, Object value) {
+	public static String discretize(Discretize discretize, Object value)
+			throws EvaluationException {
 		Double doubleValue = ParameterUtil.toDouble(value);
 
 		List<DiscretizeBin> bins = discretize.getDiscretizeBins();
@@ -35,7 +35,7 @@ public class DiscretizationUtil {
 		return discretize.getDefaultValue();
 	}
 
-	public static boolean contains(Interval interval, Double value) {
+	public static boolean contains(Interval interval, Double value) throws EvaluationException {
 		Double left = interval.getLeftMargin();
 		Double right = interval.getRightMargin();
 
@@ -50,7 +50,7 @@ public class DiscretizationUtil {
 		case CLOSED_CLOSED:
 			return greaterOrEqual(left, value) && lessOrEqual(right, value);
 		default:
-			throw new UnsupportedFeatureException(closure);
+			throw new EvaluationException(new UnsupportedFeatureException(closure));
 		}
 	}
 
@@ -70,7 +70,8 @@ public class DiscretizationUtil {
 		return (reference != null ? (value).compareTo(reference) >= 0 : true);
 	}
 
-	public static String mapValue(MapValues mapValues, Map<String, Object> values) {
+	public static String mapValue(MapValues mapValues, Map<String, Object> values)
+			throws EvaluationException {
 		InlineTable table = mapValues.getInlineTable();
 
 		if (table != null) {
@@ -80,7 +81,7 @@ public class DiscretizationUtil {
 			if (row != null) {
 				String result = row.get(mapValues.getOutputColumn());
 				if (result == null) {
-					throw new EvaluationException();
+					throw new EvaluationException("There is no result here");
 				}
 
 				return result;
@@ -88,7 +89,8 @@ public class DiscretizationUtil {
 		} else {
 			TableLocator tableLocator = mapValues.getTableLocator();
 			if (tableLocator != null) {
-				throw new UnsupportedFeatureException(tableLocator);
+				throw new EvaluationException(new UnsupportedFeatureException(tableLocator +
+						" is not supported yet"));
 			}
 		}
 

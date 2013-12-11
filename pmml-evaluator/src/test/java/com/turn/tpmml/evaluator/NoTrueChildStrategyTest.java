@@ -11,6 +11,7 @@ import com.turn.tpmml.Node;
 import com.turn.tpmml.OpType;
 import com.turn.tpmml.SimplePredicate;
 import com.turn.tpmml.TreeModel;
+import com.turn.tpmml.manager.ModelManagerException;
 import com.turn.tpmml.manager.TreeModelManager;
 
 import org.junit.Test;
@@ -19,11 +20,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-
 public class NoTrueChildStrategyTest {
 
 	@Test
-	public void returnNullPrediction() {
+	public void returnNullPrediction() throws EvaluationException, ModelManagerException {
 		TreeModelEvaluator2 treeModelManager =
 				prepareModel(NoTrueChildStrategyType.RETURN_NULL_PREDICTION);
 
@@ -40,7 +40,7 @@ public class NoTrueChildStrategyTest {
 	}
 
 	@Test
-	public void returnLastPrediction() {
+	public void returnLastPrediction() throws EvaluationException, ModelManagerException {
 		TreeModelEvaluator2 treeModelManager =
 				prepareModel(NoTrueChildStrategyType.RETURN_LAST_PREDICTION);
 
@@ -57,7 +57,8 @@ public class NoTrueChildStrategyTest {
 		assertEquals("T1", t1.getId());
 	}
 
-	private static TreeModelEvaluator2 prepareModel(NoTrueChildStrategyType noTrueChildStrategy) {
+	private static TreeModelEvaluator2 prepareModel(NoTrueChildStrategyType noTrueChildStrategy)
+			throws ModelManagerException {
 		TreeModelManager treeModelManager = new TreeModelManager();
 
 		TreeModel treeModel = treeModelManager.createClassificationModel();
@@ -71,8 +72,8 @@ public class NoTrueChildStrategyTest {
 		n1.setId("N1");
 		n1.setScore("0");
 
-		SimplePredicate t1Predicate = new SimplePredicate(prob1,
-				SimplePredicate.Operator.GREATER_THAN);
+		SimplePredicate t1Predicate =
+				new SimplePredicate(prob1, SimplePredicate.Operator.GREATER_THAN);
 		t1Predicate.setValue("0.33");
 
 		Node t1 = treeModelManager.addNode(n1, t1Predicate);

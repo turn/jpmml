@@ -5,14 +5,12 @@ import com.turn.tpmml.OpType;
 import com.turn.tpmml.PMML;
 import com.turn.tpmml.evaluator.EvaluationException;
 import com.turn.tpmml.evaluator.Evaluator;
-import com.turn.tpmml.evaluator.MiningModelEvaluator;
+import com.turn.tpmml.evaluator.MissingParameterException;
 import com.turn.tpmml.evaluator.ModelEvaluatorFactory;
-import com.turn.tpmml.evaluator.RegressionModelEvaluator;
 import com.turn.tpmml.manager.IPMMLResult;
-import com.turn.tpmml.manager.ManagerException;
 import com.turn.tpmml.manager.ModelManager;
+import com.turn.tpmml.manager.ModelManagerException;
 import com.turn.tpmml.manager.PMMLManager;
-import com.turn.tpmml.manager.UnsupportedFeatureException;
 import com.turn.tpmml.translator.PmmlToJavaTranslator;
 import com.turn.tpmml.translator.TranslationContext;
 
@@ -20,7 +18,6 @@ import java.io.StringReader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,24 +74,7 @@ public class BaseModelTest {
 						nameToValue.put(e.getKey(), 100.0 * Math.random());
 					}
 				}
-				try {
-					executeAndCompareOutput(i, compiledModel, evaluator, manual, nameToValue);
-				} catch (EvaluationException ee) {
-					if ((ee.getMessage().startsWith("Missing parameter ")) &&
-							(evaluator instanceof RegressionModelEvaluator ||
-									evaluator instanceof MiningModelEvaluator)) {
-						// This is fine, the way we generate our test
-						// doesn't fit with the input for the regression model.
-						// So in order to keep this way of thinking, we just
-						// remove the exception for this particular case.
-					} else {
-						// Otherwise, this exception is not normal, and should be sent
-						// to the user.
-						throw ee;
-					}
-				} catch (UnsupportedFeatureException ee) {
-					// Target is currently missing.
-				}
+				executeAndCompareOutput(i, compiledModel, evaluator, manual, nameToValue);
 			}
 		}
 	}
@@ -161,9 +141,13 @@ public class BaseModelTest {
 								.getName()));
 			}
 
-		} catch (NoSuchElementException e) {
-			value3 = null;
-		} catch (ManagerException e) {
+		} catch (EvaluationException e) {
+			// e.printStackTrace();
+			if (e.getCause() instanceof MissingParameterException) {
+				value3 = null;
+			}
+		} catch (ModelManagerException e) {
+			// e.printStackTrace();
 			value3 = null;
 		}
 
@@ -171,7 +155,8 @@ public class BaseModelTest {
 		compareValues(iteration, nameToValue, value2, value3, null, null, true);
 	}
 
-	protected IPMMLResult evaluateModel(Evaluator evaluator, Map<String, Object> nameToValue) {
+	protected IPMMLResult evaluateModel(Evaluator evaluator, Map<String, Object> nameToValue)
+			throws EvaluationException {
 		Map<FieldName, Object> fieldToValue = new HashMap<FieldName, Object>();
 		for (Map.Entry<String, Object> entry : nameToValue.entrySet()) {
 			fieldToValue.put(new FieldName(entry.getKey()), entry.getValue());

@@ -27,7 +27,7 @@ import static org.junit.Assert.assertTrue;
 public class ParameterUtilTest {
 
 	@Test
-	public void prepare() {
+	public void prepare() throws EvaluationException {
 		FieldName name = new FieldName("x");
 
 		DataField dataField = new DataField(name, OpType.CONTINUOUS, DataType.DOUBLE);
@@ -130,7 +130,7 @@ public class ParameterUtilTest {
 	}
 
 	@Test
-	public void equals() {
+	public void equals() throws EvaluationException {
 		assertTrue(ParameterUtil.equals("1", "1"));
 
 		assertTrue(ParameterUtil.equals(1, "1"));
@@ -145,7 +145,7 @@ public class ParameterUtilTest {
 	}
 
 	@Test
-	public void compare() {
+	public void compare() throws EvaluationException {
 		assertTrue(ParameterUtil.compare("1", "1") == 0);
 
 		assertTrue(ParameterUtil.compare(1, "1") == 0);
@@ -160,7 +160,7 @@ public class ParameterUtilTest {
 	}
 
 	@Test
-	public void getDataType() {
+	public void getDataType() throws EvaluationException {
 		assertEquals(DataType.STRING, ParameterUtil.getDataType("value"));
 
 		assertEquals(DataType.INTEGER, ParameterUtil.getDataType(1));
@@ -169,7 +169,7 @@ public class ParameterUtilTest {
 	}
 
 	@Test
-	public void getResultDataType() {
+	public void getResultDataType() throws EvaluationException {
 		assertEquals(DataType.DOUBLE, ParameterUtil.getResultDataType(1d, 1f));
 		assertEquals(DataType.DOUBLE, ParameterUtil.getResultDataType(1d, 1));
 

@@ -8,15 +8,17 @@ import com.turn.tpmml.OpType;
 import com.turn.tpmml.PMML;
 import com.turn.tpmml.Predicate;
 import com.turn.tpmml.TreeModel;
+import com.turn.tpmml.manager.ModelManagerException;
 import com.turn.tpmml.manager.TreeModelManager;
 import com.turn.tpmml.translator.Variable.VariableType;
 
 import java.util.List;
+
 /**
  * Translate tree model into java code
- *
+ * 
  * @author asvirsky
- *
+ * 
  */
 public class TreeModelTranslator extends TreeModelManager implements Translator {
 
@@ -30,14 +32,19 @@ public class TreeModelTranslator extends TreeModelManager implements Translator 
 		super(pmml, treeModel);
 	}
 
-	public TreeModelTranslator(TreeModelManager parent) {
+	public TreeModelTranslator(TreeModelManager parent) throws ModelManagerException {
 		this(parent.getPmml(), parent.getModel());
 	}
 
 	public String translate(TranslationContext context) throws TranslationException {
 
 		String outputVariableName = null;
-		List<FieldName> predictedFields = getPredictedFields();
+		List<FieldName> predictedFields;
+		try {
+			predictedFields = getPredictedFields();
+		} catch (ModelManagerException e) {
+			throw new TranslationException(e);
+		}
 		if (predictedFields != null && !predictedFields.isEmpty()) {
 			outputVariableName = predictedFields.get(0).getValue();
 		}
@@ -56,7 +63,12 @@ public class TreeModelTranslator extends TreeModelManager implements Translator 
 
 	public String translate(TranslationContext context, DataField outputField)
 			throws TranslationException {
-		Node rootNode = getOrCreateRoot();
+		Node rootNode;
+		try {
+			rootNode = getOrCreateRoot();
+		} catch (ModelManagerException e) {
+			throw new TranslationException(e);
+		}
 		StringBuilder sb = new StringBuilder();
 		CodeFormatter cf = new StandardCodeFormatter();
 		generateCodeForNode(rootNode, context, sb, outputField, cf);
@@ -124,59 +136,69 @@ public class TreeModelTranslator extends TreeModelManager implements Translator 
 					PredicateTranslationUtil.UNKNOWN);
 			// predicate is unknown
 
-			switch (this.getModel().getMissingValueStrategy()) {
-			case NONE:
-				// same as FALSE for current predicate
-				// do nothing
-				break;
+			try {
+				switch (this.getModel().getMissingValueStrategy()) {
+				case NONE:
+					// same as FALSE for current predicate
+					// do nothing
+					break;
 
-			case LAST_PREDICTION:
-				// assume this node evaluated to true, but ignore its value
-				// take last prediction instead
-				cf.assignVariable(code, context, succVariable, "true");
-				break;
+				case LAST_PREDICTION:
+					// assume this node evaluated to true, but ignore its value
+					// take last prediction instead
+					cf.assignVariable(code, context, succVariable, "true");
+					break;
 
-			case NULL_PREDICTION:
-				// same as above, but reset prediction to null
-				cf.assignVariable(code, context, succVariable, "true");
+				case NULL_PREDICTION:
+					// same as above, but reset prediction to null
+					cf.assignVariable(code, context, succVariable, "true");
 
-				cf.assignVariableToNullValue(
-						code,
-						context,
-						new Variable(VariableType.OBJECT, "Double", context
-								.formatOutputVariable(outputVariable.getName().getValue())));
-				break;
+					cf.assignVariableToNullValue(
+							code,
+							context,
+							new Variable(VariableType.OBJECT, "Double", context
+									.formatOutputVariable(outputVariable.getName().getValue())));
+					break;
 
-			case DEFAULT_CHILD:
-				// use default node
-				// can't generate code if default child is undefined
-				// (this seems to be expensive option in terms of amount of code generated...)
-				Node defaultNode = getChildById(child, child.getDefaultChild());
-				if (defaultNode == null) {
-					throw new TranslationException("No default child defined for nodeId: " +
-							child.getId());
+				case DEFAULT_CHILD:
+					// use default node
+					// can't generate code if default child is undefined
+					// (this seems to be expensive option in terms of amount of code generated...)
+					Node defaultNode = getChildById(child, child.getDefaultChild());
+					if (defaultNode == null) {
+						throw new TranslationException("No default child defined for nodeId: " +
+								child.getId());
+					}
+					generateCodeForNode(defaultNode, context, code, outputVariable, cf);
+					break;
+				default:
+					throw new TranslationException("Unsupported strategy: " +
+							getModel().getMissingValueStrategy());
 				}
-				generateCodeForNode(defaultNode, context, code, outputVariable, cf);
-				break;
-			default:
-				throw new TranslationException("Unsupported strategy: " +
-						getModel().getMissingValueStrategy());
+			} catch (ModelManagerException e) {
+				throw new TranslationException(e);
 			}
 
 			cf.endControlFlowStructure(code, context);
 			cf.endControlFlowStructure(code, context);
 		}
 
-		if (getModel().getNoTrueChildStrategy() == NoTrueChildStrategyType.RETURN_NULL_PREDICTION) {
-			cf.beginControlFlowStructure(code, context, "if", "!" + succVariable);
+		try {
+			if (getModel().getNoTrueChildStrategy() ==
+					NoTrueChildStrategyType.RETURN_NULL_PREDICTION) {
+				cf.beginControlFlowStructure(code, context, "if", "!" + succVariable);
 
-			cf.assignVariableToNullValue(code, context, new Variable(VariableType.OBJECT, "Double",
-					context.formatOutputVariable(outputVariable.getName().getValue())));
+				cf.assignVariableToNullValue(code, context,
+						new Variable(VariableType.OBJECT, "Double",
+						context.formatOutputVariable(outputVariable.getName().getValue())));
 
-			cf.assignVariable(code, context, context.getModelResultTrackingVariable(),
-					context.getNullValueForVariable(OpType.CATEGORICAL));
+				cf.assignVariable(code, context, context.getModelResultTrackingVariable(),
+						context.getNullValueForVariable(OpType.CATEGORICAL));
 
-			cf.endControlFlowStructure(code, context);
+				cf.endControlFlowStructure(code, context);
+			}
+		} catch (ModelManagerException e) {
+			throw new TranslationException(e);
 		}
 	}
 

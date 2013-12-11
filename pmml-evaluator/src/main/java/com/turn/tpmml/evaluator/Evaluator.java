@@ -6,6 +6,7 @@ package com.turn.tpmml.evaluator;
 import com.turn.tpmml.FieldName;
 import com.turn.tpmml.manager.Consumer;
 import com.turn.tpmml.manager.IPMMLResult;
+import com.turn.tpmml.manager.ModelManagerException;
 
 import java.util.Map;
 
@@ -76,7 +77,7 @@ public interface Evaluator extends Consumer {
 	 * 
 	 * @see Consumer#getPredictedFields()
 	 */
-	FieldName getTarget();
+	FieldName getTarget() throws ModelManagerException;
 
 	/**
 	 * Prepares the input value for a field.
@@ -94,7 +95,7 @@ public interface Evaluator extends Consumer {
 	 * @see #getDataField(FieldName)
 	 * @see #getMiningField(FieldName)
 	 */
-	Object prepare(FieldName name, Object value);
+	Object prepare(FieldName name, Object value) throws EvaluationException;
 
 	/**
 	 * @param parameters Map of {@link #getActiveFields() active field} values.
@@ -108,5 +109,5 @@ public interface Evaluator extends Consumer {
 	 * 
 	 * @see Computable
 	 */
-	IPMMLResult evaluate(Map<FieldName, ?> parameters);
+	IPMMLResult evaluate(Map<FieldName, ?> parameters) throws EvaluationException;
 }

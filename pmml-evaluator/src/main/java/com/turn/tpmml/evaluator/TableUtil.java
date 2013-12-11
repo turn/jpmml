@@ -14,7 +14,6 @@ import java.util.Set;
 
 import org.w3c.dom.Element;
 
-
 public class TableUtil {
 
 	private TableUtil() {
@@ -43,7 +42,8 @@ public class TableUtil {
 		return result;
 	}
 
-	public static Map<String, String> match(List<Map<String, String>> rows, Map<String, ?> values) {
+	public static Map<String, String> match(List<Map<String, String>> rows, Map<String, ?> values)
+			throws EvaluationException {
 
 		rows: for (Map<String, String> row : rows) {
 

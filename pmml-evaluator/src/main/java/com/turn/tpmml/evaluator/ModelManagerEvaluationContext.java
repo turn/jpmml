@@ -6,6 +6,7 @@ package com.turn.tpmml.evaluator;
 import com.turn.tpmml.DerivedField;
 import com.turn.tpmml.FieldName;
 import com.turn.tpmml.manager.ModelManager;
+import com.turn.tpmml.manager.ModelManagerException;
 
 import java.util.Map;
 
@@ -21,10 +22,14 @@ public class ModelManagerEvaluationContext extends EvaluationContext {
 	}
 
 	@Override
-	public DerivedField resolve(FieldName name) {
+	public DerivedField resolve(FieldName name) throws EvaluationException {
 		ModelManager<?> modelManager = getModelManager();
 
-		return modelManager.resolve(name);
+		try {
+			return modelManager.resolve(name);
+		} catch (ModelManagerException e) {
+			throw new EvaluationException(e);
+		}
 	}
 
 	@Override

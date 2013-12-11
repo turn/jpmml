@@ -15,7 +15,7 @@ public class ArrayUtil {
 	private ArrayUtil() {
 	}
 
-	public static Boolean isIn(Array array, Object value) {
+	public static Boolean isIn(Array array, Object value) throws EvaluationException {
 		List<String> values = getContent(array);
 
 		validateDataType(value);
@@ -25,7 +25,7 @@ public class ArrayUtil {
 		return Boolean.valueOf(result);
 	}
 
-	public static Boolean isNotIn(Array array, Object value) {
+	public static Boolean isNotIn(Array array, Object value) throws EvaluationException {
 		List<String> values = getContent(array);
 
 		validateDataType(value);
@@ -35,7 +35,7 @@ public class ArrayUtil {
 		return Boolean.valueOf(result);
 	}
 
-	public static List<String> getContent(Array array) {
+	public static List<String> getContent(Array array) throws EvaluationException {
 		List<String> values = array.getContent();
 
 		if (values == null) {
@@ -47,7 +47,7 @@ public class ArrayUtil {
 		return values;
 	}
 
-	public static List<String> tokenize(Array array) {
+	public static List<String> tokenize(Array array) throws EvaluationException {
 		List<String> result;
 
 		Array.Type type = array.getType();
@@ -60,7 +60,8 @@ public class ArrayUtil {
 			result = tokenize(array.getValue(), true);
 			break;
 		default:
-			throw new UnsupportedFeatureException(type);
+			throw new EvaluationException(new UnsupportedFeatureException(type +
+					" is not supported"));
 		}
 
 		Number n = array.getN();
@@ -149,7 +150,7 @@ public class ArrayUtil {
 		return result;
 	}
 
-	private static void validateDataType(Object value) {
+	private static void validateDataType(Object value) throws EvaluationException {
 		DataType dataType = ParameterUtil.getDataType(value);
 
 		switch (dataType) {
@@ -158,9 +159,9 @@ public class ArrayUtil {
 			break;
 		case FLOAT:
 		case DOUBLE:
-			throw new UnsupportedFeatureException(dataType);
 		default:
-			throw new EvaluationException();
+			throw new EvaluationException(new UnsupportedFeatureException(dataType +
+					" is not supported."));
 		}
 	}
 }

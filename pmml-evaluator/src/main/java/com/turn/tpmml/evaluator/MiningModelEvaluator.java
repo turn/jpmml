@@ -7,9 +7,9 @@ import com.turn.tpmml.MultipleModelMethodType;
 import com.turn.tpmml.PMML;
 import com.turn.tpmml.Segment;
 import com.turn.tpmml.manager.IPMMLResult;
-import com.turn.tpmml.manager.ManagerException;
 import com.turn.tpmml.manager.MiningModelManager;
 import com.turn.tpmml.manager.ModelManager;
+import com.turn.tpmml.manager.ModelManagerException;
 import com.turn.tpmml.manager.PMMLResult;
 import com.turn.tpmml.manager.UnsupportedFeatureException;
 
@@ -33,12 +33,12 @@ public class MiningModelEvaluator extends MiningModelManager implements Evaluato
 		super(pmml, miningModel);
 	}
 
-	public Object prepare(FieldName name, Object value) {
-		return ParameterUtil.prepare(getDataField(name), getMiningField(name), value);
-	}
-
-	public MiningModelEvaluator(MiningModelManager parent) {
-		this(parent.getPmml(), parent.getModel());
+	public Object prepare(FieldName name, Object value) throws EvaluationException {
+		try {
+			return ParameterUtil.prepare(getDataField(name), getMiningField(name), value);
+		} catch (ModelManagerException e) {
+			throw new EvaluationException(e);
+		}
 	}
 
 	/**
@@ -91,8 +91,8 @@ public class MiningModelEvaluator extends MiningModelManager implements Evaluato
 			default:
 				throw new UnsupportedOperationException();
 			}
-		} catch (ManagerException e) {
-			return null;
+		} catch (ModelManagerException e) {
+			throw new EvaluationException(e);
 		}
 	}
 
@@ -141,52 +141,60 @@ public class MiningModelEvaluator extends MiningModelManager implements Evaluato
 
 		Object result = null;
 
-		ModelEvaluatorFactory factory = new ModelEvaluatorFactory();
+		try {
 
-		for (Segment s : getSegments()) {
-			EvaluationContext context = new ModelManagerEvaluationContext(this, parameters);
+			ModelEvaluatorFactory factory = new ModelEvaluatorFactory();
 
-			Boolean test = PredicateUtil.evaluate(s.getPredicate(), context);
-			
-			if (test != null ? test : false) {
-				Evaluator m = (Evaluator) factory.getModelManager(getPmml(), s.getModel());
-				PMMLResult tmpObj = (PMMLResult) m.evaluate(parameters);
+			for (Segment s : getSegments()) {
+				EvaluationContext context = new ModelManagerEvaluationContext(this, parameters);
 
-				if (tmpObj == null) {
-					return null;
-				}
-				
-				if (getMultipleMethodModel() == MultipleModelMethodType.MODEL_CHAIN) {
-					FieldName output = getOutputField((ModelManager<?>) m).getName();
-					tmpObj.merge(parameters);
-					// If this is the result we are interested in, put it in result.
-					if (output.equals(outputField.getName())) {
-						// This cast is legitimate because getModelManager returns a modelManager
-						// that is
-						// also an evaluator.
-						result = tmpObj.getValue(getOutputField((ModelManager<?>) m).getName());
+				Boolean test = PredicateUtil.evaluate(s.getPredicate(), context);
+
+				if (test != null ? test : false) {
+					Evaluator m = (Evaluator) factory.getModelManager(getPmml(), s.getModel());
+					PMMLResult tmpObj = (PMMLResult) m.evaluate(parameters);
+
+					if (tmpObj == null) {
+						return null;
 					}
-				}
-				// If there is at least one result.
-				if (tmpObj != null && !tmpObj.isEmpty()) {
-					// Associate the main result to the name of the segment.
-					// So we won't override the previous result at each new segment.
 
-					// If there is one result, store it in the result list.
-					Object tmpRes = tmpObj.getValue(getOutputField((ModelManager<?>) m).getName());
-					if (tmpRes != null) {
-						results.put(getId(s), tmpRes);
+					if (getMultipleMethodModel() == MultipleModelMethodType.MODEL_CHAIN) {
+						FieldName output = getOutputField((ModelManager<?>) m).getName();
+						tmpObj.merge(parameters);
+						// If this is the result we are interested in, put it in result.
+						if (output.equals(outputField.getName())) {
+							// This cast is legitimate because getModelManager returns a
+							// modelManager
+							// that is
+							// also an evaluator.
+							result = tmpObj.getValue(getOutputField((ModelManager<?>) m).getName());
+						}
+					}
+					// If there is at least one result.
+					if (tmpObj != null && !tmpObj.isEmpty()) {
+						// Associate the main result to the name of the segment.
+						// So we won't override the previous result at each new segment.
 
-						idToWeight.put(getId(s), s.getWeight());
-						// In this case, we are done with the evaluation of these model. We can
-						// quit.
-						if (getMultipleMethodModel() == MultipleModelMethodType.SELECT_FIRST) {
-							result = results.get(getId(s));
-							break;
+						// If there is one result, store it in the result list.
+						Object tmpRes =
+								tmpObj.getValue(getOutputField((ModelManager<?>) m).getName());
+						if (tmpRes != null) {
+							results.put(getId(s), tmpRes);
+
+							idToWeight.put(getId(s), s.getWeight());
+							// In this case, we are done with the evaluation of these model. We can
+							// quit.
+							if (getMultipleMethodModel() == MultipleModelMethodType.SELECT_FIRST) {
+								result = results.get(getId(s));
+								break;
+							}
 						}
 					}
 				}
 			}
+
+		} catch (ModelManagerException e) {
+			throw new EvaluationException(e);
 		}
 
 		return result;
@@ -217,7 +225,7 @@ public class MiningModelEvaluator extends MiningModelManager implements Evaluato
 			// result already have the right value.
 			break;
 		case SELECT_ALL:
-			throw new UnsupportedFeatureException();
+			throw new EvaluationException(new UnsupportedFeatureException());
 		case MODEL_CHAIN:
 			// This case is to be managed before.
 			break;
@@ -257,10 +265,8 @@ public class MiningModelEvaluator extends MiningModelManager implements Evaluato
 		PMMLResult res = new PMMLResult();
 		try {
 			res.put(getOutputField(this).getName(), result);
-		} catch (ManagerException e) {
-			System.out.println(this.getClass().getCanonicalName() + " ~ " +
-					e.getClass().getCanonicalName() + " " + e.getCause());
-			throw new EvaluationException(e.getMessage());
+		} catch (ModelManagerException e1) {
+			throw new EvaluationException(e1);
 		}
 
 		return res;
@@ -292,7 +298,8 @@ public class MiningModelEvaluator extends MiningModelManager implements Evaluato
 			break;
 		case MODEL_CHAIN:
 			// This case is to be managed before.
-			throw new UnsupportedFeatureException("Missing implementation.");
+			throw new EvaluationException(
+					new UnsupportedFeatureException("Missing implementation."));
 		case MAJORITY_VOTE:
 			TreeMap<Object, Double> vote = new TreeMap<Object, Double>();
 			for (Map.Entry<String, Object> e : results.entrySet()) {
@@ -321,7 +328,8 @@ public class MiningModelEvaluator extends MiningModelManager implements Evaluato
 		case WEIGHTED_AVERAGE:
 		case MEDIAN:
 		case MAX:
-			throw new UnsupportedFeatureException("Missing implementation.");
+			throw new EvaluationException(
+					new UnsupportedFeatureException("Missing implementation."));
 		default:
 			throw new EvaluationException("The method " + getMultipleMethodModel().value() +
 					" is not compatible with the regression.");
@@ -330,8 +338,8 @@ public class MiningModelEvaluator extends MiningModelManager implements Evaluato
 		PMMLResult res = new PMMLResult();
 		try {
 			res.put(getOutputField(this).getName(), result);
-		} catch (ManagerException e) {
-			throw new EvaluationException(e.getMessage());
+		} catch (ModelManagerException e) {
+			throw new EvaluationException(e);
 		}
 
 		return res;

@@ -15,22 +15,19 @@ import com.turn.tpmml.RegressionTable;
 
 import java.util.List;
 
-
 /**
  * Provide an interface to the regressionModel class.
- *
- * The regression functions are used to determine the relationship between the
- * dependent variable (target field) and one or more independent variables. The
- * dependent variable is the one whose values you want to predict, whereas the
- * independent variables are the variables that you base your prediction on.
- * While the term regression usually refers to the prediction of numeric values,
- * the PMML element RegressionModel can also be used for classification. This is
- * due to the fact that multiple regression equations can be combined in order
- * to predict categorical values.
- *
- *
+ * 
+ * The regression functions are used to determine the relationship between the dependent variable
+ * (target field) and one or more independent variables. The dependent variable is the one whose
+ * values you want to predict, whereas the independent variables are the variables that you base
+ * your prediction on. While the term regression usually refers to the prediction of numeric values,
+ * the PMML element RegressionModel can also be used for classification. This is due to the fact
+ * that multiple regression equations can be combined in order to predict categorical values.
+ * 
+ * 
  * @author tbadie
- *
+ * 
  */
 public class RegressionModelManager extends ModelManager<RegressionModel> {
 
@@ -56,13 +53,13 @@ public class RegressionModelManager extends ModelManager<RegressionModel> {
 	}
 
 	@Override
-	public RegressionModel getModel() {
+	public RegressionModel getModel() throws ModelManagerException {
 		ensureNotNull(this.regressionModel);
 
 		return this.regressionModel;
 	}
 
-	public RegressionModel createRegressionModel() {
+	public RegressionModel createRegressionModel() throws ModelManagerException {
 		return createModel(MiningFunctionType.REGRESSION);
 	}
 
@@ -71,7 +68,8 @@ public class RegressionModelManager extends ModelManager<RegressionModel> {
 	 * 
 	 * @see #getModel()
 	 */
-	public RegressionModel createModel(MiningFunctionType miningFunction) {
+	public RegressionModel createModel(MiningFunctionType miningFunction)
+			throws ModelManagerException {
 		ensureNull(this.regressionModel);
 
 		this.regressionModel = new RegressionModel(new MiningSchema(), miningFunction);
@@ -82,7 +80,7 @@ public class RegressionModelManager extends ModelManager<RegressionModel> {
 	}
 
 	@Override
-	public FieldName getTarget() {
+	public FieldName getTarget() throws ModelManagerException {
 		RegressionModel regressionModel = getModel();
 
 		FieldName name = regressionModel.getTargetFieldName();
@@ -93,14 +91,14 @@ public class RegressionModelManager extends ModelManager<RegressionModel> {
 		return super.getTarget();
 	}
 
-	public RegressionModel setTarget(FieldName name) {
+	public RegressionModel setTarget(FieldName name) throws ModelManagerException {
 		RegressionModel regressionModel = getModel();
 		regressionModel.setTargetFieldName(name);
 
 		return regressionModel;
 	}
 
-	public List<RegressionTable> getRegressionTables() {
+	public List<RegressionTable> getRegressionTables() throws ModelManagerException {
 		RegressionModel model = getModel();
 		return model.getRegressionTables();
 	}

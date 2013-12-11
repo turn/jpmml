@@ -13,7 +13,7 @@ import static org.junit.Assert.assertTrue;
 public class DiscretizationUtilTest {
 
 	@Test
-	public void contains() {
+	public void contains() throws EvaluationException {
 		Double min = Double.valueOf(Integer.MIN_VALUE);
 		Double max = Double.valueOf(Integer.MAX_VALUE);
 

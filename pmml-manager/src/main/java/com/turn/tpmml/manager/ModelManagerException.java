@@ -8,7 +8,7 @@ package com.turn.tpmml.manager;
  * 
  */
 // FIXME: Specialize this exception, make it better.
-public class ModelManagerException extends RuntimeException {
+public class ModelManagerException extends Exception {
 
 	private static final long serialVersionUID = 1L;
 
@@ -17,5 +17,9 @@ public class ModelManagerException extends RuntimeException {
 
 	public ModelManagerException(String message) {
 		super(message);
+	}
+	
+	public ModelManagerException(Throwable t) {
+		super(t);
 	}
 }

@@ -15,7 +15,7 @@ import static org.junit.Assert.assertEquals;
 public class TableUtilTest {
 
 	@Test
-	public void matchSingleColumn() {
+	public void matchSingleColumn() throws EvaluationException {
 		Map<String, String> first = createRow(new String[][] { { "value", "1" },
 				{ "output", "first" } });
 		Map<String, String> second = createRow(new String[][] { { "value", "2" },
@@ -32,7 +32,7 @@ public class TableUtilTest {
 	}
 
 	@Test
-	public void matchMultipleColumns() {
+	public void matchMultipleColumns() throws EvaluationException {
 		Map<String, String> firstTrue = createRow(new String[][] { { "value", "1" },
 				{ "flag", "true" }, { "output", "firstTrue" } });
 		Map<String, String> firstFalse = createRow(new String[][] { { "value", "1" },

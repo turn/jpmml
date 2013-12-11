@@ -6,8 +6,8 @@ import com.turn.tpmml.PMML;
 import com.turn.tpmml.RegressionModel;
 import com.turn.tpmml.Scorecard;
 import com.turn.tpmml.TreeModel;
-
 import com.turn.tpmml.manager.ModelManager;
+import com.turn.tpmml.manager.ModelManagerException;
 import com.turn.tpmml.manager.ModelManagerFactory;
 import com.turn.tpmml.manager.UnsupportedFeatureException;
 
@@ -17,7 +17,8 @@ public class ModelTranslatorFactory extends ModelManagerFactory {
 	}
 
 	@Override
-	public ModelManager<? extends Model> getModelManager(PMML pmml, Model model) {
+	public ModelManager<? extends Model> getModelManager(PMML pmml, Model model)
+			throws ModelManagerException {
 
 		if (model instanceof TreeModel) {
 			return new TreeModelTranslator(pmml, (TreeModel) model);
@@ -34,7 +35,7 @@ public class ModelTranslatorFactory extends ModelManagerFactory {
 		if (model instanceof MiningModel) {
 			return new MiningModelTranslator(pmml, (MiningModel) model);
 		} else {
-			throw new UnsupportedFeatureException(model);
+			throw new ModelManagerException(new UnsupportedFeatureException(model));
 		}
 	}
 

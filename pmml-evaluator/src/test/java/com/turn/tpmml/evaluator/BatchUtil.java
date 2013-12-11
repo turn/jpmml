@@ -82,7 +82,7 @@ public class BatchUtil {
 		return success;
 	}
 
-	private static boolean acceptable(String expected, Object actual) {
+	private static boolean acceptable(String expected, Object actual) throws EvaluationException {
 		return VerificationUtil.acceptable(
 				ParameterUtil.parse(ParameterUtil.getDataType(actual), expected), actual,
 				BatchUtil.PRECISION, BatchUtil.ZERO_THRESHOLD);

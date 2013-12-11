@@ -11,7 +11,6 @@ import com.turn.tpmml.RegressionModel;
 import com.turn.tpmml.Scorecard;
 import com.turn.tpmml.TreeModel;
 
-
 /**
  * Allow to get a manager for a model.
  */
@@ -22,7 +21,8 @@ public class ModelManagerFactory {
 	protected ModelManagerFactory() {
 	}
 
-	public ModelManager<? extends Model> getModelManager(PMML pmml, Model model) {
+	public ModelManager<? extends Model> getModelManager(PMML pmml, Model model)
+			throws ModelManagerException {
 
 		if (model instanceof RegressionModel) {
 			return new RegressionModelManager(pmml, (RegressionModel) model);
@@ -44,7 +44,8 @@ public class ModelManagerFactory {
 			return new ScoreCardModelManager(pmml, (Scorecard) model);
 		}
 
-		throw new UnsupportedFeatureException(model);
+		throw new ModelManagerException(
+				new UnsupportedFeatureException(model + " is not supported"));
 	}
 
 	public static ModelManagerFactory getInstance() {

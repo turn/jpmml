@@ -8,7 +8,7 @@ import com.turn.tpmml.PMML;
 import com.turn.tpmml.RegressionModel;
 import com.turn.tpmml.RegressionNormalizationMethodType;
 import com.turn.tpmml.RegressionTable;
-
+import com.turn.tpmml.manager.ModelManagerException;
 import com.turn.tpmml.manager.RegressionModelManager;
 import com.turn.tpmml.manager.UnsupportedFeatureException;
 import com.turn.tpmml.translator.CodeFormatter.Operator;
@@ -20,16 +20,17 @@ import java.util.TreeMap;
 
 /**
  * Translate regression model into java code.
+ * 
  * @see RegressionModelManager.
- *
+ * 
  * @author tbadie
- *
+ * 
  */
 public class RegressionModelTranslator extends RegressionModelManager implements Translator {
 
 	private static final long serialVersionUID = 1L;
-	private HashMap<RegressionTable, String> regressionTableToId
-		= new HashMap<RegressionTable, String>();
+	private HashMap<RegressionTable, String> regressionTableToId =
+			new HashMap<RegressionTable, String>();
 
 	public RegressionModelTranslator(PMML pmml) {
 		super(pmml);
@@ -39,18 +40,25 @@ public class RegressionModelTranslator extends RegressionModelManager implements
 		super(pmml, regressionModel);
 	}
 
-	public RegressionModelTranslator(RegressionModelManager parent) {
+	public RegressionModelTranslator(RegressionModelManager parent) throws ModelManagerException {
 		this(parent.getPmml(), parent.getModel());
 	}
 
 	/**
 	 * Return a string that is a java code able to evaluate the model on a set of parameters.
 	 * 
-	 * @param context The translation context.
+	 * @param context
+	 *            The translation context.
 	 */
 	public String translate(TranslationContext context) throws TranslationException {
 		String outputVariableName = null;
-		List<FieldName> predictedFields = getPredictedFields();
+		List<FieldName> predictedFields;
+		try {
+			predictedFields = getPredictedFields();
+		} catch (ModelManagerException e) {
+			throw new TranslationException(e);
+		}
+
 		// Get the predicted field. If there is none, it is an error.
 		if (predictedFields != null && predictedFields.size() > 0) {
 			outputVariableName = predictedFields.get(0).getValue();
@@ -89,15 +97,23 @@ public class RegressionModelTranslator extends RegressionModelManager implements
 	/**
 	 * Translate the regression.
 	 * 
-	 * @param sb The string builder we are working with.
-	 * @param context The context of the translation.
-	 * @param outputField The name of the output variable.
+	 * @param sb
+	 *            The string builder we are working with.
+	 * @param context
+	 *            The context of the translation.
+	 * @param outputField
+	 *            The name of the output variable.
 	 * @throws TranslationException
 	 */
 
 	private void translateRegression(StringBuilder sb, TranslationContext context,
 			DataField outputField) throws TranslationException {
-		RegressionTable rt = getRegressionTables().get(0);
+		RegressionTable rt;
+		try {
+			rt = getRegressionTables().get(0);
+		} catch (ModelManagerException e) {
+			throw new TranslationException(e);
+		}
 		CodeFormatter cf = context.getFormatter();
 
 		translateRegressionTable(sb, context, outputField.getName().getValue(), rt, cf, true);
@@ -107,26 +123,33 @@ public class RegressionModelTranslator extends RegressionModelManager implements
 	/**
 	 * Translate the classification.
 	 * 
-	 * @param sb The string builder we are working with.
-	 * @param context The context of the translation.
-	 * @param outputField The name of the output variable.
+	 * @param sb
+	 *            The string builder we are working with.
+	 * @param context
+	 *            The context of the translation.
+	 * @param outputField
+	 *            The name of the output variable.
 	 * @throws TranslationException
 	 */
 	private void translateClassification(StringBuilder sb, TranslationContext context,
 			DataField outputField) throws TranslationException {
 		CodeFormatter cf = context.getFormatter();
-		String targetCategoryToScoreVariable = context
-				.generateLocalVariableName("targetCategoryToScore");
+		String targetCategoryToScoreVariable =
+				context.generateLocalVariableName("targetCategoryToScore");
 		context.requiredImports.add("import java.util.TreeMap;");
 		cf.addLine(sb, context, "TreeMap<String, Double> " + targetCategoryToScoreVariable +
 				" = new TreeMap<String, Double>();");
 
 		TreeMap<String, String> categoryNameToVariable = new TreeMap<String, String>();
-		for (RegressionTable rt : getRegressionTables()) {
-			categoryNameToVariable.put(
-					rt.getTargetCategory(),
-					translateRegressionTable(sb, context, targetCategoryToScoreVariable, rt, cf,
-							false));
+		try {
+			for (RegressionTable rt : getRegressionTables()) {
+				categoryNameToVariable.put(
+						rt.getTargetCategory(),
+						translateRegressionTable(sb, context, targetCategoryToScoreVariable, rt,
+								cf, false));
+			}
+		} catch (ModelManagerException e) {
+			throw new TranslationException(e);
 		}
 
 		// Apply the normalization:
@@ -138,73 +161,98 @@ public class RegressionModelTranslator extends RegressionModelManager implements
 			// Pick the category with top score.
 			String entryName = context.generateLocalVariableName("entry");
 			cf.declareVariable(sb, context, new Variable(VariableType.DOUBLE, entryName));
-			for (RegressionTable rt : getRegressionTables()) {
-				cf.assignVariable(sb, context, entryName,
-						categoryNameToVariable.get(rt.getTargetCategory()));
-				cf.addLine(
-						sb,
-						context,
-						scoreToCategoryVariable + ".put(" + entryName + ", \"" +
-								rt.getTargetCategory() + "\");");
+			try {
+				for (RegressionTable rt : getRegressionTables()) {
+					cf.assignVariable(sb, context, entryName,
+							categoryNameToVariable.get(rt.getTargetCategory()));
+					cf.addLine(sb, context, scoreToCategoryVariable + ".put(" + entryName + ", \"" +
+							rt.getTargetCategory() + "\");");
+				}
+			} catch (ModelManagerException e) {
+				throw new TranslationException(e);
 			}
 			break;
 		case LOGIT:
 			// pick the max of pj = 1 / ( 1 + exp( -yj ) )
-			for (RegressionTable rt : getRegressionTables()) {
-				String expression = "1.0 / (1.0 + Math.exp(-" +
-						categoryNameToVariable.get(rt.getTargetCategory()) + "))";
-				cf.addLine(sb, context, scoreToCategoryVariable + ".put(" + expression + ", \"" +
-						rt.getTargetCategory() + "\");");
+			try {
+				for (RegressionTable rt : getRegressionTables()) {
+					String expression =
+							"1.0 / (1.0 + Math.exp(-" +
+									categoryNameToVariable.get(rt.getTargetCategory()) + "))";
+					cf.addLine(sb, context, scoreToCategoryVariable + ".put(" + expression +
+							", \"" + rt.getTargetCategory() + "\");");
+				}
+			} catch (ModelManagerException e) {
+				throw new TranslationException(e);
 			}
 			break;
 		case EXP:
 			// pick the max of exp(yj)
 			// FIXME: Since this is classification, and since exponential is growing, we may want to
 			// only take the max without computing the exp.
-			for (RegressionTable rt : getRegressionTables()) {
-				String expression = "Math.exp(" +
-						categoryNameToVariable.get(rt.getTargetCategory()) + ")";
-				cf.addLine(sb, context, scoreToCategoryVariable + ".put(" + expression + ", \"" +
-						rt.getTargetCategory() + "\");");
+			try {
+				for (RegressionTable rt : getRegressionTables()) {
+					String expression =
+							"Math.exp(" + categoryNameToVariable.get(rt.getTargetCategory()) + ")";
+					cf.addLine(sb, context, scoreToCategoryVariable + ".put(" + expression +
+							", \"" + rt.getTargetCategory() + "\");");
+				}
+			} catch (ModelManagerException e) {
+				throw new TranslationException(e);
 			}
 			break;
 		case SOFTMAX:
 			// pj = exp(yj) / (Sum[i = 1 to N](exp(yi) ) )
 			String sumName = context.generateLocalVariableName("sum");
 			cf.declareVariable(sb, context, new Variable(Variable.VariableType.DOUBLE, sumName));
-			for (RegressionTable rt : getRegressionTables()) {
-				cf.assignVariable(sb, context, Operator.PLUS_EQUAL, sumName, "Math.exp(" +
-						categoryNameToVariable.get(rt.getTargetCategory()) + ")");
-			}
+			try {
+				for (RegressionTable rt : getRegressionTables()) {
+					cf.assignVariable(sb, context, Operator.PLUS_EQUAL, sumName, "Math.exp(" +
+							categoryNameToVariable.get(rt.getTargetCategory()) + ")");
+				}
 
-			for (RegressionTable rt : getRegressionTables()) {
-				cf.addLine(sb, context, scoreToCategoryVariable + ".put(Math.exp(" +
-						categoryNameToVariable.get(rt.getTargetCategory()) + ") / " + sumName +
-						", \"" + rt.getTargetCategory() + "\");");
+				for (RegressionTable rt : getRegressionTables()) {
+					cf.addLine(sb, context, scoreToCategoryVariable + ".put(Math.exp(" +
+							categoryNameToVariable.get(rt.getTargetCategory()) + ") / " + sumName +
+							", \"" + rt.getTargetCategory() + "\");");
+				}
+			} catch (ModelManagerException e) {
+				throw new TranslationException(e);
 			}
 			break;
 		case CLOGLOG:
 			// pick the max of pj = 1 - exp( -exp( yj ) )
 
-			for (RegressionTable rt : getRegressionTables()) {
-				String expression = "1.0 - Math.exp(-Math.exp(" +
-						categoryNameToVariable.get(rt.getTargetCategory()) + "))";
-				cf.addLine(sb, context, scoreToCategoryVariable + ".put(" + expression + ", \"" +
-						rt.getTargetCategory() + "\");");
+			try {
+				for (RegressionTable rt : getRegressionTables()) {
+					String expression =
+							"1.0 - Math.exp(-Math.exp(" +
+									categoryNameToVariable.get(rt.getTargetCategory()) + "))";
+					cf.addLine(sb, context, scoreToCategoryVariable + ".put(" +
+							expression + ", \"" + rt.getTargetCategory() + "\");");
+				}
+			} catch (ModelManagerException e) {
+				throw new TranslationException(e);
 			}
 			break;
 		case LOGLOG:
 			// pick the max of pj = exp( -exp( -yj ) )
-			for (RegressionTable rt : getRegressionTables()) {
-				String expression = "Math.exp(-Math.exp(-" +
-						categoryNameToVariable.get(rt.getTargetCategory()) + "))";
-				cf.addLine(sb, context, scoreToCategoryVariable + ".put(" + expression + ", \"" +
-						rt.getTargetCategory() + "\");");
+			try {
+				for (RegressionTable rt : getRegressionTables()) {
+					String expression =
+							"Math.exp(-Math.exp(-" +
+									categoryNameToVariable.get(rt.getTargetCategory()) + "))";
+					cf.addLine(sb, context, scoreToCategoryVariable + ".put(" +
+								expression + ", \"" + rt.getTargetCategory() + "\");");
+				}
+			} catch (ModelManagerException e) {
+				throw new TranslationException(e);
 			}
 			break;
 		default:
-			throw new UnsupportedFeatureException(getNormalizationMethodType() +
-					" is not supported.");
+			throw new TranslationException(new
+					UnsupportedFeatureException(getNormalizationMethodType() +
+					" is not supported."));
 		}
 
 		cf.assignVariable(sb, context,
@@ -226,13 +274,16 @@ public class RegressionModelTranslator extends RegressionModelManager implements
 	/**
 	 * Produce a code that evaluates a regressionTable.
 	 * 
-	 * @param sb The string builder we are working with.
-	 * @param context The context of the translation.
-	 * @param variableName The name of the variable we want.
+	 * @param sb
+	 *            The string builder we are working with.
+	 * @param context
+	 *            The context of the translation.
+	 * @param variableName
+	 *            The name of the variable we want.
 	 * @param rt
 	 * @param cf
-	 * @param storeResultInVariable True if we want to affect the result to the output variable.
-	 *            False Otherwise.
+	 * @param storeResultInVariable
+	 *            True if we want to affect the result to the output variable. False Otherwise.
 	 * @return The name of the variable that contains the evaluation of the table.
 	 * @throws TranslationException
 	 */
@@ -266,10 +317,14 @@ public class RegressionModelTranslator extends RegressionModelManager implements
 	/**
 	 * Produce the code for the normalization for the regression.
 	 * 
-	 * @param code The string builder we are working with.
-	 * @param context The context of the translation.
-	 * @param outputVariable The variable where we have to put the result.
-	 * @param cf The code formatter.
+	 * @param code
+	 *            The string builder we are working with.
+	 * @param context
+	 *            The context of the translation.
+	 * @param outputVariable
+	 *            The variable where we have to put the result.
+	 * @param cf
+	 *            The code formatter.
 	 */
 	private void translateNormalizationRegression(StringBuilder code, TranslationContext context,
 			DataField outputVariable, CodeFormatter cf) {
@@ -292,7 +347,8 @@ public class RegressionModelTranslator extends RegressionModelManager implements
 		case EXP:
 			cf.assignVariable(code, context,
 					context.formatOutputVariable(outputVariable.getName().getValue()), "Math.exp(" +
-						context.formatOutputVariable(outputVariable.getName().getValue()) + ")");
+							context.formatOutputVariable(
+									outputVariable.getName().getValue()) + ")");
 			// result = Math.exp(result);
 			break;
 		default:
@@ -305,11 +361,16 @@ public class RegressionModelTranslator extends RegressionModelManager implements
 	/**
 	 * Produce the code for the evaluation of a particular numeric predictor.
 	 * 
-	 * @param code The string builder we are working with.
-	 * @param context The context of the translation.
-	 * @param outputVariable The variable where we have to put the result.
-	 * @param numericPredictor The numeric predictor we translate.
-	 * @param cf The code formatter.
+	 * @param code
+	 *            The string builder we are working with.
+	 * @param context
+	 *            The context of the translation.
+	 * @param outputVariable
+	 *            The variable where we have to put the result.
+	 * @param numericPredictor
+	 *            The numeric predictor we translate.
+	 * @param cf
+	 *            The code formatter.
 	 * @throws TranslationException
 	 */
 	private void translateNumericPredictor(StringBuilder code, TranslationContext context,
@@ -344,11 +405,16 @@ public class RegressionModelTranslator extends RegressionModelManager implements
 	/**
 	 * Produce the code for the evaluation of a particular categorical predictor.
 	 * 
-	 * @param code The string builder we are working with.
-	 * @param context The context of the translation.
-	 * @param outputVariable The variable where we have to put the result.
-	 * @param categoricalPredictor The categorical predictor we translate.
-	 * @param cf The code formatter.
+	 * @param code
+	 *            The string builder we are working with.
+	 * @param context
+	 *            The context of the translation.
+	 * @param outputVariable
+	 *            The variable where we have to put the result.
+	 * @param categoricalPredictor
+	 *            The categorical predictor we translate.
+	 * @param cf
+	 *            The code formatter.
 	 * @throws TranslationException
 	 */
 	private void translateCategoricalPredictor(StringBuilder code, TranslationContext context,
@@ -377,8 +443,10 @@ public class RegressionModelTranslator extends RegressionModelManager implements
 	 * Produce the code for an equality expression. The code is different between string and numbers
 	 * type.
 	 * 
-	 * @param categoricalPredictor The categorical predictor we translate.
-	 * @param context The context.
+	 * @param categoricalPredictor
+	 *            The categorical predictor we translate.
+	 * @param context
+	 *            The context.
 	 * @return The code corresponding to an is equal statement.
 	 * @throws TranslationException
 	 */

@@ -23,16 +23,17 @@ public class ParameterUtil {
 	}
 
 	@SuppressWarnings("unused")
-	public static Object prepare(DataField dataField, MiningField miningField, Object value) {
+	public static Object prepare(DataField dataField, MiningField miningField, Object value)
+			throws EvaluationException {
 
 		if (dataField == null) {
-			throw new EvaluationException();
+			throw new EvaluationException("DataField is null");
 		}
 
 		outlierTreatment: if (isOutlier(dataField, value)) {
 
 			if (miningField == null) {
-				throw new EvaluationException();
+				throw new EvaluationException("MiningField is null");
 			}
 
 			OutlierTreatmentMethodType outlierTreatmentMethod = miningField.getOutlierTreatment();
@@ -61,7 +62,8 @@ public class ParameterUtil {
 				}
 				break;
 			default:
-				throw new UnsupportedFeatureException(outlierTreatmentMethod);
+				throw new EvaluationException(new UnsupportedFeatureException(
+						outlierTreatmentMethod));
 			}
 		}
 
@@ -85,8 +87,8 @@ public class ParameterUtil {
 				throw new EvaluationException();
 			}
 
-			InvalidValueTreatmentMethodType invalidValueTreatmentMethod = miningField
-					.getInvalidValueTreatment();
+			InvalidValueTreatmentMethodType invalidValueTreatmentMethod =
+					miningField.getInvalidValueTreatment();
 			switch (invalidValueTreatmentMethod) {
 			case RETURN_INVALID:
 				throw new EvaluationException();
@@ -100,14 +102,15 @@ public class ParameterUtil {
 
 				return null;
 			default:
-				throw new UnsupportedFeatureException(invalidValueTreatmentMethod);
+				throw new EvaluationException(new UnsupportedFeatureException(
+						invalidValueTreatmentMethod));
 			}
 		}
 
 		return cast(dataField.getDataType(), value);
 	}
 
-	private static boolean isOutlier(DataField dataField, Object value) {
+	private static boolean isOutlier(DataField dataField, Object value) throws EvaluationException {
 
 		if (value == null) {
 			return false;
@@ -157,13 +160,13 @@ public class ParameterUtil {
 		case ORDINAL:
 			break;
 		default:
-			throw new UnsupportedFeatureException(opType);
+			throw new EvaluationException(new UnsupportedFeatureException(opType));
 		}
 
 		return false;
 	}
 
-	private static boolean isMissing(DataField dataField, Object value) {
+	private static boolean isMissing(DataField dataField, Object value) throws EvaluationException {
 
 		if (value == null) {
 			return true;
@@ -188,12 +191,12 @@ public class ParameterUtil {
 		return false;
 	}
 
-	private static boolean isInvalid(DataField dataField, Object value) {
+	private static boolean isInvalid(DataField dataField, Object value) throws EvaluationException {
 		return !isValid(dataField, value);
 	}
 
 	@SuppressWarnings("fallthrough")
-	private static boolean isValid(DataField dataField, Object value) {
+	private static boolean isValid(DataField dataField, Object value) throws EvaluationException {
 		DataType dataType = dataField.getDataType();
 
 		// Speed up subsequent conversions
@@ -218,7 +221,7 @@ public class ParameterUtil {
 			if (intervalCount > 0) {
 				return false;
 			}
-		// Falls through
+			// Falls through
 		case CATEGORICAL:
 		case ORDINAL:
 			int validValueCount = 0;
@@ -245,7 +248,7 @@ public class ParameterUtil {
 				case MISSING:
 					break;
 				default:
-					throw new UnsupportedFeatureException(property);
+					throw new EvaluationException(new UnsupportedFeatureException(property));
 				}
 			}
 
@@ -254,7 +257,7 @@ public class ParameterUtil {
 			}
 			break;
 		default:
-			throw new UnsupportedFeatureException(opType);
+			throw new EvaluationException(new UnsupportedFeatureException(opType));
 		}
 
 		return true;
@@ -263,35 +266,43 @@ public class ParameterUtil {
 	/**
 	 * Checks the equality between different value representations.
 	 * 
-	 * @param value The {@link #getDataType(Object) runtime data type representation} of the value.
-	 * @param string The String representation of the value.
+	 * @param value
+	 *            The {@link #getDataType(Object) runtime data type representation} of the value.
+	 * @param string
+	 *            The String representation of the value.
+	 * @throws EvaluationException
 	 */
-	public static boolean equals(Object value, String string) {
+	public static boolean equals(Object value, String string) throws EvaluationException {
 		return equals(getDataType(value), value, string);
 	}
 
-	private static boolean equals(DataType dataType, Object left, Object right) {
+	private static boolean equals(DataType dataType, Object left, Object right)
+			throws EvaluationException {
 		return (cast(dataType, left)).equals(cast(dataType, right));
 	}
 
 	/**
 	 * Calculates the order between the value and the reference value.
 	 * 
-	 * @param value The {@link #getDataType(Object) runtime data type representation} of the value.
-	 * @param string The String representation of the reference value.
+	 * @param value
+	 *            The {@link #getDataType(Object) runtime data type representation} of the value.
+	 * @param string
+	 *            The String representation of the reference value.
+	 * @throws EvaluationException
 	 * 
 	 * @see Comparable#compareTo(Object)
 	 */
-	public static int compare(Object value, String string) {
+	public static int compare(Object value, String string) throws EvaluationException {
 		return compare(getDataType(value), value, string);
 	}
 
 	@SuppressWarnings({ "cast", "rawtypes", "unchecked" })
-	private static int compare(DataType dataType, Object left, Object right) {
+	private static int compare(DataType dataType, Object left, Object right)
+			throws EvaluationException {
 		return ((Comparable) cast(dataType, left)).compareTo((Comparable) cast(dataType, right));
 	}
 
-	public static Object parse(DataType dataType, String string) {
+	public static Object parse(DataType dataType, String string) throws EvaluationException {
 
 		switch (dataType) {
 		case STRING:
@@ -306,43 +317,40 @@ public class ParameterUtil {
 			break;
 		}
 
-		throw new UnsupportedFeatureException(dataType);
+		throw new EvaluationException(new UnsupportedFeatureException(dataType));
 	}
 
 	/**
 	 * @return The data type of the value.
+	 * @throws EvaluationException
 	 */
-	public static DataType getDataType(Object value) {
+	public static DataType getDataType(Object value) throws EvaluationException {
 
 		if (value instanceof String) {
 			return DataType.STRING;
-		} else
-
-		if (value instanceof Integer) {
+		} else if (value instanceof Integer) {
 			return DataType.INTEGER;
-		} else
-
-		if (value instanceof Float) {
+		} else if (value instanceof Float) {
 			return DataType.FLOAT;
-		} else
-
-		if (value instanceof Double) {
+		} else if (value instanceof Double) {
 			return DataType.DOUBLE;
 		}
 
-		throw new EvaluationException();
+		throw new EvaluationException(value + " is not a valid type.");
 	}
 
 	/**
 	 * @return The least restrictive data type of the data types of two values
+	 * @throws EvaluationException
 	 * 
 	 * @see #getResultDataType(DataType, DataType)
 	 */
-	public static DataType getResultDataType(Object left, Object right) {
+	public static DataType getResultDataType(Object left, Object right) throws EvaluationException {
 		return getResultDataType(getDataType(left), getDataType(right));
 	}
 
-	public static DataType getResultDataType(DataType left, DataType right) {
+	public static DataType getResultDataType(DataType left, DataType right)
+			throws EvaluationException {
 
 		if ((left).equals(right)) {
 			return left;
@@ -356,10 +364,10 @@ public class ParameterUtil {
 			}
 		}
 
-		throw new EvaluationException();
+		throw new EvaluationException("Unable to find a result data type");
 	}
 
-	public static Object cast(DataType dataType, Object value) {
+	public static Object cast(DataType dataType, Object value) throws EvaluationException {
 
 		switch (dataType) {
 		case STRING:
@@ -374,35 +382,36 @@ public class ParameterUtil {
 			break;
 		}
 
-		throw new EvaluationException();
+		throw new EvaluationException("Can't cast [" + value + "] to " + dataType.name());
 	}
 
 	/**
 	 * Converts the specified value to String data type.
+	 * @throws EvaluationException 
 	 * 
 	 * @see DataType#STRING
 	 */
-	public static String toString(Object value) {
+	public static String toString(Object value) throws EvaluationException {
 
 		if (value instanceof String) {
 			return (String) value;
 		} else
-
 		if (value instanceof Number) {
 			Number number = (Number) value;
 
 			return number.toString();
 		}
 
-		throw new EvaluationException();
+		throw new EvaluationException("Can't transform [" + value + "] into a string");
 	}
 
 	/**
 	 * Converts the specified value to Integer data type.
+	 * @throws EvaluationException 
 	 * 
 	 * @see DataType#INTEGER
 	 */
-	public static Integer toInteger(Object value) {
+	public static Integer toInteger(Object value) throws EvaluationException {
 
 		if (value instanceof String) {
 			String string = (String) value;
@@ -420,15 +429,16 @@ public class ParameterUtil {
 			return Integer.valueOf(number.intValue());
 		}
 
-		throw new EvaluationException();
+		throw new EvaluationException("Can't cast [" + value + "] to an integer");
 	}
 
 	/**
 	 * Converts the specified value to Float data type.
+	 * @throws EvaluationException 
 	 * 
 	 * @see DataType#FLOAT
 	 */
-	public static Float toFloat(Object value) {
+	public static Float toFloat(Object value) throws EvaluationException {
 
 		if (value instanceof String) {
 			String string = (String) value;
@@ -446,15 +456,16 @@ public class ParameterUtil {
 			return Float.valueOf(number.floatValue());
 		}
 
-		throw new EvaluationException();
+		throw new EvaluationException("Can't cast [" + value + "] to a float");
 	}
 
 	/**
 	 * Converts the specified value to Double data type.
+	 * @throws EvaluationException 
 	 * 
 	 * @see DataType#DOUBLE
 	 */
-	public static Double toDouble(Object value) {
+	public static Double toDouble(Object value) throws EvaluationException {
 
 		if (value instanceof String) {
 			String string = (String) value;
@@ -468,7 +479,7 @@ public class ParameterUtil {
 			return Double.valueOf(number.doubleValue());
 		}
 
-		throw new EvaluationException();
+		throw new EvaluationException("Can't cast [" + value + "] to a double");
 	}
 
 	public static DataType getConstantDataType(String string) {

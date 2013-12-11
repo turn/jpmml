@@ -35,7 +35,7 @@ public class MiningModelManager extends ModelManager<MiningModel> {
 	}
 
 	@Override
-	public MiningModel getModel() {
+	public MiningModel getModel() throws ModelManagerException {
 		ensureNotNull(this.miningModel);
 
 		return this.miningModel;
@@ -50,7 +50,7 @@ public class MiningModelManager extends ModelManager<MiningModel> {
 	 * 
 	 * @see #getModel()
 	 */
-	public MiningModel createModel(MiningFunctionType miningFunction) {
+	public MiningModel createModel(MiningFunctionType miningFunction) throws ModelManagerException {
 		ensureNull(this.miningModel);
 
 		this.miningModel = new MiningModel(new MiningSchema(), miningFunction);
@@ -63,7 +63,7 @@ public class MiningModelManager extends ModelManager<MiningModel> {
 	/**
 	 * @throws ModelManagerException If the Segmentation does not exist
 	 */
-	public Segmentation getSegmentation() {
+	public Segmentation getSegmentation() throws ModelManagerException {
 		MiningModel miningModel = getModel();
 
 		Segmentation segmentation = miningModel.getSegmentation();
@@ -75,7 +75,8 @@ public class MiningModelManager extends ModelManager<MiningModel> {
 	/**
 	 * @throws ModelManagerException If the Segmentation already exists
 	 */
-	public Segmentation createSegmentation(MultipleModelMethodType multipleModelMethod) {
+	public Segmentation createSegmentation(MultipleModelMethodType multipleModelMethod)
+			throws ModelManagerException {
 		MiningModel miningModel = getModel();
 
 		Segmentation segmentation = miningModel.getSegmentation();
@@ -87,11 +88,11 @@ public class MiningModelManager extends ModelManager<MiningModel> {
 		return segmentation;
 	}
 
-	public Segment addSegment(Model model) {
+	public Segment addSegment(Model model) throws ModelManagerException {
 		return addSegment(new True(), model);
 	}
 
-	public Segment addSegment(Predicate predicate, Model model) {
+	public Segment addSegment(Predicate predicate, Model model) throws ModelManagerException {
 		Segment segment = new Segment();
 		segment.setPredicate(predicate);
 		segment.setModel(model);
@@ -101,7 +102,7 @@ public class MiningModelManager extends ModelManager<MiningModel> {
 		return segment;
 	}
 
-	public List<Segment> getSegments() {
+	public List<Segment> getSegments() throws ModelManagerException {
 		return getSegmentation().getSegments();
 	}
 

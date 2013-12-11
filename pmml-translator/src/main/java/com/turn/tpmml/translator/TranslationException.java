@@ -14,4 +14,7 @@ public class TranslationException extends Exception {
 		super(message);
 	}
 
+	public TranslationException(Throwable t) {
+		super(t);
+	}
 }

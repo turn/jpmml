@@ -8,7 +8,7 @@ import com.turn.tpmml.FieldName;
 import com.turn.tpmml.PMML;
 import com.turn.tpmml.Predicate;
 import com.turn.tpmml.Scorecard;
-
+import com.turn.tpmml.manager.ModelManagerException;
 import com.turn.tpmml.manager.ScoreCardModelManager;
 import com.turn.tpmml.translator.CodeFormatter.Operator;
 import com.turn.tpmml.translator.Variable.VariableType;
@@ -35,7 +35,7 @@ public class ScorecardTranslator extends ScoreCardModelManager implements Transl
 		super(pmml, scorecard);
 	}
 
-	public ScorecardTranslator(ScoreCardModelManager parent) {
+	public ScorecardTranslator(ScoreCardModelManager parent) throws ModelManagerException {
 		this(parent.getPmml(), parent.getModel());
 	}
 
@@ -47,7 +47,12 @@ public class ScorecardTranslator extends ScoreCardModelManager implements Transl
 	public String translate(TranslationContext context) throws TranslationException {
 
 		String outputVariableName = null;
-		List<FieldName> predictedFields = getPredictedFields();
+		List<FieldName> predictedFields;
+		try {
+			predictedFields = getPredictedFields();
+		} catch (ModelManagerException e) {
+			throw new TranslationException(e);
+		}
 		// Get the predicted field. If there is none, it is an error.
 		if (predictedFields != null && predictedFields.size() > 0) {
 			outputVariableName = predictedFields.get(0).getValue();

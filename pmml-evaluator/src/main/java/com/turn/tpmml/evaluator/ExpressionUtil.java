@@ -22,14 +22,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-
-
 public class ExpressionUtil {
 
 	private ExpressionUtil() {
 	}
 
-	public static Object evaluate(FieldName name, EvaluationContext context) {
+	public static Object evaluate(FieldName name, EvaluationContext context)
+			throws EvaluationException {
 		DerivedField derivedField = context.resolve(name);
 		if (derivedField != null) {
 			return evaluate(derivedField, context);
@@ -38,7 +37,8 @@ public class ExpressionUtil {
 		return context.getParameter(name);
 	}
 
-	public static Object evaluate(DerivedField derivedField, EvaluationContext context) {
+	public static Object evaluate(DerivedField derivedField, EvaluationContext context)
+			throws EvaluationException {
 		Object value = evaluate(derivedField.getExpression(), context);
 
 		DataType dataType = derivedField.getDataType();
@@ -49,40 +49,30 @@ public class ExpressionUtil {
 		return value;
 	}
 
-	public static Object evaluate(Expression expression, EvaluationContext context) {
+	public static Object evaluate(Expression expression, EvaluationContext context)
+			throws EvaluationException {
 
 		if (expression instanceof Constant) {
 			return evaluateConstant((Constant) expression, context);
-		} else
-
-		if (expression instanceof FieldRef) {
+		} else if (expression instanceof FieldRef) {
 			return evaluateFieldRef((FieldRef) expression, context);
-		} else
-
-		if (expression instanceof NormContinuous) {
+		} else if (expression instanceof NormContinuous) {
 			return evaluateNormContinuous((NormContinuous) expression, context);
-		} else
-
-		if (expression instanceof NormDiscrete) {
+		} else if (expression instanceof NormDiscrete) {
 			return evaluateNormDiscrete((NormDiscrete) expression, context);
-		} else
-
-		if (expression instanceof Discretize) {
+		} else if (expression instanceof Discretize) {
 			return evaluateDiscretize((Discretize) expression, context);
-		} else
-
-		if (expression instanceof MapValues) {
+		} else if (expression instanceof MapValues) {
 			return evaluateMapValues((MapValues) expression, context);
-		} else
-
-		if (expression instanceof Apply) {
+		} else if (expression instanceof Apply) {
 			return evaluateApply((Apply) expression, context);
 		}
 
-		throw new UnsupportedFeatureException(expression);
+		throw new EvaluationException(new UnsupportedFeatureException(expression));
 	}
 
-	public static Object evaluateConstant(Constant constant, EvaluationContext context) {
+	public static Object evaluateConstant(Constant constant, EvaluationContext context)
+			throws EvaluationException {
 		String value = constant.getValue();
 
 		DataType dataType = constant.getDataType();
@@ -93,7 +83,8 @@ public class ExpressionUtil {
 		return ParameterUtil.parse(dataType, value);
 	}
 
-	public static Object evaluateFieldRef(FieldRef fieldRef, EvaluationContext context) {
+	public static Object evaluateFieldRef(FieldRef fieldRef, EvaluationContext context)
+			throws EvaluationException {
 		Object value = evaluate(fieldRef.getField(), context);
 		if (value == null) {
 			return fieldRef.getMapMissingTo();
@@ -103,7 +94,7 @@ public class ExpressionUtil {
 	}
 
 	public static Object evaluateNormContinuous(NormContinuous normContinuous,
-			EvaluationContext context) {
+			EvaluationContext context) throws EvaluationException {
 		Number value = (Number) evaluate(normContinuous.getField(), context);
 		if (value == null) {
 			return normContinuous.getMapMissingTo();
@@ -112,8 +103,8 @@ public class ExpressionUtil {
 		return NormalizationUtil.normalize(normContinuous, value.doubleValue());
 	}
 
-	public static Object evaluateNormDiscrete(NormDiscrete normDiscrete,
-											EvaluationContext context) {
+	public static Object evaluateNormDiscrete(NormDiscrete normDiscrete, EvaluationContext context)
+			throws EvaluationException {
 		Object value = evaluate(normDiscrete.getField(), context);
 		if (value == null) {
 			return normDiscrete.getMapMissingTo();
@@ -124,7 +115,8 @@ public class ExpressionUtil {
 		return Double.valueOf(equals ? 1.0 : 0.0);
 	}
 
-	public static Object evaluateDiscretize(Discretize discretize, EvaluationContext context) {
+	public static Object evaluateDiscretize(Discretize discretize, EvaluationContext context)
+			throws EvaluationException {
 		DataType dataType = discretize.getDataType();
 
 		Object value = evaluate(discretize.getField(), context);
@@ -137,7 +129,8 @@ public class ExpressionUtil {
 		return parseSafely(dataType, result);
 	}
 
-	public static Object evaluateMapValues(MapValues mapValues, EvaluationContext context) {
+	public static Object evaluateMapValues(MapValues mapValues, EvaluationContext context)
+			throws EvaluationException {
 		DataType dataType = mapValues.getDataType();
 
 		Map<String, Object> values = new LinkedHashMap<String, Object>();
@@ -157,7 +150,8 @@ public class ExpressionUtil {
 		return parseSafely(dataType, result);
 	}
 
-	public static Object evaluateApply(Apply apply, EvaluationContext context) {
+	public static Object evaluateApply(Apply apply, EvaluationContext context)
+			throws EvaluationException {
 		List<Object> values = new ArrayList<Object>();
 
 		List<Expression> arguments = apply.getExpressions();
@@ -175,7 +169,7 @@ public class ExpressionUtil {
 		return result;
 	}
 
-	private static Object parseSafely(DataType dataType, String value) {
+	private static Object parseSafely(DataType dataType, String value) throws EvaluationException {
 
 		if (value != null) {
 

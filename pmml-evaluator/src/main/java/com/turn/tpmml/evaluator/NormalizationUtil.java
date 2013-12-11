@@ -15,7 +15,8 @@ public class NormalizationUtil {
 		// Forbid creation of an instance.
 	}
 
-	public static double normalize(NormContinuous normContinuous, double value) {
+	public static double normalize(NormContinuous normContinuous, double value)
+			throws EvaluationException {
 		List<LinearNorm> linearNorms = normContinuous.getLinearNorms();
 
 		LinearNorm rangeStart = linearNorms.get(0);
@@ -45,7 +46,8 @@ public class NormalizationUtil {
 			case AS_MISSING_VALUES:
 				Double missing = normContinuous.getMapMissingTo();
 				if (missing == null) {
-					throw new EvaluationException();
+					throw new EvaluationException(
+							"There is no map available for the missing values.");
 				}
 				return missing;
 			case AS_IS:

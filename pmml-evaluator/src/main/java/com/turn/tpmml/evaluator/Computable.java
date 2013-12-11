@@ -5,5 +5,5 @@ package com.turn.tpmml.evaluator;
 
 public interface Computable<V> {
 
-	V getResult();
+	V getResult() throws EvaluationException;
 }

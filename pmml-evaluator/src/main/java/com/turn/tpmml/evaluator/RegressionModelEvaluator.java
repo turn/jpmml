@@ -15,6 +15,7 @@ import com.turn.tpmml.RegressionModel;
 import com.turn.tpmml.RegressionNormalizationMethodType;
 import com.turn.tpmml.RegressionTable;
 import com.turn.tpmml.manager.IPMMLResult;
+import com.turn.tpmml.manager.ModelManagerException;
 import com.turn.tpmml.manager.PMMLResult;
 import com.turn.tpmml.manager.RegressionModelManager;
 import com.turn.tpmml.manager.UnsupportedFeatureException;
@@ -23,6 +24,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 /**
  * This class evaluates the variables on the model. It reads the pmml object to return a result. For
@@ -43,20 +45,31 @@ public class RegressionModelEvaluator extends RegressionModelManager implements 
 		super(pmml, regressionModel);
 	}
 
-	public RegressionModelEvaluator(RegressionModelManager parent) {
+	public RegressionModelEvaluator(RegressionModelManager parent) throws ModelManagerException {
 		this(parent.getPmml(), parent.getModel());
 	}
 
-	public Object prepare(FieldName name, Object value) {
-		return ParameterUtil.prepare(getDataField(name), getMiningField(name), value);
+	public Object prepare(FieldName name, Object value) throws EvaluationException {
+		try {
+			return ParameterUtil.prepare(getDataField(name), getMiningField(name), value);
+		} catch (ModelManagerException e) {
+			throw new EvaluationException(e);
+		}
 	}
 
 	/**
+	 * @throws EvaluationException
 	 * @see #evaluateRegression(EvaluationContext)
 	 * @see #evaluateClassification(EvaluationContext)
 	 */
-	public IPMMLResult evaluate(Map<FieldName, ?> parameters) {
-		RegressionModel regressionModel = getModel();
+	@Override
+	public IPMMLResult evaluate(Map<FieldName, ?> parameters) throws EvaluationException {
+		RegressionModel regressionModel;
+		try {
+			regressionModel = getModel();
+		} catch (ModelManagerException e) {
+			throw new EvaluationException(e);
+		}
 
 		Map<FieldName, ?> predictions;
 
@@ -71,9 +84,9 @@ public class RegressionModelEvaluator extends RegressionModelManager implements 
 			predictions = evaluateClassification(context);
 			break;
 		default:
-			throw new UnsupportedFeatureException(miningFunction);
+			throw new EvaluationException(new UnsupportedFeatureException(miningFunction));
 		}
-		
+
 		if (predictions == null) {
 			return null;
 		}
@@ -81,16 +94,34 @@ public class RegressionModelEvaluator extends RegressionModelManager implements 
 		res = OutputUtil.evaluate(predictions, context);
 		// FIXME: Dirty hack: Remove all the content of the result, and keep only the real result.
 		// ( { foo => 1.0, bar => 0.5, baz => 0.0 } becomes foo ).
-		if (res.getValue(getTarget()) instanceof ClassificationMap) {
-			res.put(getTarget(), ((ClassificationMap) res.getValue(getTarget())).getResult());
+		try {
+			if (res.getValue(getTarget()) instanceof ClassificationMap) {
+				res.put(getTarget(), ((ClassificationMap) res.getValue(getTarget())).getResult());
+			}
+		} catch (NoSuchElementException e) {
+			throw new EvaluationException(e);
+		} catch (ModelManagerException e) {
+			throw new EvaluationException(e);
 		}
 		return res;
 	}
 
-	public Map<FieldName, Double> evaluateRegression(EvaluationContext context) {
-		RegressionModel regressionModel = getModel();
+	public Map<FieldName, Double> evaluateRegression(EvaluationContext context)
+			throws EvaluationException {
+		RegressionModel regressionModel;
+		try {
+			regressionModel = getModel();
+		} catch (ModelManagerException e) {
+			throw new EvaluationException(e);
+		}
 
-		List<RegressionTable> regressionTables = getRegressionTables();
+		List<RegressionTable> regressionTables;
+		try {
+			regressionTables = getRegressionTables();
+		} catch (ModelManagerException e) {
+			throw new EvaluationException(e);
+		}
+
 		if (regressionTables.size() != 1) {
 			throw new EvaluationException("There are too many tables for a regression.");
 		}
@@ -102,23 +133,40 @@ public class RegressionModelEvaluator extends RegressionModelManager implements 
 		if (value == null) {
 			return null;
 		}
-		
-		FieldName name = getTarget();
 
-		RegressionNormalizationMethodType regressionNormalizationMethod = regressionModel
-				.getNormalizationMethod();
+		FieldName name;
+		try {
+			name = getTarget();
+		} catch (ModelManagerException e) {
+			throw new EvaluationException(e);
+		}
+
+		RegressionNormalizationMethodType regressionNormalizationMethod =
+				regressionModel.getNormalizationMethod();
 
 		value = normalizeRegressionResult(regressionNormalizationMethod, value);
 
 		return Collections.singletonMap(name, value);
 	}
 
-	public Map<FieldName, ClassificationMap> evaluateClassification(EvaluationContext context) {
-		RegressionModel regressionModel = getModel();
+	public Map<FieldName, ClassificationMap> evaluateClassification(EvaluationContext context)
+			throws EvaluationException {
+		RegressionModel regressionModel;
+		try {
+			regressionModel = getModel();
+		} catch (ModelManagerException e) {
+			throw new EvaluationException(e);
+		}
 
-		List<RegressionTable> regressionTables = getRegressionTables();
+		List<RegressionTable> regressionTables;
+		try {
+			regressionTables = getRegressionTables();
+		} catch (ModelManagerException e) {
+			throw new EvaluationException(e);
+		}
+
 		if (regressionTables.size() < 1) {
-			throw new EvaluationException();
+			throw new EvaluationException("There is no regression table in this model");
 		}
 
 		double sumExp = 0d;
@@ -129,14 +177,20 @@ public class RegressionModelEvaluator extends RegressionModelManager implements 
 			Double value = evaluateRegressionTable(regressionTable, context);
 
 			if (value == null) {
-				throw new UnsupportedFeatureException("Target are not supported yet.");
+				throw new EvaluationException(new UnsupportedFeatureException(
+						"Target are not supported yet."));
 			}
-			
+
 			sumExp += Math.exp(value.doubleValue());
 			values.put(regressionTable.getTargetCategory(), value);
 		}
 
-		FieldName name = getTarget();
+		FieldName name;
+		try {
+			name = getTarget();
+		} catch (ModelManagerException e) {
+			throw new EvaluationException(e);
+		}
 
 		DataField dataField = getDataField(name);
 
@@ -145,17 +199,17 @@ public class RegressionModelEvaluator extends RegressionModelManager implements 
 		case CATEGORICAL:
 			break;
 		default:
-			throw new UnsupportedFeatureException(opType);
+			throw new EvaluationException(new UnsupportedFeatureException(opType));
 		}
 
-		RegressionNormalizationMethodType regressionNormalizationMethod = regressionModel
-				.getNormalizationMethod();
+		RegressionNormalizationMethodType regressionNormalizationMethod =
+				regressionModel.getNormalizationMethod();
 
 		Collection<Map.Entry<String, Double>> entries = values.entrySet();
 		for (Map.Entry<String, Double> entry : entries) {
 			if (entry.getValue() != null) {
-			entry.setValue(normalizeClassificationResult(regressionNormalizationMethod,
-					entry.getValue(), sumExp));
+				entry.setValue(normalizeClassificationResult(regressionNormalizationMethod,
+						entry.getValue(), sumExp));
 			} else {
 				entry.setValue(null);
 			}
@@ -165,7 +219,7 @@ public class RegressionModelEvaluator extends RegressionModelManager implements 
 	}
 
 	private static Double evaluateRegressionTable(RegressionTable regressionTable,
-			EvaluationContext context) {
+			EvaluationContext context) throws EvaluationException {
 		double result = 0D;
 
 		result += regressionTable.getIntercept();
@@ -180,12 +234,14 @@ public class RegressionModelEvaluator extends RegressionModelManager implements 
 				return null;
 			}
 
-			result += numericPredictor.getCoefficient() *
-					Math.pow(((Number) value).doubleValue(), numericPredictor.getExponent());
+			result +=
+					numericPredictor.getCoefficient() *
+							Math.pow(((Number) value).doubleValue(),
+									numericPredictor.getExponent());
 		}
 
-		List<CategoricalPredictor> categoricalPredictors = regressionTable
-				.getCategoricalPredictors();
+		List<CategoricalPredictor> categoricalPredictors =
+				regressionTable.getCategoricalPredictors();
 		for (CategoricalPredictor categoricalPredictor : categoricalPredictors) {
 			Object value = ExpressionUtil.evaluate(categoricalPredictor.getName(), context);
 
@@ -201,14 +257,15 @@ public class RegressionModelEvaluator extends RegressionModelManager implements 
 
 		List<PredictorTerm> predictorTerms = regressionTable.getPredictorTerms();
 		for (PredictorTerm predictorTerm : predictorTerms) {
-			throw new UnsupportedFeatureException(predictorTerm);
+			throw new EvaluationException(new UnsupportedFeatureException(predictorTerm));
 		}
 
 		return result;
 	}
 
 	private static Double normalizeRegressionResult(
-			RegressionNormalizationMethodType regressionNormalizationMethod, Double value) {
+			RegressionNormalizationMethodType regressionNormalizationMethod, Double value)
+			throws EvaluationException {
 		switch (regressionNormalizationMethod) {
 		case NONE:
 			return value;
@@ -218,13 +275,14 @@ public class RegressionModelEvaluator extends RegressionModelManager implements 
 		case EXP:
 			return Math.exp(value);
 		default:
-			throw new UnsupportedFeatureException(regressionNormalizationMethod);
+			throw new EvaluationException(new UnsupportedFeatureException(
+					regressionNormalizationMethod));
 		}
 	}
 
 	private static Double normalizeClassificationResult(
 			RegressionNormalizationMethodType regressionNormalizationMethod, Double value,
-			Double sumExp) {
+			Double sumExp) throws EvaluationException {
 
 		switch (regressionNormalizationMethod) {
 		case NONE:
@@ -238,7 +296,8 @@ public class RegressionModelEvaluator extends RegressionModelManager implements 
 		case LOGLOG:
 			return Math.exp(-Math.exp(-value));
 		default:
-			throw new UnsupportedFeatureException(regressionNormalizationMethod);
+			throw new EvaluationException(new UnsupportedFeatureException(
+					regressionNormalizationMethod));
 		}
 	}
 }

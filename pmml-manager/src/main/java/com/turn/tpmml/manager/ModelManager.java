@@ -37,26 +37,27 @@ public abstract class ModelManager<M extends Model> extends PMMLManager implemen
 	/**
 	 * @throws ModelManagerException If the Model does not exist
 	 */
-	public abstract M getModel();
+	public abstract M getModel() throws ModelManagerException;
 
 	/**
 	 * Convenience method for adding a field declaration to {@link DataDictionary} and
 	 * {@link MiningSchema}.
+	 * @throws ModelManagerException 
 	 * 
 	 * @see #addDataField(FieldName, String, OpType, DataType)
 	 * @see #addMiningField(FieldName, FieldUsageType)
 	 */
 	public void addField(FieldName name, String displayName, OpType opType, DataType dataType,
-			FieldUsageType fieldUsageType) {
+			FieldUsageType fieldUsageType) throws ModelManagerException {
 		addDataField(name, displayName, opType, dataType);
 		addMiningField(name, fieldUsageType);
 	}
 
-	public List<FieldName> getActiveFields() {
+	public List<FieldName> getActiveFields() throws ModelManagerException {
 		return getMiningFields(FieldUsageType.ACTIVE);
 	}
 
-	public FieldName getTarget() {
+	public FieldName getTarget() throws ModelManagerException {
 		List<FieldName> fields = getPredictedFields();
 
 		if (fields.size() < 1) {
@@ -70,11 +71,12 @@ public abstract class ModelManager<M extends Model> extends PMMLManager implemen
 		return fields.get(0);
 	}
 
-	public List<FieldName> getPredictedFields() {
+	public List<FieldName> getPredictedFields() throws ModelManagerException {
 		return getMiningFields(FieldUsageType.PREDICTED);
 	}
 
-	public List<FieldName> getMiningFields(FieldUsageType fieldUsageType) {
+	public List<FieldName> getMiningFields(FieldUsageType fieldUsageType)
+			throws ModelManagerException {
 		List<FieldName> result = new ArrayList<FieldName>();
 
 		List<MiningField> miningFields = getMiningSchema().getMiningFields();
@@ -88,13 +90,14 @@ public abstract class ModelManager<M extends Model> extends PMMLManager implemen
 		return result;
 	}
 
-	public MiningField getMiningField(FieldName name) {
+	public MiningField getMiningField(FieldName name) throws ModelManagerException {
 		List<MiningField> miningFields = getMiningSchema().getMiningFields();
 
 		return find(miningFields, name);
 	}
 
-	public MiningField addMiningField(FieldName name, FieldUsageType usageType) {
+	public MiningField addMiningField(FieldName name, FieldUsageType usageType)
+			throws ModelManagerException {
 		MiningField miningField = new MiningField(name);
 		miningField.setUsageType(usageType);
 
@@ -104,7 +107,7 @@ public abstract class ModelManager<M extends Model> extends PMMLManager implemen
 		return miningField;
 	}
 
-	public List<FieldName> getOutputFields() {
+	public List<FieldName> getOutputFields() throws ModelManagerException {
 		List<FieldName> result = new ArrayList<FieldName>();
 
 		Output output = getOrCreateOutput();
@@ -117,7 +120,7 @@ public abstract class ModelManager<M extends Model> extends PMMLManager implemen
 		return result;
 	}
 
-	public OutputField getOutputField(FieldName name) {
+	public OutputField getOutputField(FieldName name) throws ModelManagerException {
 		Output output = getOrCreateOutput();
 
 		List<OutputField> outputFields = output.getOutputFields();
@@ -126,7 +129,7 @@ public abstract class ModelManager<M extends Model> extends PMMLManager implemen
 	}
 
 	@Override
-	public DerivedField resolve(FieldName name) {
+	public DerivedField resolve(FieldName name) throws ModelManagerException {
 		LocalTransformations localTransformations = getOrCreateLocalTransformations();
 
 		List<DerivedField> derivedFields = localTransformations.getDerivedFields();
@@ -139,11 +142,11 @@ public abstract class ModelManager<M extends Model> extends PMMLManager implemen
 		return derivedField;
 	}
 
-	public MiningSchema getMiningSchema() {
+	public MiningSchema getMiningSchema() throws ModelManagerException {
 		return getModel().getMiningSchema();
 	}
 
-	public LocalTransformations getOrCreateLocalTransformations() {
+	public LocalTransformations getOrCreateLocalTransformations() throws ModelManagerException {
 
 		if (this.localTransformations == null) {
 			M model = getModel();
@@ -161,7 +164,7 @@ public abstract class ModelManager<M extends Model> extends PMMLManager implemen
 		return this.localTransformations;
 	}
 
-	public Output getOrCreateOutput() {
+	public Output getOrCreateOutput() throws ModelManagerException {
 
 		if (this.output == null) {
 			M model = getModel();
@@ -182,14 +185,14 @@ public abstract class ModelManager<M extends Model> extends PMMLManager implemen
 	protected static void ensureNull(Object object) throws ModelManagerException {
 
 		if (object != null) {
-			throw new ModelManagerException();
+			throw new ModelManagerException("Object is not null as it should be");
 		}
 	}
 
 	protected static void ensureNotNull(Object object) throws ModelManagerException {
 
 		if (object == null) {
-			throw new ModelManagerException();
+			throw new ModelManagerException("Object is null and it shouldn't be");
 		}
 	}
 }

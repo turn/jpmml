@@ -16,9 +16,10 @@ public class EvaluatorUtil {
 	}
 
 	/**
+	 * @throws EvaluationException 
 	 * @see Computable
 	 */
-	public static Object decode(Object object) {
+	public static Object decode(Object object) throws EvaluationException {
 
 		if (object instanceof Computable) {
 			Computable<?> computable = (Computable<?>) object;
@@ -32,11 +33,12 @@ public class EvaluatorUtil {
 	/**
 	 * Decouples a {@link Map} instance from the current runtime environment by decoding both its
 	 * keys and values.
+	 * @throws EvaluationException 
 	 * 
 	 * @see #decodeKeys(Map)
 	 * @see #decodeValues(Map)
 	 */
-	public static Map<String, ?> decode(Map<FieldName, ?> map) {
+	public static Map<String, ?> decode(Map<FieldName, ?> map) throws EvaluationException {
 		return decodeKeys(decodeValues(map));
 	}
 
@@ -72,10 +74,11 @@ public class EvaluatorUtil {
 
 	/**
 	 * Replaces {@link Computable} complex values with simple values.
+	 * @throws EvaluationException 
 	 * 
 	 * @see Computable
 	 */
-	public static <K> Map<K, ?> decodeValues(Map<K, ?> map) {
+	public static <K> Map<K, ?> decodeValues(Map<K, ?> map) throws EvaluationException {
 		Map<K, Object> result = new LinkedHashMap<K, Object>();
 
 		Collection<? extends Map.Entry<K, ?>> entries = map.entrySet();

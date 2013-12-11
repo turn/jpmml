@@ -17,17 +17,15 @@ import org.apache.commons.math3.stat.descriptive.rank.Min;
 import org.apache.commons.math3.stat.descriptive.summary.Product;
 import org.apache.commons.math3.stat.descriptive.summary.Sum;
 
-
-
 public class FunctionUtil {
 
 	private FunctionUtil() {
 	}
 
-	public static Object evaluate(String name, List<?> values) {
+	public static Object evaluate(String name, List<?> values) throws EvaluationException {
 		Function function = getFunction(name);
 		if (function == null) {
-			throw new UnsupportedFeatureException(name);
+			throw new EvaluationException(new UnsupportedFeatureException(name));
 		}
 
 		return function.evaluate(values);
@@ -41,40 +39,40 @@ public class FunctionUtil {
 		FunctionUtil.FUNCTIONS.put(name, function);
 	}
 
-	private static Boolean asBoolean(Object value) {
+	private static Boolean asBoolean(Object value) throws EvaluationException {
 
 		if (value instanceof Boolean) {
 			return (Boolean) value;
 		}
 
-		throw new EvaluationException();
+		throw new EvaluationException(value + " is not a boolean");
 	}
 
-	private static Number asNumber(Object value) {
+	private static Number asNumber(Object value) throws EvaluationException {
 
 		if (value instanceof Number) {
 			return (Number) value;
 		}
 
-		throw new EvaluationException();
+		throw new EvaluationException(value + " is not a number");
 	}
 
-	private static Integer asInteger(Object value) {
+	private static Integer asInteger(Object value) throws EvaluationException {
 
 		if (value instanceof Integer) {
 			return (Integer) value;
 		}
 
-		throw new EvaluationException();
+		throw new EvaluationException(value + " is not an integer");
 	}
 
-	private static String asString(Object value) {
+	private static String asString(Object value) throws EvaluationException {
 
 		if (value instanceof String) {
 			return (String) value;
 		}
 
-		throw new EvaluationException();
+		throw new EvaluationException(value + " is not a string");
 	}
 
 	private static DataType integerToDouble(DataType dataType) {
@@ -86,26 +84,25 @@ public class FunctionUtil {
 		return dataType;
 	}
 
-	private static final Map<String, Function> FUNCTIONS =
-						new LinkedHashMap<String, Function>();
+	private static final Map<String, Function> FUNCTIONS = new LinkedHashMap<String, Function>();
 
 	public interface Function {
 
-		Object evaluate(List<?> values);
+		Object evaluate(List<?> values) throws EvaluationException;
 	}
 
 	public abstract static class ArithmeticFunction implements Function {
 
 		public abstract Double evaluate(Number left, Number right);
 
-		public Number cast(DataType dataType, Double result) {
+		public Number cast(DataType dataType, Double result) throws EvaluationException {
 			return asNumber(ParameterUtil.cast(dataType, result));
 		}
 
-		public Number evaluate(List<?> values) {
+		public Number evaluate(List<?> values) throws EvaluationException {
 
 			if (values.size() != 2) {
-				throw new EvaluationException();
+				throw new EvaluationException("Only binary expressions are supported");
 			}
 
 			Object left = values.get(0);
@@ -149,7 +146,7 @@ public class FunctionUtil {
 		putFunction("/", new ArithmeticFunction() {
 
 			@Override
-			public Number cast(DataType dataType, Double result) {
+			public Number cast(DataType dataType, Double result) throws EvaluationException {
 				return super.cast(integerToDouble(dataType), result);
 			}
 
@@ -164,11 +161,11 @@ public class FunctionUtil {
 
 		public abstract StorelessUnivariateStatistic createStatistic();
 
-		public Number cast(DataType dataType, Double result) {
+		public Number cast(DataType dataType, Double result) throws EvaluationException {
 			return asNumber(ParameterUtil.cast(dataType, result));
 		}
 
-		public Number evaluate(List<?> values) {
+		public Number evaluate(List<?> values) throws EvaluationException {
 			StorelessUnivariateStatistic statistic = createStatistic();
 
 			DataType dataType = null;
@@ -182,8 +179,9 @@ public class FunctionUtil {
 				statistic.increment(asNumber(value).doubleValue());
 
 				if (dataType != null) {
-					dataType = ParameterUtil.getResultDataType(dataType,
-							ParameterUtil.getDataType(value));
+					dataType =
+							ParameterUtil.getResultDataType(dataType,
+									ParameterUtil.getDataType(value));
 				} else {
 					dataType = ParameterUtil.getDataType(value);
 				}
@@ -222,7 +220,7 @@ public class FunctionUtil {
 			}
 
 			@Override
-			public Number cast(DataType dataType, Double result) {
+			public Number cast(DataType dataType, Double result) throws EvaluationException {
 				return super.cast(integerToDouble(dataType), result);
 			}
 		});
@@ -248,14 +246,14 @@ public class FunctionUtil {
 
 		public abstract Double evaluate(Number value);
 
-		public Number cast(DataType dataType, Number result) {
+		public Number cast(DataType dataType, Number result) throws EvaluationException {
 			return asNumber(ParameterUtil.cast(dataType, result));
 		}
 
-		public Number evaluate(List<?> values) {
+		public Number evaluate(List<?> values) throws EvaluationException {
 
 			if (values.size() != 1) {
-				throw new EvaluationException();
+				throw new EvaluationException("The list does contain more than one element");
 			}
 
 			Object value = values.get(0);
@@ -269,7 +267,7 @@ public class FunctionUtil {
 	public abstract static class FpMathFunction extends MathFunction {
 
 		@Override
-		public Number cast(DataType dataType, Number result) {
+		public Number cast(DataType dataType, Number result) throws EvaluationException {
 			return super.cast(integerToDouble(dataType), result);
 		}
 	}
@@ -317,10 +315,10 @@ public class FunctionUtil {
 
 		putFunction("pow", new Function() {
 
-			public Number evaluate(List<?> values) {
+			public Number evaluate(List<?> values) throws EvaluationException {
 
 				if (values.size() != 2) {
-					throw new EvaluationException();
+					throw new EvaluationException("Binary operation doesn't contain two arguments");
 				}
 
 				Number left = asNumber(values.get(0));
@@ -336,10 +334,10 @@ public class FunctionUtil {
 
 		putFunction("threshold", new Function() {
 
-			public Number evaluate(List<?> values) {
+			public Number evaluate(List<?> values) throws EvaluationException {
 
 				if (values.size() != 2) {
-					throw new EvaluationException();
+					throw new EvaluationException("Binary operation doesn't contain two arguments");
 				}
 
 				Number left = asNumber(values.get(0));
@@ -382,10 +380,10 @@ public class FunctionUtil {
 
 		public abstract Boolean evaluate(Object value);
 
-		public Boolean evaluate(List<?> values) {
+		public Boolean evaluate(List<?> values) throws EvaluationException {
 
 			if (values.size() != 1) {
-				throw new EvaluationException();
+				throw new EvaluationException("Doesn't contain the right number of arguments");
 			}
 
 			return evaluate(values.get(0));
@@ -419,7 +417,7 @@ public class FunctionUtil {
 		}
 
 		@SuppressWarnings({ "rawtypes", "unchecked" })
-		public Boolean evaluate(List<?> values) {
+		public Boolean evaluate(List<?> values) throws EvaluationException {
 
 			if (values.size() != 2) {
 				throw new EvaluationException();
@@ -498,10 +496,11 @@ public class FunctionUtil {
 
 		public abstract Boolean evaluate(Boolean left, Boolean right);
 
-		public Boolean evaluate(List<?> values) {
+		@Override
+		public Boolean evaluate(List<?> values) throws EvaluationException {
 
 			if (values.size() < 2) {
-				throw new EvaluationException();
+				throw new EvaluationException("Binary operation doesn't contain two arguments");
 			}
 
 			Boolean result = asBoolean(values.get(0));
@@ -536,7 +535,7 @@ public class FunctionUtil {
 
 		public abstract Boolean evaluate(Boolean value);
 
-		public Boolean evaluate(List<?> values) {
+		public Boolean evaluate(List<?> values) throws EvaluationException {
 
 			if (values.size() != 1) {
 				throw new EvaluationException();
@@ -560,10 +559,10 @@ public class FunctionUtil {
 
 		public abstract Boolean evaluate(Object value, List<?> values);
 
-		public Boolean evaluate(List<?> values) {
+		public Boolean evaluate(List<?> values) throws EvaluationException {
 
 			if (values.size() < 2) {
-				throw new EvaluationException();
+				throw new EvaluationException("Binary operation doesn't contain two arguments");
 			}
 
 			return evaluate(values.get(0), values.subList(1, values.size()));
@@ -591,7 +590,7 @@ public class FunctionUtil {
 	static {
 		putFunction("if", new Function() {
 
-			public Object evaluate(List<?> values) {
+			public Object evaluate(List<?> values) throws EvaluationException {
 
 				if (values.size() < 2 || values.size() > 3) {
 					throw new EvaluationException();
@@ -617,7 +616,7 @@ public class FunctionUtil {
 
 		public abstract String evaluate(String value);
 
-		public String evaluate(List<?> values) {
+		public String evaluate(List<?> values) throws EvaluationException {
 
 			if (values.size() != 1) {
 				throw new EvaluationException();
@@ -645,8 +644,8 @@ public class FunctionUtil {
 		});
 
 		putFunction("substring", new Function() {
-
-			public String evaluate(List<?> values) {
+			@Override
+			public String evaluate(List<?> values) throws EvaluationException {
 
 				if (values.size() != 3) {
 					throw new EvaluationException();

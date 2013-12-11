@@ -18,7 +18,7 @@ public abstract class EvaluationContext implements Cloneable {
 		setParameters(parameters);
 	}
 
-	public abstract DerivedField resolve(FieldName name);
+	public abstract DerivedField resolve(FieldName name) throws EvaluationException;
 
 	@Override
 	public EvaluationContext clone() {

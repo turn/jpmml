@@ -19,7 +19,8 @@ public class PredicateUtil {
 	private PredicateUtil() {
 	}
 
-	public static Boolean evaluate(Predicate predicate, EvaluationContext context) {
+	public static Boolean evaluate(Predicate predicate, EvaluationContext context)
+			throws EvaluationException {
 
 		if (predicate instanceof SimplePredicate) {
 			return evaluateSimplePredicate((SimplePredicate) predicate, context);
@@ -40,12 +41,12 @@ public class PredicateUtil {
 		if (predicate instanceof False) {
 			return evaluateFalse((False) predicate);
 		} else {
-			throw new UnsupportedFeatureException(predicate);
+			throw new EvaluationException(new UnsupportedFeatureException(predicate));
 		}
 	}
 
 	public static Boolean evaluateSimplePredicate(SimplePredicate simplePredicate,
-			EvaluationContext context) {
+			EvaluationContext context) throws EvaluationException {
 		Object value = ExpressionUtil.evaluate(simplePredicate.getField(), context);
 
 		switch (simplePredicate.getOperator()) {
@@ -78,12 +79,12 @@ public class PredicateUtil {
 		case GREATER_OR_EQUAL:
 			return Boolean.valueOf(order >= 0);
 		default:
-			throw new UnsupportedFeatureException(operator);
+			throw new EvaluationException(new UnsupportedFeatureException(operator));
 		}
 	}
 
 	public static Boolean evaluateCompoundPredicate(CompoundPredicate compoundPredicate,
-			EvaluationContext context) {
+			EvaluationContext context) throws EvaluationException {
 		List<Predicate> predicates = compoundPredicate.getContent();
 
 		Boolean result = evaluate(predicates.get(0), context);
@@ -125,10 +126,11 @@ public class PredicateUtil {
 	}
 
 	public static Boolean evaluateSimpleSetPredicate(SimpleSetPredicate simpleSetPredicate,
-			EvaluationContext context) {
+			EvaluationContext context) throws EvaluationException {
 		Object value = ExpressionUtil.evaluate(simpleSetPredicate.getField(), context);
 		if (value == null) {
-			throw new MissingParameterException(simpleSetPredicate.getField());
+			throw new EvaluationException(new MissingParameterException(
+					simpleSetPredicate.getField()));
 		}
 
 		Array array = simpleSetPredicate.getArray();
@@ -140,7 +142,7 @@ public class PredicateUtil {
 		case IS_NOT_IN:
 			return ArrayUtil.isNotIn(array, value);
 		default:
-			throw new UnsupportedFeatureException(operator);
+			throw new EvaluationException(new UnsupportedFeatureException(operator));
 		}
 	}
 

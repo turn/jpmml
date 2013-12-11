@@ -10,6 +10,7 @@ import com.turn.tpmml.Output;
 import com.turn.tpmml.OutputField;
 import com.turn.tpmml.ResultFeatureType;
 import com.turn.tpmml.manager.ModelManager;
+import com.turn.tpmml.manager.ModelManagerException;
 import com.turn.tpmml.manager.PMMLResult;
 import com.turn.tpmml.manager.UnsupportedFeatureException;
 
@@ -22,7 +23,7 @@ public class OutputUtil {
 	}
 
 	public static PMMLResult evaluate(Map<FieldName, ?> predictions,
-			ModelManagerEvaluationContext context) {
+			ModelManagerEvaluationContext context) throws EvaluationException {
 		PMMLResult res = new PMMLResult();
 		for (Map.Entry<FieldName, ?> e : predictions.entrySet()) {
 			res.put(e.getKey(), e.getValue());
@@ -38,9 +39,10 @@ public class OutputUtil {
 	 * 
 	 * @return Map of {@link Evaluator#getPredictedFields() predicted field} values together with
 	 *         {@link Evaluator#getOutputFields() output field} values.
+	 * @throws EvaluationException 
 	 */
 	public static PMMLResult evaluate(PMMLResult predictions,
-							ModelManagerEvaluationContext context) {
+							ModelManagerEvaluationContext context) throws EvaluationException {
 		PMMLResult result = new PMMLResult(predictions);
 
 		// Create a modifiable context instance
@@ -48,7 +50,12 @@ public class OutputUtil {
 
 		ModelManager<?> modelManager = context.getModelManager();
 
-		Output output = modelManager.getOrCreateOutput();
+		Output output;
+		try {
+			output = modelManager.getOrCreateOutput();
+		} catch (ModelManagerException e) {
+			throw new EvaluationException(e);
+		}
 
 		List<OutputField> outputFields = output.getOutputFields();
 		for (OutputField outputField : outputFields) {
@@ -85,7 +92,7 @@ public class OutputUtil {
 				value = getProbability(predictions.getValue(target2), outputField.getValue());
 				break;
 			default:
-				throw new UnsupportedFeatureException(resultFeature);
+				throw new EvaluationException(new UnsupportedFeatureException(resultFeature));
 			}
 
 			FieldName name = outputField.getName();
@@ -105,19 +112,23 @@ public class OutputUtil {
 	}
 
 	private static FieldName getTarget(ModelManager<?> modelManager,
-										OutputField outputField) {
+										OutputField outputField) throws EvaluationException {
 		FieldName result = outputField.getTargetField();
 		if (result == null) {
-			result = modelManager.getTarget();
+			try {
+				result = modelManager.getTarget();
+			} catch (ModelManagerException e) {
+				throw new EvaluationException(e);
+			}
 		}
 
 		return result;
 	}
 
-	private static Double getProbability(Object result, String value) {
+	private static Double getProbability(Object result, String value) throws EvaluationException {
 
 		if (!(result instanceof Classification)) {
-			throw new EvaluationException();
+			throw new EvaluationException("Wrong result type");
 		}
 
 		Classification classification = (Classification) result;

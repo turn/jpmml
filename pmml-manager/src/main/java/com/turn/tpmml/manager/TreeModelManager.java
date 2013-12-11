@@ -44,13 +44,13 @@ public class TreeModelManager extends ModelManager<TreeModel> {
 	}
 
 	@Override
-	public TreeModel getModel() {
+	public TreeModel getModel() throws ModelManagerException {
 		ensureNotNull(this.treeModel);
 
 		return this.treeModel;
 	}
 
-	public TreeModel createClassificationModel() {
+	public TreeModel createClassificationModel() throws ModelManagerException {
 		return createModel(MiningFunctionType.CLASSIFICATION);
 	}
 
@@ -59,7 +59,7 @@ public class TreeModelManager extends ModelManager<TreeModel> {
 	 * 
 	 * @see #getModel()
 	 */
-	public TreeModel createModel(MiningFunctionType miningFunction) {
+	public TreeModel createModel(MiningFunctionType miningFunction) throws ModelManagerException {
 		ensureNull(this.treeModel);
 
 		this.treeModel = new TreeModel(new MiningSchema(), new Node(), miningFunction);
@@ -71,8 +71,9 @@ public class TreeModelManager extends ModelManager<TreeModel> {
 
 	/**
 	 * @return The root Node
+	 * @throws ModelManagerException 
 	 */
-	public Node getOrCreateRoot() {
+	public Node getOrCreateRoot() throws ModelManagerException {
 
 		if (this.root == null) {
 			TreeModel treeModel = getModel();
@@ -97,10 +98,11 @@ public class TreeModelManager extends ModelManager<TreeModel> {
 	 * Adds a new Node to the root Node.
 	 * 
 	 * @return The newly added Node
+	 * @throws ModelManagerException 
 	 * 
 	 * @see #getOrCreateRoot()
 	 */
-	public Node addNode(Predicate predicate) {
+	public Node addNode(Predicate predicate) throws ModelManagerException {
 		return addNode(getOrCreateRoot(), predicate);
 	}
 
@@ -134,7 +136,7 @@ public class TreeModelManager extends ModelManager<TreeModel> {
 		return scoreDistribution;
 	}
 
-	public Set<String> getAllNodesId() {
+	public Set<String> getAllNodesId() throws ModelManagerException {
 		if (ids == null) {
 			// Fill ids
 			Node root = getOrCreateRoot();

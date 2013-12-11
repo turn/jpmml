@@ -11,6 +11,7 @@ import com.turn.tpmml.RegressionModel;
 import com.turn.tpmml.Scorecard;
 import com.turn.tpmml.TreeModel;
 import com.turn.tpmml.manager.ModelManager;
+import com.turn.tpmml.manager.ModelManagerException;
 import com.turn.tpmml.manager.ModelManagerFactory;
 import com.turn.tpmml.manager.UnsupportedFeatureException;
 
@@ -21,7 +22,8 @@ public class ModelEvaluatorFactory extends ModelManagerFactory {
 	}
 
 	@Override
-	public ModelManager<? extends Model> getModelManager(PMML pmml, Model model) {
+	public ModelManager<? extends Model> getModelManager(PMML pmml, Model model)
+			throws ModelManagerException {
 
 		if (model instanceof RegressionModel) {
 			return new RegressionModelEvaluator(pmml, (RegressionModel) model);
@@ -50,7 +52,7 @@ public class ModelEvaluatorFactory extends ModelManagerFactory {
 			return new ScorecardEvaluator(pmml, (Scorecard) model);
 		}
 
-		throw new UnsupportedFeatureException(model);
+		throw new ModelManagerException(new UnsupportedFeatureException(model));
 	}
 
 	public static ModelEvaluatorFactory getInstance() {

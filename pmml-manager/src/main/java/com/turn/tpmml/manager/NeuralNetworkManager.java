@@ -33,11 +33,12 @@ public class NeuralNetworkManager extends ModelManager<NeuralNetwork> {
 	public NeuralNetworkManager() {
 	}
 
-	public NeuralNetworkManager(PMML pmml) {
+	public NeuralNetworkManager(PMML pmml) throws ModelManagerException {
 		this(pmml, find(pmml.getContent(), NeuralNetwork.class));
 	}
 
-	public NeuralNetworkManager(PMML pmml, NeuralNetwork neuralNetwork) {
+	public NeuralNetworkManager(PMML pmml, NeuralNetwork neuralNetwork)
+			throws ModelManagerException {
 		super(pmml);
 
 		this.neuralNetwork = neuralNetwork;
@@ -52,7 +53,7 @@ public class NeuralNetworkManager extends ModelManager<NeuralNetwork> {
 	}
 
 	@Override
-	public NeuralNetwork getModel() {
+	public NeuralNetwork getModel() throws ModelManagerException {
 		ensureNotNull(this.neuralNetwork);
 
 		return this.neuralNetwork;
@@ -64,7 +65,7 @@ public class NeuralNetworkManager extends ModelManager<NeuralNetwork> {
 	 * @see #getModel()
 	 */
 	public NeuralNetwork createModel(MiningFunctionType miningFunction,
-			ActivationFunctionType activationFunction) {
+			ActivationFunctionType activationFunction) throws ModelManagerException {
 		ensureNull(this.neuralNetwork);
 
 		this.neuralNetwork = new NeuralNetwork(new MiningSchema(), new NeuralInputs(),
@@ -75,13 +76,13 @@ public class NeuralNetworkManager extends ModelManager<NeuralNetwork> {
 		return this.neuralNetwork;
 	}
 
-	public List<NeuralInput> getNeuralInputs() {
+	public List<NeuralInput> getNeuralInputs() throws ModelManagerException {
 		NeuralNetwork neuralNetwork = getModel();
 
 		return neuralNetwork.getNeuralInputs().getNeuralInputs();
 	}
 
-	public NeuralInput addNeuralInput(NormContinuous normContinuous) {
+	public NeuralInput addNeuralInput(NormContinuous normContinuous) throws ModelManagerException {
 		DerivedField derivedField = new DerivedField(OpType.CONTINUOUS, DataType.DOUBLE);
 		derivedField.setExpression(normContinuous);
 
@@ -92,13 +93,13 @@ public class NeuralNetworkManager extends ModelManager<NeuralNetwork> {
 		return neuralInput;
 	}
 
-	public List<NeuralLayer> getNeuralLayers() {
+	public List<NeuralLayer> getNeuralLayers() throws ModelManagerException {
 		NeuralNetwork neuralNetwork = getModel();
 
 		return neuralNetwork.getNeuralLayers();
 	}
 
-	public NeuralLayer addNeuralLayer() {
+	public NeuralLayer addNeuralLayer() throws ModelManagerException {
 		NeuralLayer neuralLayer = new NeuralLayer();
 
 		getNeuralLayers().add(neuralLayer);
@@ -106,7 +107,7 @@ public class NeuralNetworkManager extends ModelManager<NeuralNetwork> {
 		return neuralLayer;
 	}
 
-	public int getNeuronCount() {
+	public int getNeuronCount() throws ModelManagerException {
 		int count = 0;
 
 		count += (getNeuralInputs()).size();
@@ -140,7 +141,7 @@ public class NeuralNetworkManager extends ModelManager<NeuralNetwork> {
 		(to.getConnections()).add(connection);
 	}
 
-	public List<NeuralOutput> getOrCreateNeuralOutputs() {
+	public List<NeuralOutput> getOrCreateNeuralOutputs() throws ModelManagerException {
 		NeuralNetwork neuralNetwork = getModel();
 
 		NeuralOutputs neuralOutputs = neuralNetwork.getNeuralOutputs();
@@ -153,7 +154,8 @@ public class NeuralNetworkManager extends ModelManager<NeuralNetwork> {
 		return neuralOutputs.getNeuralOutputs();
 	}
 
-	public NeuralOutput addNeuralOutput(Neuron neuron, NormContinuous normCountinuous) {
+	public NeuralOutput addNeuralOutput(Neuron neuron, NormContinuous normCountinuous)
+			throws ModelManagerException {
 		DerivedField derivedField = new DerivedField(OpType.CONTINUOUS, DataType.DOUBLE);
 		derivedField.setExpression(normCountinuous);
 
