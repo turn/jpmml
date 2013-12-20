@@ -11,7 +11,7 @@ import com.turn.tpmml.Segment;
 import com.turn.tpmml.manager.MiningModelManager;
 import com.turn.tpmml.manager.ModelManager;
 import com.turn.tpmml.manager.ModelManagerException;
-import com.turn.tpmml.manager.UnsupportedFeatureException;
+import com.turn.tpmml.manager.TPMMLException.TPMMLCause;
 import com.turn.tpmml.translator.CodeFormatter.Operator;
 import com.turn.tpmml.translator.Variable.VariableType;
 
@@ -67,7 +67,8 @@ public class MiningModelTranslator extends MiningModelManager implements Transla
 			translateRegression(context, sb, outputField);
 			break;
 		default:
-			throw new TranslationException(new UnsupportedFeatureException());
+			throw new TranslationException(TPMMLCause.UNSUPPORTED_OPERATION,
+					getFunctionType().name());
 		}
 
 		return sb.toString();
@@ -239,8 +240,7 @@ public class MiningModelTranslator extends MiningModelManager implements Transla
 			break;
 		case MODEL_CHAIN:
 			// This case is to be managed before.
-			throw new TranslationException(
-					new UnsupportedFeatureException("Missing implementation"));
+			throw new TranslationException(TPMMLCause.UNSUPPORTED_OPERATION, "MODEL_CHAIN");
 		case MAJORITY_VOTE:
 		case WEIGHTED_MAJORITY_VOTE:
 			context.addRequiredImport("java.util.TreeMap;");
@@ -280,8 +280,8 @@ public class MiningModelTranslator extends MiningModelManager implements Transla
 		case WEIGHTED_AVERAGE:
 		case MEDIAN:
 		case MAX:
-			throw new TranslationException(new UnsupportedFeatureException(
-					"Missing implementation."));
+			throw new TranslationException(TPMMLCause.UNSUPPORTED_OPERATION,
+					getMultipleMethodModel().name());
 		default:
 			throw new TranslationException("The method " + getMultipleMethodModel().value() +
 					" is not compatible with the classification.");
@@ -300,9 +300,10 @@ public class MiningModelTranslator extends MiningModelManager implements Transla
 	 * @param outputVariableName
 	 *            The variable where we store the result.
 	 * @return A valid expression.
+	 * @throws TranslationException 
 	 */
 	private String getBetterKey(TranslationContext context, CodeFormatter cf, String mapName,
-			String outputVariableName) {
+			String outputVariableName) throws TranslationException {
 		StringBuilder result = new StringBuilder();
 
 		String maxVarName = context.generateLocalVariableName("max");

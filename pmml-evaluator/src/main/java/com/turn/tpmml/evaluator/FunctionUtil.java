@@ -4,7 +4,7 @@
 package com.turn.tpmml.evaluator;
 
 import com.turn.tpmml.DataType;
-import com.turn.tpmml.manager.UnsupportedFeatureException;
+import com.turn.tpmml.manager.TPMMLException.TPMMLCause;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -25,7 +25,7 @@ public class FunctionUtil {
 	public static Object evaluate(String name, List<?> values) throws EvaluationException {
 		Function function = getFunction(name);
 		if (function == null) {
-			throw new EvaluationException(new UnsupportedFeatureException(name));
+			throw new EvaluationException(TPMMLCause.UNSUPPORTED_OPERATION, name.toString());
 		}
 
 		return function.evaluate(values);
@@ -188,7 +188,7 @@ public class FunctionUtil {
 			}
 
 			if (statistic.getN() == 0) {
-				throw new EvaluationException();
+				throw new EvaluationException("There is no result in statistic");
 			}
 
 			return cast(dataType, statistic.getResult());
@@ -420,15 +420,15 @@ public class FunctionUtil {
 		public Boolean evaluate(List<?> values) throws EvaluationException {
 
 			if (values.size() != 2) {
-				throw new EvaluationException();
+				throw new EvaluationException("Not a binary operation");
 			}
 
 			Object left = values.get(0);
 			Object right = values.get(1);
 
 			if (left == null || right == null) {
-				throw new EvaluationException();
-			} // End if
+				throw new EvaluationException("One of the operand is null");
+			}
 
 			// Cast operands to common data type before comparison
 			if (!(left.getClass()).equals(right.getClass())) {
@@ -538,7 +538,7 @@ public class FunctionUtil {
 		public Boolean evaluate(List<?> values) throws EvaluationException {
 
 			if (values.size() != 1) {
-				throw new EvaluationException();
+				throw new EvaluationException("Doesn't contain exactly one argument");
 			}
 
 			return evaluate(asBoolean(values.get(0)));
@@ -562,7 +562,7 @@ public class FunctionUtil {
 		public Boolean evaluate(List<?> values) throws EvaluationException {
 
 			if (values.size() < 2) {
-				throw new EvaluationException("Binary operation doesn't contain two arguments");
+				throw new EvaluationException("Invalid number of arguments, got " + values.size());
 			}
 
 			return evaluate(values.get(0), values.subList(1, values.size()));
@@ -593,7 +593,8 @@ public class FunctionUtil {
 			public Object evaluate(List<?> values) throws EvaluationException {
 
 				if (values.size() < 2 || values.size() > 3) {
-					throw new EvaluationException();
+					throw new EvaluationException("Invalid number of arguments, got " +
+							values.size());
 				}
 
 				Boolean flag = asBoolean(values.get(0));
@@ -619,7 +620,7 @@ public class FunctionUtil {
 		public String evaluate(List<?> values) throws EvaluationException {
 
 			if (values.size() != 1) {
-				throw new EvaluationException();
+				throw new EvaluationException("Invalid size, got " + values.size());
 			}
 
 			return evaluate(asString(values.get(0)));
@@ -648,7 +649,7 @@ public class FunctionUtil {
 			public String evaluate(List<?> values) throws EvaluationException {
 
 				if (values.size() != 3) {
-					throw new EvaluationException();
+					throw new EvaluationException("Invalid size, got " + values.size());
 				}
 
 				String value = asString(values.get(0));
@@ -657,7 +658,7 @@ public class FunctionUtil {
 				int length = asInteger(values.get(2));
 
 				if (position <= 0 || length < 0) {
-					throw new EvaluationException();
+					throw new EvaluationException("Invalid position");
 				}
 
 				return value.substring(position - 1, (position + length) - 1);

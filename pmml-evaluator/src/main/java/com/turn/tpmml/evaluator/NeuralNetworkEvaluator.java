@@ -23,7 +23,7 @@ import com.turn.tpmml.manager.IPMMLResult;
 import com.turn.tpmml.manager.ModelManagerException;
 import com.turn.tpmml.manager.NeuralNetworkManager;
 import com.turn.tpmml.manager.PMMLResult;
-import com.turn.tpmml.manager.UnsupportedFeatureException;
+import com.turn.tpmml.manager.TPMMLException.TPMMLCause;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -81,7 +81,7 @@ public class NeuralNetworkEvaluator extends NeuralNetworkManager implements Eval
 			predictions = evaluateClassification(context);
 			break;
 		default:
-			throw new EvaluationException(new UnsupportedFeatureException(miningFunction));
+			throw new EvaluationException(TPMMLCause.UNSUPPORTED_OPERATION, miningFunction.name());
 		}
 
 		PMMLResult result = new PMMLResult();
@@ -123,8 +123,8 @@ public class NeuralNetworkEvaluator extends NeuralNetworkManager implements Eval
 
 				result.put(field, value);
 			} else {
-				throw new EvaluationException(new UnsupportedFeatureException(expression +
-						" is not supported"));
+				throw new EvaluationException(TPMMLCause.UNSUPPORTED_OPERATION,
+						expression.toString());
 			}
 		}
 
@@ -164,7 +164,8 @@ public class NeuralNetworkEvaluator extends NeuralNetworkManager implements Eval
 
 				values.put(normDiscrete.getValue(), value);
 			} else {
-				throw new EvaluationException(new UnsupportedFeatureException(expression));
+				throw new EvaluationException(TPMMLCause.UNSUPPORTED_OPERATION,
+						expression.toString());
 			}
 		}
 
@@ -285,7 +286,8 @@ public class NeuralNetworkEvaluator extends NeuralNetworkManager implements Eval
 				neuronOutputs.put(neuron.getId(), Math.exp(output) / sum);
 			}
 		} else {
-			throw new EvaluationException(new UnsupportedFeatureException(normalizationMethod));
+			throw new EvaluationException(TPMMLCause.UNSUPPORTED_OPERATION,
+					normalizationMethod.name());
 		}
 	}
 
@@ -332,7 +334,8 @@ public class NeuralNetworkEvaluator extends NeuralNetworkManager implements Eval
 		case ARCTAN:
 			return Math.atan(z);
 		default:
-			throw new EvaluationException(new UnsupportedFeatureException(activationFunction));
+			throw new EvaluationException(TPMMLCause.UNSUPPORTED_OPERATION,
+					activationFunction.name());
 		}
 	}
 }

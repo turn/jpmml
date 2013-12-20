@@ -11,7 +11,7 @@ import com.turn.tpmml.MiningField;
 import com.turn.tpmml.OpType;
 import com.turn.tpmml.OutlierTreatmentMethodType;
 import com.turn.tpmml.Value;
-import com.turn.tpmml.manager.UnsupportedFeatureException;
+import com.turn.tpmml.manager.TPMMLException.TPMMLCause;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -48,7 +48,7 @@ public class ParameterUtil {
 				Double highValue = miningField.getHighValue();
 
 				if (lowValue == null || highValue == null) {
-					throw new EvaluationException();
+					throw new EvaluationException("There are no limits");
 				}
 
 				DataType dataType = dataField.getDataType();
@@ -62,8 +62,8 @@ public class ParameterUtil {
 				}
 				break;
 			default:
-				throw new EvaluationException(new UnsupportedFeatureException(
-						outlierTreatmentMethod));
+				throw new EvaluationException(TPMMLCause.UNSUPPORTED_OPERATION,
+						outlierTreatmentMethod.name());
 			}
 		}
 
@@ -84,14 +84,14 @@ public class ParameterUtil {
 		invalidValueTreatment: if (isInvalid(dataField, value)) {
 
 			if (miningField == null) {
-				throw new EvaluationException();
+				throw new EvaluationException("MiningField is null");
 			}
 
 			InvalidValueTreatmentMethodType invalidValueTreatmentMethod =
 					miningField.getInvalidValueTreatment();
 			switch (invalidValueTreatmentMethod) {
 			case RETURN_INVALID:
-				throw new EvaluationException();
+				throw new EvaluationException("FIXME");
 			case AS_IS:
 				break invalidValueTreatment;
 			case AS_MISSING:
@@ -102,8 +102,8 @@ public class ParameterUtil {
 
 				return null;
 			default:
-				throw new EvaluationException(new UnsupportedFeatureException(
-						invalidValueTreatmentMethod));
+				throw new EvaluationException(TPMMLCause.UNSUPPORTED_OPERATION,
+						invalidValueTreatmentMethod.name());
 			}
 		}
 
@@ -160,7 +160,7 @@ public class ParameterUtil {
 		case ORDINAL:
 			break;
 		default:
-			throw new EvaluationException(new UnsupportedFeatureException(opType));
+			throw new EvaluationException(TPMMLCause.UNSUPPORTED_OPERATION, opType.name());
 		}
 
 		return false;
@@ -248,7 +248,8 @@ public class ParameterUtil {
 				case MISSING:
 					break;
 				default:
-					throw new EvaluationException(new UnsupportedFeatureException(property));
+					throw new EvaluationException(TPMMLCause.UNSUPPORTED_OPERATION,
+							property.name());
 				}
 			}
 
@@ -257,7 +258,8 @@ public class ParameterUtil {
 			}
 			break;
 		default:
-			throw new EvaluationException(new UnsupportedFeatureException(opType));
+			throw new EvaluationException(TPMMLCause.UNSUPPORTED_OPERATION,
+					opType.name());
 		}
 
 		return true;
@@ -317,7 +319,8 @@ public class ParameterUtil {
 			break;
 		}
 
-		throw new EvaluationException(new UnsupportedFeatureException(dataType));
+		throw new EvaluationException(TPMMLCause.UNSUPPORTED_OPERATION,
+				dataType.name());
 	}
 
 	/**

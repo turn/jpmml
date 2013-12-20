@@ -18,7 +18,7 @@ import com.turn.tpmml.manager.IPMMLResult;
 import com.turn.tpmml.manager.ModelManagerException;
 import com.turn.tpmml.manager.PMMLResult;
 import com.turn.tpmml.manager.RegressionModelManager;
-import com.turn.tpmml.manager.UnsupportedFeatureException;
+import com.turn.tpmml.manager.TPMMLException.TPMMLCause;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -84,7 +84,8 @@ public class RegressionModelEvaluator extends RegressionModelManager implements 
 			predictions = evaluateClassification(context);
 			break;
 		default:
-			throw new EvaluationException(new UnsupportedFeatureException(miningFunction));
+			throw new EvaluationException(TPMMLCause.UNSUPPORTED_OPERATION,
+					miningFunction.name());
 		}
 
 		if (predictions == null) {
@@ -177,8 +178,8 @@ public class RegressionModelEvaluator extends RegressionModelManager implements 
 			Double value = evaluateRegressionTable(regressionTable, context);
 
 			if (value == null) {
-				throw new EvaluationException(new UnsupportedFeatureException(
-						"Target are not supported yet."));
+				throw new EvaluationException(TPMMLCause.UNSUPPORTED_OPERATION,
+						"Target");
 			}
 
 			sumExp += Math.exp(value.doubleValue());
@@ -199,7 +200,8 @@ public class RegressionModelEvaluator extends RegressionModelManager implements 
 		case CATEGORICAL:
 			break;
 		default:
-			throw new EvaluationException(new UnsupportedFeatureException(opType));
+			throw new EvaluationException(TPMMLCause.UNSUPPORTED_OPERATION,
+					opType.name());
 		}
 
 		RegressionNormalizationMethodType regressionNormalizationMethod =
@@ -257,7 +259,8 @@ public class RegressionModelEvaluator extends RegressionModelManager implements 
 
 		List<PredictorTerm> predictorTerms = regressionTable.getPredictorTerms();
 		for (PredictorTerm predictorTerm : predictorTerms) {
-			throw new EvaluationException(new UnsupportedFeatureException(predictorTerm));
+			throw new EvaluationException(TPMMLCause.UNSUPPORTED_OPERATION,
+					predictorTerm.toString());
 		}
 
 		return result;
@@ -275,8 +278,8 @@ public class RegressionModelEvaluator extends RegressionModelManager implements 
 		case EXP:
 			return Math.exp(value);
 		default:
-			throw new EvaluationException(new UnsupportedFeatureException(
-					regressionNormalizationMethod));
+			throw new EvaluationException(TPMMLCause.UNSUPPORTED_OPERATION,
+					regressionNormalizationMethod.name());
 		}
 	}
 
@@ -296,8 +299,8 @@ public class RegressionModelEvaluator extends RegressionModelManager implements 
 		case LOGLOG:
 			return Math.exp(-Math.exp(-value));
 		default:
-			throw new EvaluationException(new UnsupportedFeatureException(
-					regressionNormalizationMethod));
+			throw new EvaluationException(TPMMLCause.UNSUPPORTED_OPERATION,
+					regressionNormalizationMethod.name());
 		}
 	}
 }

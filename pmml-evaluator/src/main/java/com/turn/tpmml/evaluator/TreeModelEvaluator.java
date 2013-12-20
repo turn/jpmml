@@ -10,9 +10,9 @@ import com.turn.tpmml.Predicate;
 import com.turn.tpmml.TreeModel;
 import com.turn.tpmml.manager.IPMMLResult;
 import com.turn.tpmml.manager.ModelManagerException;
+import com.turn.tpmml.manager.TPMMLException.TPMMLCause;
 import com.turn.tpmml.manager.TreeModelManager;
 import com.turn.tpmml.manager.TreePMMLResult;
-import com.turn.tpmml.manager.UnsupportedFeatureException;
 
 import java.util.Map;
 
@@ -91,9 +91,8 @@ public class TreeModelEvaluator extends TreeModelManager implements Evaluator {
 					}
 					break;
 				default:
-					throw new EvaluationException(new UnsupportedFeatureException(
-							"Unsupported missing value strategy: " +
-									getModel().getMissingValueStrategy()));
+					throw new EvaluationException(TPMMLCause.UNSUPPORTED_OPERATION,
+									getModel().getMissingValueStrategy().name());
 				}
 			} catch (ModelManagerException e) {
 				throw new EvaluationException(e);

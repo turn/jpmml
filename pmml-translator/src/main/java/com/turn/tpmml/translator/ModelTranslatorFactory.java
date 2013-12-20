@@ -9,7 +9,6 @@ import com.turn.tpmml.TreeModel;
 import com.turn.tpmml.manager.ModelManager;
 import com.turn.tpmml.manager.ModelManagerException;
 import com.turn.tpmml.manager.ModelManagerFactory;
-import com.turn.tpmml.manager.UnsupportedFeatureException;
 
 public class ModelTranslatorFactory extends ModelManagerFactory {
 
@@ -35,7 +34,8 @@ public class ModelTranslatorFactory extends ModelManagerFactory {
 		if (model instanceof MiningModel) {
 			return new MiningModelTranslator(pmml, (MiningModel) model);
 		} else {
-			throw new ModelManagerException(new UnsupportedFeatureException(model));
+			throw new ModelManagerException(ModelManagerException.TPMMLCause.UNSUPPORTED_OPERATION,
+					model.getModelName());
 		}
 	}
 

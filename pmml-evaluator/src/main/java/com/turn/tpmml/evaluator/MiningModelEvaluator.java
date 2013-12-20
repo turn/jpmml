@@ -11,7 +11,7 @@ import com.turn.tpmml.manager.MiningModelManager;
 import com.turn.tpmml.manager.ModelManager;
 import com.turn.tpmml.manager.ModelManagerException;
 import com.turn.tpmml.manager.PMMLResult;
-import com.turn.tpmml.manager.UnsupportedFeatureException;
+import com.turn.tpmml.manager.TPMMLException.TPMMLCause;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -225,7 +225,7 @@ public class MiningModelEvaluator extends MiningModelManager implements Evaluato
 			// result already have the right value.
 			break;
 		case SELECT_ALL:
-			throw new EvaluationException(new UnsupportedFeatureException());
+			throw new EvaluationException(TPMMLCause.UNSUPPORTED_OPERATION, "SELECT_ALL");
 		case MODEL_CHAIN:
 			// This case is to be managed before.
 			break;
@@ -298,8 +298,8 @@ public class MiningModelEvaluator extends MiningModelManager implements Evaluato
 			break;
 		case MODEL_CHAIN:
 			// This case is to be managed before.
-			throw new EvaluationException(
-					new UnsupportedFeatureException("Missing implementation."));
+			throw new EvaluationException(TPMMLCause.UNSUPPORTED_OPERATION, 
+					"MODEL_CHAIN");
 		case MAJORITY_VOTE:
 			TreeMap<Object, Double> vote = new TreeMap<Object, Double>();
 			for (Map.Entry<String, Object> e : results.entrySet()) {
@@ -328,8 +328,8 @@ public class MiningModelEvaluator extends MiningModelManager implements Evaluato
 		case WEIGHTED_AVERAGE:
 		case MEDIAN:
 		case MAX:
-			throw new EvaluationException(
-					new UnsupportedFeatureException("Missing implementation."));
+			throw new EvaluationException(TPMMLCause.UNSUPPORTED_OPERATION, 
+					"AVERAGE, WEIGHTED_AVERAGE, MEDIAN, MAX");
 		default:
 			throw new EvaluationException("The method " + getMultipleMethodModel().value() +
 					" is not compatible with the regression.");

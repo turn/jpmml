@@ -10,7 +10,7 @@ import com.turn.tpmml.Predicate;
 import com.turn.tpmml.SimplePredicate;
 import com.turn.tpmml.SimpleSetPredicate;
 import com.turn.tpmml.True;
-import com.turn.tpmml.manager.UnsupportedFeatureException;
+import com.turn.tpmml.manager.TPMMLException.TPMMLCause;
 
 import java.util.List;
 
@@ -41,7 +41,8 @@ public class PredicateUtil {
 		if (predicate instanceof False) {
 			return evaluateFalse((False) predicate);
 		} else {
-			throw new EvaluationException(new UnsupportedFeatureException(predicate));
+			throw new EvaluationException(TPMMLCause.UNSUPPORTED_OPERATION,
+					predicate.toString());
 		}
 	}
 
@@ -79,7 +80,8 @@ public class PredicateUtil {
 		case GREATER_OR_EQUAL:
 			return Boolean.valueOf(order >= 0);
 		default:
-			throw new EvaluationException(new UnsupportedFeatureException(operator));
+			throw new EvaluationException(TPMMLCause.UNSUPPORTED_OPERATION,
+					operator.name());
 		}
 	}
 
@@ -142,7 +144,8 @@ public class PredicateUtil {
 		case IS_NOT_IN:
 			return ArrayUtil.isNotIn(array, value);
 		default:
-			throw new EvaluationException(new UnsupportedFeatureException(operator));
+			throw new EvaluationException(TPMMLCause.UNSUPPORTED_OPERATION,
+					operator.name());
 		}
 	}
 

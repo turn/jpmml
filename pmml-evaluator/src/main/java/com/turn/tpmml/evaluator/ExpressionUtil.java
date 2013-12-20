@@ -15,7 +15,7 @@ import com.turn.tpmml.FieldRef;
 import com.turn.tpmml.MapValues;
 import com.turn.tpmml.NormContinuous;
 import com.turn.tpmml.NormDiscrete;
-import com.turn.tpmml.manager.UnsupportedFeatureException;
+import com.turn.tpmml.manager.TPMMLException.TPMMLCause;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -68,7 +68,7 @@ public class ExpressionUtil {
 			return evaluateApply((Apply) expression, context);
 		}
 
-		throw new EvaluationException(new UnsupportedFeatureException(expression));
+		throw new EvaluationException(TPMMLCause.UNSUPPORTED_OPERATION, expression.toString());
 	}
 
 	public static Object evaluateConstant(Constant constant, EvaluationContext context)

@@ -5,7 +5,7 @@ package com.turn.tpmml.evaluator;
 
 import com.turn.tpmml.Array;
 import com.turn.tpmml.DataType;
-import com.turn.tpmml.manager.UnsupportedFeatureException;
+import com.turn.tpmml.manager.TPMMLException.TPMMLCause;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,13 +60,12 @@ public class ArrayUtil {
 			result = tokenize(array.getValue(), true);
 			break;
 		default:
-			throw new EvaluationException(new UnsupportedFeatureException(type +
-					" is not supported"));
+			throw new EvaluationException(TPMMLCause.UNSUPPORTED_OPERATION, type.name());
 		}
 
 		Number n = array.getN();
 		if (n != null && n.intValue() != result.size()) {
-			throw new EvaluationException();
+			throw new EvaluationException("Wrong size in the array.");
 		}
 
 		return result;
@@ -160,8 +159,7 @@ public class ArrayUtil {
 		case FLOAT:
 		case DOUBLE:
 		default:
-			throw new EvaluationException(new UnsupportedFeatureException(dataType +
-					" is not supported."));
+			throw new EvaluationException(TPMMLCause.UNSUPPORTED_OPERATION, dataType.name());
 		}
 	}
 }

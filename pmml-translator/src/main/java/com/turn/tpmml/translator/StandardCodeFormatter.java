@@ -1,6 +1,6 @@
 package com.turn.tpmml.translator;
 
-import com.turn.tpmml.manager.UnsupportedFeatureException;
+import com.turn.tpmml.manager.TPMMLException.TPMMLCause;
 
 public class StandardCodeFormatter implements CodeFormatter {
 
@@ -14,7 +14,7 @@ public class StandardCodeFormatter implements CodeFormatter {
 	}
 
 	public void declareVariable(StringBuilder code,
-			TranslationContext context, Variable variable) {
+			TranslationContext context, Variable variable) throws TranslationException {
 		String initializer = null;
 
 		switch (variable.getType()) {
@@ -33,7 +33,8 @@ public class StandardCodeFormatter implements CodeFormatter {
 			initializer = "new " + variable.getTypeName() + "()";
 			break;
 		default:
-			throw new UnsupportedFeatureException(variable.getType());
+			throw new TranslationException(TPMMLCause.UNSUPPORTED_OPERATION,
+					variable.getType().name());
 		}
 
 		declareVariable(code, context, variable, initializer);
@@ -45,7 +46,7 @@ public class StandardCodeFormatter implements CodeFormatter {
 	}
 
 	public void assignVariableToNullValue(StringBuilder code,
-			TranslationContext context, Variable variable) {
+			TranslationContext context, Variable variable) throws TranslationException {
 		String initializer = null;
 
 		switch (variable.getType()) {
@@ -61,7 +62,8 @@ public class StandardCodeFormatter implements CodeFormatter {
 			initializer = "null";
 			break;
 		default:
-			throw new UnsupportedFeatureException(variable.getType());
+			throw new TranslationException(TPMMLCause.UNSUPPORTED_OPERATION,
+					variable.getType().name());
 		}
 
 		assignVariable(code, context, Operator.EQUAL, variable, initializer);

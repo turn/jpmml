@@ -3,18 +3,23 @@
  */
 package com.turn.tpmml.evaluator;
 
-public class EvaluationException extends Exception {
+import com.turn.tpmml.manager.ModelManagerException;
+import com.turn.tpmml.manager.TPMMLException;
+
+public class EvaluationException extends ModelManagerException {
 
 	private static final long serialVersionUID = 1L;
 
-	public EvaluationException() {
-	}
 
 	public EvaluationException(String message) {
 		super(message);
 	}
-	
-	public EvaluationException(Exception e) {
+
+	public EvaluationException(TPMMLCause cause, Object... args) {
+		super(cause, args);
+	}
+
+	public EvaluationException(TPMMLException e) {
 		super(e);
 	}
 }

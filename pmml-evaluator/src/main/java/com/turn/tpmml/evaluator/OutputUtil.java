@@ -12,7 +12,7 @@ import com.turn.tpmml.ResultFeatureType;
 import com.turn.tpmml.manager.ModelManager;
 import com.turn.tpmml.manager.ModelManagerException;
 import com.turn.tpmml.manager.PMMLResult;
-import com.turn.tpmml.manager.UnsupportedFeatureException;
+import com.turn.tpmml.manager.TPMMLException.TPMMLCause;
 
 import java.util.List;
 import java.util.Map;
@@ -68,7 +68,7 @@ public class OutputUtil {
 				FieldName target = getTarget(modelManager, outputField);
 
 				if (!predictions.containsKey(target)) {
-					throw new EvaluationException();
+					throw new EvaluationException("There is no target");
 				}
 
 				// Prediction results may be either simple or complex values
@@ -77,7 +77,7 @@ public class OutputUtil {
 			case TRANSFORMED_VALUE:
 				Expression expression = outputField.getExpression();
 				if (expression == null) {
-					throw new EvaluationException();
+					throw new EvaluationException("There is no expression");
 				}
 
 				value = ExpressionUtil.evaluate(expression, context);
@@ -86,13 +86,14 @@ public class OutputUtil {
 				FieldName target2 = getTarget(modelManager, outputField);
 
 				if (!predictions.containsKey(target2)) {
-					throw new EvaluationException();
+					throw new EvaluationException("There is no expression");
 				}
 
 				value = getProbability(predictions.getValue(target2), outputField.getValue());
 				break;
 			default:
-				throw new EvaluationException(new UnsupportedFeatureException(resultFeature));
+				throw new EvaluationException(TPMMLCause.UNSUPPORTED_OPERATION,
+						resultFeature.name());
 			}
 
 			FieldName name = outputField.getName();
