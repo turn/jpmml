@@ -163,7 +163,12 @@ public class MiningModelEvaluator2 extends MiningModelManager implements Evaluat
 		ClassificationMap result = new ClassificationMap();
 
 		for (SegmentResult segmentResult : segmentResults) {
-			Object predictedValue = EvaluatorUtil.decode(segmentResult.getPrediction());
+			Object predictedValue;
+			try {
+				predictedValue = EvaluatorUtil.decode(segmentResult.getPrediction());
+			} catch (ModelManagerException e) {
+				throw new EvaluationException(e);
+			}
 
 			String value = ParameterUtil.toString(predictedValue);
 
@@ -271,7 +276,12 @@ public class MiningModelEvaluator2 extends MiningModelManager implements Evaluat
 				}
 
 				for (FieldName outputField : outputFields) {
-					Object outputValue = result.getValue(outputField);
+					Object outputValue;
+					try {
+						outputValue = result.getValue(outputField);
+					} catch (ModelManagerException e) {
+						throw new EvaluationException(e);
+					}
 					if (outputValue == null) {
 						throw new EvaluationException("Output value is null");
 					}
@@ -309,7 +319,7 @@ public class MiningModelEvaluator2 extends MiningModelManager implements Evaluat
 			setResult(result);
 		}
 
-		public Object getPrediction() {
+		public Object getPrediction() throws ModelManagerException {
 			return getResult().getValue(getPredictedField());
 		}
 

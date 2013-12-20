@@ -13,7 +13,7 @@ public class TranslationException extends ModelManagerException {
 	private static final long serialVersionUID = 1L;
 
 	public TranslationException(String message) {
-		super(message);
+		super(TPMMLCause.GENERAL, message);
 	}
 	
 	public TranslationException(TPMMLCause cause, Object... args) {

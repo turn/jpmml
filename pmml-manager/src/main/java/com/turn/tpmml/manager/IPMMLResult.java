@@ -21,8 +21,9 @@ public interface IPMMLResult {
 	 * @param key The result we are interested in.
 	 * @return The value associated with the key.
 	 * @throws NoSuchElementException If the key does not exist.
+	 * @throws ModelManagerException 
 	 */
-	public Object getValue(FieldName key) throws NoSuchElementException;
+	public Object getValue(FieldName key) throws ModelManagerException;
 
 	/**
 	 * Return true if there is not result.

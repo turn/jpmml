@@ -28,9 +28,9 @@ public class PMMLResult implements IPMMLResult {
 		results = (HashMap<FieldName, Object>) other.results.clone();
 	}
 
-	public Object getValue(FieldName key) throws NoSuchElementException {
+	public Object getValue(FieldName key) throws ModelManagerException {
 		if (!results.containsKey(key)) {
-			throw new NoSuchElementException("There is no field " + key.getValue() +
+			throw new ModelManagerException("There is no field " + key.getValue() +
 					" in the result.");
 		}
 

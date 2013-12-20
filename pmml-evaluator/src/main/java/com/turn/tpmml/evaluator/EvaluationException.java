@@ -12,7 +12,7 @@ public class EvaluationException extends ModelManagerException {
 
 
 	public EvaluationException(String message) {
-		super(message);
+		super(TPMMLCause.GENERAL, message);
 	}
 
 	public EvaluationException(TPMMLCause cause, Object... args) {

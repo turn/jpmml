@@ -24,7 +24,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 
 /**
  * This class evaluates the variables on the model. It reads the pmml object to return a result. For
@@ -99,8 +98,6 @@ public class RegressionModelEvaluator extends RegressionModelManager implements 
 			if (res.getValue(getTarget()) instanceof ClassificationMap) {
 				res.put(getTarget(), ((ClassificationMap) res.getValue(getTarget())).getResult());
 			}
-		} catch (NoSuchElementException e) {
-			throw new EvaluationException(e);
 		} catch (ModelManagerException e) {
 			throw new EvaluationException(e);
 		}

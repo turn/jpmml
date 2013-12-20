@@ -72,7 +72,11 @@ public class OutputUtil {
 				}
 
 				// Prediction results may be either simple or complex values
-				value = EvaluatorUtil.decode(predictions.getValue(target));
+				try {
+					value = EvaluatorUtil.decode(predictions.getValue(target));
+				} catch (ModelManagerException e) {
+					throw new EvaluationException(e);
+				}
 				break;
 			case TRANSFORMED_VALUE:
 				Expression expression = outputField.getExpression();
@@ -89,7 +93,11 @@ public class OutputUtil {
 					throw new EvaluationException("There is no expression");
 				}
 
-				value = getProbability(predictions.getValue(target2), outputField.getValue());
+				try {
+					value = getProbability(predictions.getValue(target2), outputField.getValue());
+				} catch (ModelManagerException e) {
+					throw new EvaluationException(e);
+				}
 				break;
 			default:
 				throw new EvaluationException(TPMMLCause.UNSUPPORTED_OPERATION,
