@@ -44,8 +44,8 @@ public class ModelManagerFactory {
 			return new ScoreCardModelManager(pmml, (Scorecard) model);
 		}
 
-		throw new ModelManagerException(
-				new UnsupportedFeatureException(model + " is not supported"));
+		throw new ModelManagerException(ModelManagerException.TPMMLCause.UNSUPPORTED_OPERATION,
+				model.getModelName());
 	}
 
 	public static ModelManagerFactory getInstance() {

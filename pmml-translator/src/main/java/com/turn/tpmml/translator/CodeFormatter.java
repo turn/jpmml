@@ -51,9 +51,10 @@ public interface CodeFormatter {
 	 * @param code The code on which we append.
 	 * @param context The context of the translation.
 	 * @param variable The variable.
+	 * @throws TranslationException 
 	 */
 	public void declareVariable(StringBuilder code, TranslationContext context,
-					Variable variable);
+					Variable variable) throws TranslationException;
 
 	/**
 	 * Add a line in the code. Don't append a '\n' at the end of the line.
@@ -69,9 +70,10 @@ public interface CodeFormatter {
 	 * @param code The code on which we append.
 	 * @param context The context of the translation. Define the null value.
 	 * @param variable The variable.
+	 * @throws TranslationException 
 	 */
 	public void assignVariableToNullValue(StringBuilder code, TranslationContext context,
-										Variable variable);
+										Variable variable) throws TranslationException;
 
 	/**
 	 * Assign a variable.

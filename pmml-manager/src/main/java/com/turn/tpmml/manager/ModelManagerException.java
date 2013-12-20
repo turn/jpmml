@@ -7,19 +7,19 @@ package com.turn.tpmml.manager;
  * Generic exception when something happens within ModelManager.
  * 
  */
-// FIXME: Specialize this exception, make it better.
-public class ModelManagerException extends Exception {
+public class ModelManagerException extends TPMMLException {
 
 	private static final long serialVersionUID = 1L;
-
-	public ModelManagerException() {
-	}
 
 	public ModelManagerException(String message) {
 		super(message);
 	}
 	
-	public ModelManagerException(Throwable t) {
-		super(t);
+	public ModelManagerException(TPMMLCause c, Object... args) {
+		super(c, args);
+	}
+	
+	public ModelManagerException(Throwable e) {
+		super(e);
 	}
 }

@@ -12,9 +12,9 @@ import com.turn.tpmml.TreeModel;
 import com.turn.tpmml.manager.IPMMLResult;
 import com.turn.tpmml.manager.ModelManagerException;
 import com.turn.tpmml.manager.PMMLResult;
+import com.turn.tpmml.manager.TPMMLException.TPMMLCause;
 import com.turn.tpmml.manager.TreeModelManager;
 import com.turn.tpmml.manager.TreePMMLResult;
-import com.turn.tpmml.manager.UnsupportedFeatureException;
 
 import java.util.List;
 import java.util.Map;
@@ -100,7 +100,8 @@ public class TreeModelEvaluator2 extends TreeModelManager implements Evaluator {
 			case RETURN_LAST_PREDICTION:
 				return prediction.getLastTrueNode();
 			default:
-				throw new EvaluationException(new UnsupportedFeatureException(noTrueChildStrategy));
+				throw new EvaluationException(TPMMLCause.UNSUPPORTED_OPERATION,
+						noTrueChildStrategy.name());
 			}
 		}
 	}
@@ -133,7 +134,7 @@ public class TreeModelEvaluator2 extends TreeModelManager implements Evaluator {
 	private Boolean evaluateNode(Node node, EvaluationContext context) throws EvaluationException {
 		Predicate predicate = node.getPredicate();
 		if (predicate == null) {
-			throw new EvaluationException("No predicqte found for a node.");
+			throw new EvaluationException("No predicate found for a node.");
 		}
 
 		return PredicateUtil.evaluate(predicate, context);

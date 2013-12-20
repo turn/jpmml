@@ -17,7 +17,7 @@ import com.turn.tpmml.manager.IPMMLResult;
 import com.turn.tpmml.manager.MiningModelManager;
 import com.turn.tpmml.manager.ModelManagerException;
 import com.turn.tpmml.manager.PMMLResult;
-import com.turn.tpmml.manager.UnsupportedFeatureException;
+import com.turn.tpmml.manager.TPMMLException.TPMMLCause;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -67,7 +67,8 @@ public class MiningModelEvaluator2 extends MiningModelManager implements Evaluat
 				predictions = evaluateClassification(context);
 				break;
 			default:
-				throw new UnsupportedFeatureException(miningFunction);
+				throw new EvaluationException(TPMMLCause.UNSUPPORTED_OPERATION,
+						miningFunction.name());
 			}
 
 			PMMLResult res = new PMMLResult();
@@ -89,7 +90,8 @@ public class MiningModelEvaluator2 extends MiningModelManager implements Evaluat
 			case MODEL_CHAIN:
 				return dispatchSingleResult(segmentResults);
 			case SELECT_ALL:
-				throw new EvaluationException(new UnsupportedFeatureException(multipleModelMethod));
+				throw new EvaluationException(TPMMLCause.UNSUPPORTED_OPERATION,
+						multipleModelMethod.name());
 			default:
 				break;
 			}
@@ -121,7 +123,8 @@ public class MiningModelEvaluator2 extends MiningModelManager implements Evaluat
 				result = (weightedSum / count);
 				break;
 			default:
-				throw new UnsupportedFeatureException(multipleModelMethod);
+				throw new EvaluationException(TPMMLCause.UNSUPPORTED_OPERATION,
+						multipleModelMethod.name());
 			}
 
 			PMMLResult res = new PMMLResult();
@@ -151,8 +154,8 @@ public class MiningModelEvaluator2 extends MiningModelManager implements Evaluat
 		case MODEL_CHAIN:
 			return dispatchSingleResult(segmentResults);
 		case SELECT_ALL:
-			throw new EvaluationException(new UnsupportedFeatureException(multipleModelMethod +
-					" is undefined"));
+			throw new EvaluationException(TPMMLCause.UNSUPPORTED_OPERATION,
+					multipleModelMethod.name());
 		default:
 			break;
 		}
@@ -160,7 +163,12 @@ public class MiningModelEvaluator2 extends MiningModelManager implements Evaluat
 		ClassificationMap result = new ClassificationMap();
 
 		for (SegmentResult segmentResult : segmentResults) {
-			Object predictedValue = EvaluatorUtil.decode(segmentResult.getPrediction());
+			Object predictedValue;
+			try {
+				predictedValue = EvaluatorUtil.decode(segmentResult.getPrediction());
+			} catch (ModelManagerException e) {
+				throw new EvaluationException(e);
+			}
 
 			String value = ParameterUtil.toString(predictedValue);
 
@@ -177,7 +185,8 @@ public class MiningModelEvaluator2 extends MiningModelManager implements Evaluat
 				vote += ((segmentResult.getSegment()).getWeight() * 1d);
 				break;
 			default:
-				throw new EvaluationException(new UnsupportedFeatureException(multipleModelMethod));
+				throw new EvaluationException(TPMMLCause.UNSUPPORTED_OPERATION,
+						multipleModelMethod.name());
 			}
 
 			result.put(value, vote);
@@ -201,7 +210,8 @@ public class MiningModelEvaluator2 extends MiningModelManager implements Evaluat
 			throws EvaluationException {
 
 		if (results.size() != 1) {
-			throw new EvaluationException();
+			throw new EvaluationException(results.size() + " results are returned," +
+					" but only one is expected");
 		}
 
 		SegmentResult result = results.get(0);
@@ -228,7 +238,7 @@ public class MiningModelEvaluator2 extends MiningModelManager implements Evaluat
 
 			Boolean selectable = PredicateUtil.evaluate(predicate, context);
 			if (selectable == null) {
-				throw new EvaluationException();
+				throw new EvaluationException("Predicate doesn't evaluate to false or true");
 			} // End if
 
 			if (!selectable.booleanValue()) {
@@ -238,7 +248,7 @@ public class MiningModelEvaluator2 extends MiningModelManager implements Evaluat
 			Model model = segment.getModel();
 
 			Evaluator evaluator;
-			
+
 			try {
 				evaluator = (Evaluator) EVALUATOR_FACTORY.getModelManager(getPmml(), model);
 			} catch (ModelManagerException e1) {
@@ -267,9 +277,14 @@ public class MiningModelEvaluator2 extends MiningModelManager implements Evaluat
 				}
 
 				for (FieldName outputField : outputFields) {
-					Object outputValue = result.getValue(outputField);
+					Object outputValue;
+					try {
+						outputValue = result.getValue(outputField);
+					} catch (ModelManagerException e) {
+						throw new EvaluationException(e);
+					}
 					if (outputValue == null) {
-						throw new EvaluationException();
+						throw new EvaluationException("Output value is null");
 					}
 
 					outputValue = EvaluatorUtil.decode(outputValue);
@@ -305,7 +320,7 @@ public class MiningModelEvaluator2 extends MiningModelManager implements Evaluat
 			setResult(result);
 		}
 
-		public Object getPrediction() {
+		public Object getPrediction() throws ModelManagerException {
 			return getResult().getValue(getPredictedField());
 		}
 

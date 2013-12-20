@@ -9,6 +9,7 @@ import com.turn.tpmml.PMML;
 import com.turn.tpmml.Predicate;
 import com.turn.tpmml.TreeModel;
 import com.turn.tpmml.manager.ModelManagerException;
+import com.turn.tpmml.manager.TPMMLException.TPMMLCause;
 import com.turn.tpmml.manager.TreeModelManager;
 import com.turn.tpmml.translator.Variable.VariableType;
 
@@ -172,8 +173,8 @@ public class TreeModelTranslator extends TreeModelManager implements Translator 
 					generateCodeForNode(defaultNode, context, code, outputVariable, cf);
 					break;
 				default:
-					throw new TranslationException("Unsupported strategy: " +
-							getModel().getMissingValueStrategy());
+					throw new TranslationException(TPMMLCause.UNSUPPORTED_OPERATION,
+							getModel().getMissingValueStrategy().name());
 				}
 			} catch (ModelManagerException e) {
 				throw new TranslationException(e);

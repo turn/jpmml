@@ -10,7 +10,7 @@ import com.turn.tpmml.RegressionNormalizationMethodType;
 import com.turn.tpmml.RegressionTable;
 import com.turn.tpmml.manager.ModelManagerException;
 import com.turn.tpmml.manager.RegressionModelManager;
-import com.turn.tpmml.manager.UnsupportedFeatureException;
+import com.turn.tpmml.manager.TPMMLException.TPMMLCause;
 import com.turn.tpmml.translator.CodeFormatter.Operator;
 import com.turn.tpmml.translator.Variable.VariableType;
 
@@ -88,7 +88,8 @@ public class RegressionModelTranslator extends RegressionModelManager implements
 			translateClassification(sb, context, outputField);
 			break;
 		default:
-			throw new UnsupportedOperationException();
+			throw new TranslationException(TPMMLCause.UNSUPPORTED_OPERATION,
+					getFunctionName().name());
 		}
 
 		return sb.toString();
@@ -250,9 +251,8 @@ public class RegressionModelTranslator extends RegressionModelManager implements
 			}
 			break;
 		default:
-			throw new TranslationException(new
-					UnsupportedFeatureException(getNormalizationMethodType() +
-					" is not supported."));
+			throw new TranslationException(TPMMLCause.UNSUPPORTED_OPERATION,
+					getNormalizationMethodType().name());
 		}
 
 		cf.assignVariable(sb, context,
@@ -466,7 +466,8 @@ public class RegressionModelTranslator extends RegressionModelManager implements
 					return "" + context.formatVariableName(this, categoricalPredictor.getName()) +
 							" == " + categoricalPredictor.getValue();
 				default:
-					throw new UnsupportedOperationException();
+					throw new TranslationException(TPMMLCause.UNSUPPORTED_OPERATION,
+							df.getDataType().name());
 				}
 			}
 		}

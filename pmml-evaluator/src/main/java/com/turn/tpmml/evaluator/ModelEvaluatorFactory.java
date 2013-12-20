@@ -13,7 +13,7 @@ import com.turn.tpmml.TreeModel;
 import com.turn.tpmml.manager.ModelManager;
 import com.turn.tpmml.manager.ModelManagerException;
 import com.turn.tpmml.manager.ModelManagerFactory;
-import com.turn.tpmml.manager.UnsupportedFeatureException;
+import com.turn.tpmml.manager.TPMMLException.TPMMLCause;
 
 
 public class ModelEvaluatorFactory extends ModelManagerFactory {
@@ -52,7 +52,8 @@ public class ModelEvaluatorFactory extends ModelManagerFactory {
 			return new ScorecardEvaluator(pmml, (Scorecard) model);
 		}
 
-		throw new ModelManagerException(new UnsupportedFeatureException(model));
+		throw new ModelManagerException(TPMMLCause.UNSUPPORTED_OPERATION,
+				model.getModelName());
 	}
 
 	public static ModelEvaluatorFactory getInstance() {

@@ -2,8 +2,6 @@ package com.turn.tpmml.manager;
 
 import com.turn.tpmml.FieldName;
 
-import java.util.NoSuchElementException;
-
 /**
  * This Interface handles the results of an evaluation.
  *
@@ -21,8 +19,9 @@ public interface IPMMLResult {
 	 * @param key The result we are interested in.
 	 * @return The value associated with the key.
 	 * @throws NoSuchElementException If the key does not exist.
+	 * @throws ModelManagerException 
 	 */
-	public Object getValue(FieldName key) throws NoSuchElementException;
+	public Object getValue(FieldName key) throws ModelManagerException;
 
 	/**
 	 * Return true if there is not result.
@@ -36,7 +35,8 @@ public interface IPMMLResult {
 	 * @return The result wanted.
 	 * @throws NoSuchElementException If there is more than one result or
 	 * if there is none.
+	 * @throws ModelManagerException 
 	 */
-	public Object getResult() throws NoSuchElementException;
+	public Object getResult() throws ModelManagerException;
 
 }

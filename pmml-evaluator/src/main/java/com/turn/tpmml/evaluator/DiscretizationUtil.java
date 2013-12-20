@@ -9,7 +9,7 @@ import com.turn.tpmml.InlineTable;
 import com.turn.tpmml.Interval;
 import com.turn.tpmml.MapValues;
 import com.turn.tpmml.TableLocator;
-import com.turn.tpmml.manager.UnsupportedFeatureException;
+import com.turn.tpmml.manager.TPMMLException.TPMMLCause;
 
 import java.util.List;
 import java.util.Map;
@@ -50,7 +50,7 @@ public class DiscretizationUtil {
 		case CLOSED_CLOSED:
 			return greaterOrEqual(left, value) && lessOrEqual(right, value);
 		default:
-			throw new EvaluationException(new UnsupportedFeatureException(closure));
+			throw new EvaluationException(TPMMLCause.UNSUPPORTED_OPERATION, closure.name());
 		}
 	}
 
@@ -89,8 +89,8 @@ public class DiscretizationUtil {
 		} else {
 			TableLocator tableLocator = mapValues.getTableLocator();
 			if (tableLocator != null) {
-				throw new EvaluationException(new UnsupportedFeatureException(tableLocator +
-						" is not supported yet"));
+				throw new EvaluationException(TPMMLCause.UNSUPPORTED_OPERATION,
+						tableLocator.toString());
 			}
 		}
 

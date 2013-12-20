@@ -2,8 +2,7 @@ package com.turn.tpmml.translator;
 
 import com.turn.tpmml.DataField;
 import com.turn.tpmml.DataType;
-
-import com.turn.tpmml.manager.UnsupportedFeatureException;
+import com.turn.tpmml.manager.TPMMLException.TPMMLCause;
 
 /**
  * The aim of this class is to abstract the notion of variable
@@ -53,13 +52,13 @@ public class Variable {
 	private String name;
 
 
-	public Variable(DataField d) {
+	public Variable(DataField d) throws TranslationException {
 		this.type = dataTypeToVariableType(d.getDataType());
 		this.name = d.getName().getValue();
 		this.typeName = null;
 	}
 
-	public Variable(DataType d, String name) {
+	public Variable(DataType d, String name) throws TranslationException {
 		this.type = dataTypeToVariableType(d);
 		this.name = name;
 		this.typeName = null;
@@ -90,7 +89,7 @@ public class Variable {
 		this.type = VariableType.INTEGER;
 	}
 
-	public VariableType dataTypeToVariableType(DataType d) {
+	public VariableType dataTypeToVariableType(DataType d) throws TranslationException {
 		VariableType res;
 
 		switch (d) {
@@ -110,7 +109,7 @@ public class Variable {
 			res = VariableType.BOOLEAN;
 			break;
 		default:
-			throw new UnsupportedFeatureException(d);
+			throw new TranslationException(TPMMLCause.UNSUPPORTED_OPERATION, d.name());
 		}
 
 		return res;
