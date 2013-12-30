@@ -89,7 +89,8 @@ public class MiningModelEvaluator extends MiningModelManager implements Evaluato
 				return evaluateRegression((Map<FieldName, Object>) parameters,
 						getOutputField(this));
 			default:
-				throw new UnsupportedOperationException();
+				throw new EvaluationException(TPMMLCause.UNSUPPORTED_OPERATION,
+						getFunctionType().name());
 			}
 		} catch (ModelManagerException e) {
 			throw new EvaluationException(e);

@@ -102,7 +102,8 @@ public class FunctionUtil {
 		public Number evaluate(List<?> values) throws EvaluationException {
 
 			if (values.size() != 2) {
-				throw new EvaluationException("Only binary expressions are supported");
+				throw new EvaluationException("Wrong number of arguments: expected 2, got " +
+						values.size());
 			}
 
 			Object left = values.get(0);
@@ -253,7 +254,8 @@ public class FunctionUtil {
 		public Number evaluate(List<?> values) throws EvaluationException {
 
 			if (values.size() != 1) {
-				throw new EvaluationException("The list does contain more than one element");
+				throw new EvaluationException("Wrong number of arguments, expected 1, got " +
+						values.size());
 			}
 
 			Object value = values.get(0);
@@ -318,7 +320,8 @@ public class FunctionUtil {
 			public Number evaluate(List<?> values) throws EvaluationException {
 
 				if (values.size() != 2) {
-					throw new EvaluationException("Binary operation doesn't contain two arguments");
+					throw new EvaluationException("Wrong number of arguments: expected 2, got " +
+							values.size());
 				}
 
 				Number left = asNumber(values.get(0));
@@ -337,7 +340,8 @@ public class FunctionUtil {
 			public Number evaluate(List<?> values) throws EvaluationException {
 
 				if (values.size() != 2) {
-					throw new EvaluationException("Binary operation doesn't contain two arguments");
+					throw new EvaluationException("Wrong number of arguments: expected 2, got " +
+							values.size());
 				}
 
 				Number left = asNumber(values.get(0));
@@ -383,7 +387,8 @@ public class FunctionUtil {
 		public Boolean evaluate(List<?> values) throws EvaluationException {
 
 			if (values.size() != 1) {
-				throw new EvaluationException("Doesn't contain the right number of arguments");
+				throw new EvaluationException("Wrong number of arguments: expected 1, got " +
+						values.size());
 			}
 
 			return evaluate(values.get(0));
@@ -420,7 +425,8 @@ public class FunctionUtil {
 		public Boolean evaluate(List<?> values) throws EvaluationException {
 
 			if (values.size() != 2) {
-				throw new EvaluationException("Not a binary operation");
+				throw new EvaluationException("Wrong number of arguments: expected 2, got " +
+						values.size());
 			}
 
 			Object left = values.get(0);
@@ -500,7 +506,8 @@ public class FunctionUtil {
 		public Boolean evaluate(List<?> values) throws EvaluationException {
 
 			if (values.size() < 2) {
-				throw new EvaluationException("Binary operation doesn't contain two arguments");
+				throw new EvaluationException("Wrong number of arguments: expected 2, got " +
+						values.size());
 			}
 
 			Boolean result = asBoolean(values.get(0));
@@ -538,7 +545,8 @@ public class FunctionUtil {
 		public Boolean evaluate(List<?> values) throws EvaluationException {
 
 			if (values.size() != 1) {
-				throw new EvaluationException("Doesn't contain exactly one argument");
+				throw new EvaluationException("Wrong number of arguments: expected 1, got " +
+						values.size());
 			}
 
 			return evaluate(asBoolean(values.get(0)));
@@ -562,7 +570,9 @@ public class FunctionUtil {
 		public Boolean evaluate(List<?> values) throws EvaluationException {
 
 			if (values.size() < 2) {
-				throw new EvaluationException("Invalid number of arguments, got " + values.size());
+				throw new EvaluationException(
+						"Wrong number of arguments: expected more than 2, got " +
+						values.size());
 			}
 
 			return evaluate(values.get(0), values.subList(1, values.size()));
@@ -593,7 +603,8 @@ public class FunctionUtil {
 			public Object evaluate(List<?> values) throws EvaluationException {
 
 				if (values.size() < 2 || values.size() > 3) {
-					throw new EvaluationException("Invalid number of arguments, got " +
+					throw new EvaluationException("Wrong number of arguments:" +
+							" expected 2 or 3, got " +
 							values.size());
 				}
 
@@ -620,7 +631,8 @@ public class FunctionUtil {
 		public String evaluate(List<?> values) throws EvaluationException {
 
 			if (values.size() != 1) {
-				throw new EvaluationException("Invalid size, got " + values.size());
+				throw new EvaluationException("Wrong number of arguments: expected 1, got " +
+						values.size());
 			}
 
 			return evaluate(asString(values.get(0)));
@@ -649,7 +661,8 @@ public class FunctionUtil {
 			public String evaluate(List<?> values) throws EvaluationException {
 
 				if (values.size() != 3) {
-					throw new EvaluationException("Invalid size, got " + values.size());
+					throw new EvaluationException("Wrong number of arguments: expected 3, got " +
+							values.size());
 				}
 
 				String value = asString(values.get(0));

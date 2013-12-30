@@ -60,12 +60,9 @@ public abstract class ModelManager<M extends Model> extends PMMLManager implemen
 	public FieldName getTarget() throws ModelManagerException {
 		List<FieldName> fields = getPredictedFields();
 
-		if (fields.size() < 1) {
-			throw new ModelManagerException("No predicted fields");
-		} else
-
-		if (fields.size() > 1) {
-			throw new ModelManagerException("Too many predicted fields");
+		if (fields.size() != 1) {
+			throw new ModelManagerException("Wrong number of fields, expected 1, got " +
+					fields.size());
 		}
 
 		return fields.get(0);

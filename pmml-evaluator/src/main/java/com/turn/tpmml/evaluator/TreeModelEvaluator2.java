@@ -134,7 +134,7 @@ public class TreeModelEvaluator2 extends TreeModelManager implements Evaluator {
 	private Boolean evaluateNode(Node node, EvaluationContext context) throws EvaluationException {
 		Predicate predicate = node.getPredicate();
 		if (predicate == null) {
-			throw new EvaluationException("No predicqte found for a node.");
+			throw new EvaluationException("No predicate found for a node.");
 		}
 
 		return PredicateUtil.evaluate(predicate, context);

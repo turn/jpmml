@@ -88,7 +88,8 @@ public class RegressionModelTranslator extends RegressionModelManager implements
 			translateClassification(sb, context, outputField);
 			break;
 		default:
-			throw new UnsupportedOperationException();
+			throw new TranslationException(TPMMLCause.UNSUPPORTED_OPERATION,
+					getFunctionName().name());
 		}
 
 		return sb.toString();
@@ -465,7 +466,8 @@ public class RegressionModelTranslator extends RegressionModelManager implements
 					return "" + context.formatVariableName(this, categoricalPredictor.getName()) +
 							" == " + categoricalPredictor.getValue();
 				default:
-					throw new UnsupportedOperationException();
+					throw new TranslationException(TPMMLCause.UNSUPPORTED_OPERATION,
+							df.getDataType().name());
 				}
 			}
 		}

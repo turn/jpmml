@@ -131,8 +131,8 @@ public class PredicateUtil {
 			EvaluationContext context) throws EvaluationException {
 		Object value = ExpressionUtil.evaluate(simpleSetPredicate.getField(), context);
 		if (value == null) {
-			throw new EvaluationException(new MissingParameterException(
-					simpleSetPredicate.getField()));
+			throw new EvaluationException(TPMMLCause.MISSING_PARAMETER,
+					simpleSetPredicate.getField());
 		}
 
 		Array array = simpleSetPredicate.getArray();

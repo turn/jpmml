@@ -210,7 +210,7 @@ public class MiningModelEvaluator2 extends MiningModelManager implements Evaluat
 			throws EvaluationException {
 
 		if (results.size() != 1) {
-			throw new EvaluationException("More than one results are returned," +
+			throw new EvaluationException(results.size() + " results are returned," +
 					" but only one is expected");
 		}
 

@@ -151,8 +151,8 @@ public class TreeModelEvaluator extends TreeModelManager implements Evaluator {
 							}
 							break;
 						default:
-							throw new EvaluationException("Unsupported missing value strategy: " +
-									getModel().getMissingValueStrategy());
+							throw new EvaluationException(TPMMLCause.UNSUPPORTED_OPERATION,
+									getModel().getMissingValueStrategy().name());
 						}
 					} catch (ModelManagerException e) {
 						throw new EvaluationException(e);

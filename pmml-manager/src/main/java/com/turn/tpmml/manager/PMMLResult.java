@@ -4,7 +4,6 @@ import com.turn.tpmml.FieldName;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.NoSuchElementException;
 
 
 /**
@@ -73,16 +72,16 @@ public class PMMLResult implements IPMMLResult {
 		absorb(that.results);
 	}
 
-	public Object getResult() throws NoSuchElementException {
+	public Object getResult() throws ModelManagerException {
 		if (results.size() == 1) {
 			for (Map.Entry<FieldName, Object> e : results.entrySet()) {
 				return e.getValue();
 			}
 		} else {
 			if (!isEmpty()) {				
-				throw new NoSuchElementException("There is more than one result.");
+				throw new ModelManagerException("There is more than one result.");
 			} else {
-				throw new NoSuchElementException("There is no result.");
+				throw new ModelManagerException("There is no result.");
 			}
 		}
 		return null;

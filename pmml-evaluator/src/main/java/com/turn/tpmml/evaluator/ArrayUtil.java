@@ -65,7 +65,8 @@ public class ArrayUtil {
 
 		Number n = array.getN();
 		if (n != null && n.intValue() != result.size()) {
-			throw new EvaluationException("Wrong size in the array.");
+			throw new EvaluationException("Wrong size in the array, expected " +
+					n + ", got " + result.size());
 		}
 
 		return result;
