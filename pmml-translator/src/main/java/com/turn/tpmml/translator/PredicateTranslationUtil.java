@@ -113,7 +113,7 @@ public class PredicateTranslationUtil {
 				code = operationWrapper(">", variableString, constant, context);
 				break;
 			case GREATER_OR_EQUAL:
-				code = operationWrapper(">", variableString, constant, context);
+				code = operationWrapper(">=", variableString, constant, context);
 				break;
 			case IS_MISSING:
 				code = String.format("%s == %s? %s : %s", variableString,
