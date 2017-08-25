@@ -9,7 +9,7 @@
   <parent>
     <artifactId>tpmml</artifactId>
     <groupId>com.turn.tpmml</groupId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.1</version>
   </parent>
 
   <artifactId>pmml-translator</artifactId>
